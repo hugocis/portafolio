@@ -48,6 +48,7 @@ model User {
   emailVerified DateTime?
   image         String?
   username      String    @unique
+  password      String?   // For credential authentication
   bio           String?
   website       String?
   location      String?
