@@ -46,13 +46,13 @@ export default function Home() {
               ) : (
                 <>
                   <Link
-                    href="/api/auth/signin"
+                    href="/auth/signin"
                     className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Sign In
                   </Link>
                   <Link
-                    href="/api/auth/signin"
+                    href="/auth/register"
                     className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
                   >
                     Get Started
@@ -94,7 +94,7 @@ export default function Home() {
             </div>
           ) : (
             <Link
-              href="/api/auth/signin"
+              href="/auth/register"
               className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors inline-block"
             >
               Start Building Your Portfolio

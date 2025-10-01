@@ -34,13 +34,13 @@ export const authOptions: NextAuthOptions = {
           }
         })
 
-        if (!user) {
+        if (!user || !user.password) {
           return null
         }
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
-          user.password || ""
+          user.password
         )
 
         if (!isPasswordValid) {
@@ -74,29 +74,36 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     },
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       if (account?.provider === "google" || account?.provider === "github") {
-        // Check if user already exists
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email! }
-        })
-
-        if (!existingUser) {
-          // Generate a unique username from email or profile
-          let username = user.email!.split('@')[0]
-          let counter = 1
-          
-          // Ensure username is unique
-          while (await prisma.user.findUnique({ where: { username } })) {
-            username = `${user.email!.split('@')[0]}_${counter}`
-            counter++
-          }
-
-          // Create user with username
-          await prisma.user.update({
-            where: { email: user.email! },
-            data: { username }
+        try {
+          // Check if user already exists
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! }
           })
+
+          if (!existingUser) {
+            // Generate a unique username from email or profile
+            let username = user.email!.split('@')[0]
+            let counter = 1
+            
+            // Ensure username is unique
+            while (await prisma.user.findUnique({ where: { username } })) {
+              username = `${user.email!.split('@')[0]}_${counter}`
+              counter++
+            }
+
+            // User will be created automatically by the adapter
+            // We just need to update with username after creation
+            setTimeout(async () => {
+              await prisma.user.update({
+                where: { email: user.email! },
+                data: { username }
+              })
+            }, 100)
+          }
+        } catch (error) {
+          console.error('Error in signIn callback:', error)
         }
       }
       return true
