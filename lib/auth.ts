@@ -8,14 +8,14 @@ import bcrypt from "bcryptjs"
 // Custom adapter to handle username field
 function CustomPrismaAdapter(p: typeof prisma) {
   const adapter = PrismaAdapter(p)
-  
+
   return {
     ...adapter,
     createUser: async (user: any) => {
       // Generate unique username
       let username = user.name?.toLowerCase().replace(/\s+/g, '_') || user.email?.split('@')[0] || 'user'
       let counter = 1
-      
+
       // Ensure username is unique
       while (await p.user.findUnique({ where: { username } })) {
         username = `${user.name?.toLowerCase().replace(/\s+/g, '_') || user.email?.split('@')[0] || 'user'}_${counter}`

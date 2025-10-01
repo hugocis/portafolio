@@ -3,17 +3,16 @@
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { 
-  Squares2X2Icon, 
-  CogIcon, 
+import {
+  Squares2X2Icon,
+  CogIcon,
   UserIcon,
   ArrowRightOnRectangleIcon,
   RocketLaunchIcon,
   SparklesIcon,
   GlobeAltIcon,
   EyeIcon,
-  HeartIcon,
-  StarIcon
+  HeartIcon
 } from '@heroicons/react/24/outline'
 
 interface User {
@@ -64,7 +63,7 @@ export default function HomePage() {
                 Portfolio Tree
               </span>
             </Link>
-            
+
             <div className="flex items-center space-x-4">
               <Link
                 href="/explore"
@@ -72,7 +71,7 @@ export default function HomePage() {
               >
                 Explorar
               </Link>
-              
+
               {status === 'authenticated' ? (
                 <>
                   <Link
@@ -120,7 +119,7 @@ export default function HomePage() {
                 Crea tu portfolio profesional
               </span>
             </div>
-            
+
             <h1 className="text-5xl md:text-7xl font-bold mb-8">
               <span className="bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
                 Tu Portfolio en
@@ -130,12 +129,12 @@ export default function HomePage() {
                 Estructura de Árbol
               </span>
             </h1>
-            
+
             <p className="text-xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
-              Organiza tu trabajo, proyectos y experiencias de forma visual e intuitiva. 
+              Organiza tu trabajo, proyectos y experiencias de forma visual e intuitiva.
               Construye tu historia profesional como un árbol que crece y se ramifica.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               {status === 'authenticated' ? (
                 <>
@@ -188,7 +187,7 @@ export default function HomePage() {
               Revoluciona la forma en que presentas tu trabajo profesional
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 text-center">
               <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-4 w-16 h-16 mx-auto mb-6 flex items-center justify-center">
@@ -235,7 +234,7 @@ export default function HomePage() {
                 Descubre cómo otros profesionales utilizan Portfolio Tree
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
               {featuredUsers.map((user) => (
                 <Link key={user.id} href={`/user/${user.username}`}>
@@ -263,7 +262,7 @@ export default function HomePage() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="p-6">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-500 font-medium">
@@ -276,7 +275,7 @@ export default function HomePage() {
                 </Link>
               ))}
             </div>
-            
+
             <div className="text-center">
               <Link
                 href="/explore"
@@ -299,7 +298,7 @@ export default function HomePage() {
           <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
             Únete a profesionales que ya están construyendo su presencia digital de forma innovadora
           </p>
-          
+
           {status !== 'authenticated' ? (
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -342,7 +341,7 @@ export default function HomePage() {
             <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
               Construye y comparte tu historia profesional de forma visual e intuitiva
             </p>
-            
+
             <div className="flex justify-center space-x-8 mb-8">
               <Link href="/explore" className="text-gray-400 hover:text-white transition-colors">
                 Explorar
@@ -354,7 +353,7 @@ export default function HomePage() {
                 Registrarse
               </Link>
             </div>
-            
+
             <div className="border-t border-gray-800 pt-8">
               <p className="text-gray-500 text-sm">
                 © 2024 Portfolio Tree. Construye tu presencia digital profesional.

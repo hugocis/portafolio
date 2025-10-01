@@ -26,13 +26,13 @@ const nodeTypes = [
   { id: 'DOCUMENTATION', name: 'Documentación', icon: BookOpenIcon, color: 'text-cyan-600', bgColor: 'bg-cyan-100', description: 'Documentos y recursos' }
 ]
 
-export function NodeEditor({ 
-  node, 
-  parentId, 
-  portfolioId, 
-  isOpen, 
-  onClose, 
-  onSave 
+export function NodeEditor({
+  node,
+  parentId,
+  portfolioId,
+  isOpen,
+  onClose,
+  onSave
 }: NodeEditorProps) {
   const [formData, setFormData] = useState<Partial<Node>>({
     title: '',
@@ -89,11 +89,11 @@ export function NodeEditor({
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
-    
+
     if (!formData.title?.trim()) {
       newErrors.title = 'El título es obligatorio'
     }
-    
+
     if (formData.type === 'PROJECT') {
       if (formData.projectUrl && !isValidUrl(formData.projectUrl)) {
         newErrors.projectUrl = 'URL no válida'
@@ -105,7 +105,7 @@ export function NodeEditor({
         newErrors.demoUrl = 'URL no válida'
       }
     }
-    
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -121,14 +121,14 @@ export function NodeEditor({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       setSelectedTab(0) // Go to basic info tab if there are errors
       return
     }
-    
+
     setLoading(true)
-    
+
     try {
       await onSave(formData)
       onClose()
@@ -224,39 +224,39 @@ export function NodeEditor({
                     <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1 mb-6">
                       <Tab className={({ selected }) =>
                         `w-full rounded-lg py-2.5 text-sm font-medium leading-5 transition-all
-                         ${selected 
-                           ? 'bg-white text-blue-700 shadow' 
-                           : 'text-blue-600 hover:bg-white/[0.12] hover:text-blue-700'
-                         }`
+                         ${selected
+                          ? 'bg-white text-blue-700 shadow'
+                          : 'text-blue-600 hover:bg-white/[0.12] hover:text-blue-700'
+                        }`
                       }>
                         Información Básica
                       </Tab>
                       {formData.type === 'PROJECT' && (
                         <Tab className={({ selected }) =>
                           `w-full rounded-lg py-2.5 text-sm font-medium leading-5 transition-all
-                           ${selected 
-                             ? 'bg-white text-blue-700 shadow' 
-                             : 'text-blue-600 hover:bg-white/[0.12] hover:text-blue-700'
-                           }`
+                           ${selected
+                            ? 'bg-white text-blue-700 shadow'
+                            : 'text-blue-600 hover:bg-white/[0.12] hover:text-blue-700'
+                          }`
                         }>
                           Enlaces del Proyecto
                         </Tab>
                       )}
                       <Tab className={({ selected }) =>
                         `w-full rounded-lg py-2.5 text-sm font-medium leading-5 transition-all
-                         ${selected 
-                           ? 'bg-white text-blue-700 shadow' 
-                           : 'text-blue-600 hover:bg-white/[0.12] hover:text-blue-700'
-                         }`
+                         ${selected
+                          ? 'bg-white text-blue-700 shadow'
+                          : 'text-blue-600 hover:bg-white/[0.12] hover:text-blue-700'
+                        }`
                       }>
                         Contenido
                       </Tab>
                       <Tab className={({ selected }) =>
                         `w-full rounded-lg py-2.5 text-sm font-medium leading-5 transition-all
-                         ${selected 
-                           ? 'bg-white text-blue-700 shadow' 
-                           : 'text-blue-600 hover:bg-white/[0.12] hover:text-blue-700'
-                         }`
+                         ${selected
+                          ? 'bg-white text-blue-700 shadow'
+                          : 'text-blue-600 hover:bg-white/[0.12] hover:text-blue-700'
+                        }`
                       }>
                         Configuración
                       </Tab>
@@ -279,8 +279,8 @@ export function NodeEditor({
                                   type="button"
                                   onClick={() => setFormData(prev => ({ ...prev, type: type.id as NodeType }))}
                                   className={`p-4 rounded-lg border-2 transition-all text-left
-                                    ${formData.type === type.id 
-                                      ? 'border-blue-500 bg-blue-50' 
+                                    ${formData.type === type.id
+                                      ? 'border-blue-500 bg-blue-50'
                                       : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                                     }`}
                                 >
@@ -462,9 +462,8 @@ export function NodeEditor({
                         <div className="bg-gray-50 rounded-lg p-4">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
-                              <div className={`p-2 rounded-lg ${
-                                formData.isVisible ? 'bg-green-100' : 'bg-gray-100'
-                              }`}>
+                              <div className={`p-2 rounded-lg ${formData.isVisible ? 'bg-green-100' : 'bg-gray-100'
+                                }`}>
                                 {formData.isVisible ? (
                                   <EyeIcon className="h-5 w-5 text-green-600" />
                                 ) : (
@@ -476,8 +475,8 @@ export function NodeEditor({
                                   Visibilidad del Nodo
                                 </label>
                                 <p className="text-sm text-gray-500">
-                                  {formData.isVisible 
-                                    ? 'Este nodo será visible en tu portafolio público' 
+                                  {formData.isVisible
+                                    ? 'Este nodo será visible en tu portafolio público'
                                     : 'Este nodo estará oculto para los visitantes'
                                   }
                                 </p>
@@ -486,14 +485,12 @@ export function NodeEditor({
                             <button
                               type="button"
                               onClick={() => setFormData(prev => ({ ...prev, isVisible: !prev.isVisible }))}
-                              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                                formData.isVisible ? 'bg-blue-600' : 'bg-gray-200'
-                              }`}
+                              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${formData.isVisible ? 'bg-blue-600' : 'bg-gray-200'
+                                }`}
                             >
                               <span
-                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                  formData.isVisible ? 'translate-x-6' : 'translate-x-1'
-                                }`}
+                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.isVisible ? 'translate-x-6' : 'translate-x-1'
+                                  }`}
                               />
                             </button>
                           </div>

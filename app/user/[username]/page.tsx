@@ -71,7 +71,7 @@ export default function UserPage({ params }: UserPageProps) {
         const userData = await response.json()
         setUser(userData)
         setNodes(userData.portfolio?.nodes || [])
-        
+
         // Check if the current session user is the owner of this portfolio
         if (session?.user?.username === username) {
           setIsOwner(true)
@@ -181,7 +181,7 @@ export default function UserPage({ params }: UserPageProps) {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
                 <LayoutSelector
                   currentLayout={currentLayout}
@@ -234,7 +234,7 @@ export default function UserPage({ params }: UserPageProps) {
                       <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 p-6">
                         <h2 className="text-lg font-semibold mb-4 flex items-center">
                           <svg className="h-5 w-5 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                           </svg>
                           Proyectos Destacados
                         </h2>
@@ -334,7 +334,7 @@ export default function UserPage({ params }: UserPageProps) {
                 </div>
               </div>
             )}
-            
+
             {currentLayout === 'timeline' && (
               <TimelineLayout
                 nodes={nodes}
@@ -342,7 +342,7 @@ export default function UserPage({ params }: UserPageProps) {
                 isOwner={false}
               />
             )}
-            
+
             {currentLayout === 'kanban' && (
               <KanbanLayout
                 nodes={nodes}
@@ -350,7 +350,7 @@ export default function UserPage({ params }: UserPageProps) {
                 isOwner={false}
               />
             )}
-            
+
             {currentLayout === 'grid' && (
               <GridLayout
                 nodes={nodes}

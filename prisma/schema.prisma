@@ -48,7 +48,7 @@ model User {
   emailVerified DateTime?
   image         String?
   username      String    @unique
-  password      String?   // For credential authentication
+  password      String? // For credential authentication
   bio           String?
   website       String?
   location      String?
@@ -91,16 +91,16 @@ model Node {
   type        NodeType
   order       Int      @default(0)
   isVisible   Boolean  @default(true)
-  
+
   // Project specific fields
-  projectUrl  String?
-  githubUrl   String?
-  demoUrl     String?
-  images      String[] // Array of image URLs
-  tags        String[] // Array of tags
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  projectUrl String?
+  githubUrl  String?
+  demoUrl    String?
+  images     String[] // Array of image URLs
+  tags       String[] // Array of tags
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
   parent    Node?     @relation("NodeHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
