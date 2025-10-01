@@ -1,25 +1,44 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Node } from '@prisma/client'
 import { NodeEditor } from '@/components/dashboard/node-editor'
 import { InteractiveTree } from '@/components/portfolio/interactive-tree'
-import { PlusIcon } from '@heroicons/react/24/outline'
+import { ConfirmationDialog } from '@/components/dashboard/confirmation-dialog'
+import { PlusIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline'
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
+  const router = useRouter()
   const [nodes, setNodes] = useState<Node[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedNode, setSelectedNode] = useState<Node | null>(null)
   const [isEditorOpen, setIsEditorOpen] = useState(false)
   const [parentNodeId, setParentNodeId] = useState<string | null>(null)
   const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>(undefined)
+  const [isOwner, setIsOwner] = useState(false)
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean
+    title: string
+    message: string
+    onConfirm: () => void
+    loading: boolean
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    loading: false
+  })
 
   useEffect(() => {
     if (status === 'authenticated') {
       fetchNodes()
+      // User is authenticated and on their own dashboard, so they are the owner
+      setIsOwner(true)
     }
   }, [status])
 
@@ -50,30 +69,48 @@ export default function DashboardPage() {
   }
 
   const handleDeleteNode = async (nodeId: string) => {
-    try {
-      const response = await fetch(`/api/nodes/${nodeId}`, {
-        method: 'DELETE'
-      })
+    const nodeToDelete = nodes.find(n => n.id === nodeId)
+    
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Eliminar Nodo',
+      message: `¿Estás seguro de que quieres eliminar "${nodeToDelete?.title}"? Esta acción eliminará también todos los nodos hijos y no se puede deshacer.`,
+      loading: false,
+      onConfirm: async () => {
+        setConfirmDialog(prev => ({ ...prev, loading: true }))
+        
+        try {
+          const response = await fetch(`/api/nodes/${nodeId}`, {
+            method: 'DELETE'
+          })
 
-      if (response.ok) {
-        setNodes(nodes.filter(node => node.id !== nodeId))
-        // Also remove children nodes
-        setNodes(prev => prev.filter(node => {
-          // Remove the node and any of its descendants
-          const isDescendant = (checkNodeId: string, targetNodeId: string): boolean => {
-            const nodeToCheck = prev.find(n => n.id === checkNodeId)
-            if (!nodeToCheck) return false
-            if (nodeToCheck.parentId === targetNodeId) return true
-            if (nodeToCheck.parentId) return isDescendant(nodeToCheck.parentId, targetNodeId)
-            return false
+          if (response.ok) {
+            setNodes(nodes.filter(node => node.id !== nodeId))
+            // Also remove children nodes
+            setNodes(prev => prev.filter(node => {
+              // Remove the node and any of its descendants
+              const isDescendant = (checkNodeId: string, targetNodeId: string): boolean => {
+                const nodeToCheck = prev.find(n => n.id === checkNodeId)
+                if (!nodeToCheck) return false
+                if (nodeToCheck.parentId === targetNodeId) return true
+                if (nodeToCheck.parentId) return isDescendant(nodeToCheck.parentId, targetNodeId)
+                return false
+              }
+              return node.id !== nodeId && !isDescendant(node.id, nodeId)
+            }))
+            
+            setSelectedNodeId(undefined)
+            setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }))
+          } else {
+            console.error('Failed to delete node')
+            setConfirmDialog(prev => ({ ...prev, loading: false }))
           }
-          return node.id !== nodeId && !isDescendant(node.id, nodeId)
-        }))
-        setSelectedNodeId(undefined)
+        } catch (error) {
+          console.error('Error deleting node:', error)
+          setConfirmDialog(prev => ({ ...prev, loading: false }))
+        }
       }
-    } catch (error) {
-      console.error('Error deleting node:', error)
-    }
+    })
   }
 
   const handleNodeClick = (node: Node) => {
@@ -156,10 +193,18 @@ export default function DashboardPage() {
                 href={`/user/${session?.user?.username}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 flex items-center gap-2"
               >
-                Ver Portfolio Público
+                <span>Ver Portfolio Público</span>
               </Link>
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
+                title="Cerrar sesión"
+              >
+                <ArrowRightOnRectangleIcon className="h-5 w-5" />
+                <span>Logout</span>
+              </button>
             </div>
           </div>
         </div>
@@ -169,7 +214,7 @@ export default function DashboardPage() {
             <InteractiveTree
               nodes={nodes}
               username={session?.user?.username || 'User'}
-              isOwner={true}
+              isOwner={isOwner}
               onNodeClick={handleNodeClick}
               onNodeEdit={handleEditNode}
               onNodeDelete={handleDeleteNode}
@@ -245,6 +290,18 @@ export default function DashboardPage() {
         isOpen={isEditorOpen}
         onClose={() => setIsEditorOpen(false)}
         onSave={handleSaveNode}
+      />
+
+      <ConfirmationDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmDialog.onConfirm}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        type="danger"
+        loading={confirmDialog.loading}
       />
     </div>
   )

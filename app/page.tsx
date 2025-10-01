@@ -1,8 +1,8 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
-import { Squares2X2Icon, UserIcon, CogIcon } from '@heroicons/react/24/outline'
+import { Squares2X2Icon, UserIcon, CogIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline'
 
 export default function Home() {
   const { data: session, status } = useSession()
@@ -32,15 +32,14 @@ export default function Home() {
                     className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center"
                   >
                     <UserIcon className="h-4 w-4 mr-1" />
-                    My Portfolio
+                    Mi Portfolio
                   </Link>
                   <button
-                    onClick={() => {
-                      window.location.href = '/api/auth/signout'
-                    }}
-                    className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700"
+                    onClick={() => signOut({ callbackUrl: '/' })}
+                    className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 flex items-center gap-1"
                   >
-                    Sign Out
+                    <ArrowRightOnRectangleIcon className="h-4 w-4" />
+                    Salir
                   </button>
                 </>
               ) : (
