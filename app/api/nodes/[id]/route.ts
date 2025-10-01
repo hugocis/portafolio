@@ -6,7 +6,7 @@ import { NodeType } from '@prisma/client'
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -14,7 +14,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const nodeId = params.id
+    const { id: nodeId } = await context.params
     const body = await request.json()
 
     // Check if user owns this node
@@ -69,7 +69,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -77,7 +77,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const nodeId = params.id
+    const { id: nodeId } = await context.params
 
     // Check if user owns this node
     const existingNode = await prisma.node.findFirst({

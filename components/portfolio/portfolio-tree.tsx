@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Node } from '@prisma/client'
-import { NodeWithChildren, NodeType } from '@/types/portfolio'
+import { NodeType } from '@/types/portfolio'
 import { ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 import { FolderIcon, DocumentIcon, CodeBracketIcon, AcademicCapIcon, BriefcaseIcon } from '@heroicons/react/24/solid'
 

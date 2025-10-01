@@ -68,9 +68,9 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token }) {
-      if (token) {
+      if (token && token.sub) {
         session.user.id = token.sub
-        session.user.username = token.username
+        session.user.username = token.username as string
       }
       return session
     },
@@ -104,6 +104,5 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/auth/signin",
-    signUp: "/auth/signup",
   },
 }

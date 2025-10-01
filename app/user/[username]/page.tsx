@@ -4,9 +4,9 @@ import { PortfolioTree } from '@/components/portfolio/portfolio-tree'
 import { Node } from '@prisma/client'
 
 interface UserPageProps {
-  params: {
+  params: Promise<{
     username: string
-  }
+  }>
 }
 
 async function getUserPortfolio(username: string) {
@@ -28,7 +28,8 @@ async function getUserPortfolio(username: string) {
 }
 
 export default async function UserPage({ params }: UserPageProps) {
-  const user = await getUserPortfolio(params.username)
+  const { username } = await params
+  const user = await getUserPortfolio(username)
 
   if (!user || !user.portfolio?.isPublic) {
     notFound()
