@@ -62,9 +62,7 @@ function TreeNode({
     onNodeEdit,
     onNodeDelete,
     onNodeAdd,
-    selectedNodeId,
-    isLast = false,
-    parentConnections = []
+    selectedNodeId
 }: {
     node: NodeWithChildren
     level?: number
@@ -74,8 +72,6 @@ function TreeNode({
     onNodeDelete?: (nodeId: string) => void
     onNodeAdd?: (parentId?: string) => void
     selectedNodeId?: string
-    isLast?: boolean
-    parentConnections?: boolean[]
 }) {
     const [isExpanded, setIsExpanded] = useState(true)
     const [showActions, setShowActions] = useState(false)
@@ -84,34 +80,32 @@ function TreeNode({
     const colorClass = getNodeColor(node.type)
     const isSelected = selectedNodeId === node.id
 
-    const connections = [...parentConnections, !isLast]
-
     return (
         <div className="relative">
             {/* Tree connections */}
             <div className="flex items-center">
-                {/* Vertical lines for parent connections */}
-                {connections.slice(0, -1).map((hasConnection, index) => (
-                    <div key={index} className="w-6 flex justify-center">
-                        {hasConnection && (
-                            <div className="w-px bg-gray-300 h-12"></div>
-                        )}
-                    </div>
-                ))}
-
-                {/* Current level connection */}
+                {/* Indentation for tree levels */}
                 {level > 0 && (
-                    <div className="w-6 flex flex-col items-center">
-                        <div className="w-px bg-gray-300 h-6"></div>
-                        <div className="w-3 border-t border-l border-gray-300 h-6"></div>
+                    <div className="flex items-center">
+                        {/* Parent level indentations */}
+                        {Array.from({ length: level - 1 }).map((_, index) => (
+                            <div key={index} className="w-6 flex justify-center">
+                                <div className="w-px bg-gray-200 h-full opacity-50"></div>
+                            </div>
+                        ))}
+
+                        {/* Current level connector */}
+                        <div className="w-6 flex items-center justify-start">
+                            <div className="w-4 border-t border-gray-300 border-dashed"></div>
+                        </div>
                     </div>
                 )}
 
                 {/* Node content */}
                 <div
                     className={`flex-1 flex items-center py-2 px-3 rounded-lg transition-all duration-200 cursor-pointer group ${isSelected
-                            ? 'bg-blue-100 border-2 border-blue-300 shadow-md transform scale-105'
-                            : 'hover:bg-gray-50 hover:shadow-sm'
+                        ? 'bg-blue-100 border-2 border-blue-300 shadow-md transform scale-105'
+                        : 'hover:bg-gray-50 hover:shadow-sm'
                         }`}
                     onClick={() => {
                         if (hasChildren) {
@@ -248,8 +242,6 @@ function TreeNode({
                                 onNodeDelete={onNodeDelete}
                                 onNodeAdd={onNodeAdd}
                                 selectedNodeId={selectedNodeId}
-                                isLast={index === array.length - 1}
-                                parentConnections={connections}
                             />
                         ))}
                 </div>
@@ -298,11 +290,11 @@ export function InteractiveTree({
         .sort((a, b) => a.order - b.order)
 
     return (
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+        <div className="p-6 space-y-2">
             <div className="mb-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">{username}&apos;s Portfolio</h2>
+                        <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-700 to-purple-600 bg-clip-text text-transparent">{username}&apos;s Portfolio</h2>
                         <p className="text-gray-600 mt-1">
                             {isOwner
                                 ? 'Navega por tu portafolio. Haz hover sobre los nodos para ver las acciones disponibles.'
@@ -314,7 +306,7 @@ export function InteractiveTree({
                     {isOwner && (
                         <button
                             onClick={() => onNodeAdd && onNodeAdd()}
-                            className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                            className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg"
                         >
                             <PlusIcon className="h-5 w-5" />
                             <span>Añadir Nodo Raíz</span>
@@ -326,13 +318,15 @@ export function InteractiveTree({
             <div className="space-y-2">
                 {treeNodes.length === 0 ? (
                     <div className="text-center py-12 text-gray-500">
-                        <DocumentIcon className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                        <p className="text-lg font-medium">No hay contenido aún</p>
+                        <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <DocumentIcon className="h-8 w-8 text-blue-500" />
+                        </div>
+                        <p className="text-lg font-medium text-gray-700">No hay contenido aún</p>
                         {isOwner && (
                             <p className="mt-2">
                                 <button
                                     onClick={() => onNodeAdd && onNodeAdd()}
-                                    className="text-blue-600 hover:text-blue-800 font-medium"
+                                    className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
                                 >
                                     Crea tu primer nodo
                                 </button>
@@ -350,7 +344,6 @@ export function InteractiveTree({
                             onNodeDelete={onNodeDelete}
                             onNodeAdd={onNodeAdd}
                             selectedNodeId={selectedNodeId}
-                            isLast={index === treeNodes.length - 1}
                         />
                     ))
                 )}
