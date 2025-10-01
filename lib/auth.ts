@@ -1,7 +1,8 @@
-import { NextAuthOptions } from "next-auth"
+import type { NextAuthOptions, Session, User } from 'next-auth'
+import type { JWT } from 'next-auth/jwt'
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import GitHubProvider from "next-auth/providers/github"
-import CredentialsProvider from "next-auth/providers/credentials"
+import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 
@@ -11,7 +12,7 @@ function CustomPrismaAdapter(p: typeof prisma) {
 
   return {
     ...adapter,
-    createUser: async (user: any) => {
+    createUser: async (user: User & { email: string; name?: string | null }) => {
       // Generate unique username
       let username = user.name?.toLowerCase().replace(/\s+/g, '_') || user.email?.split('@')[0] || 'user'
       let counter = 1
@@ -96,13 +97,13 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT; user?: User }) {
       if (user) {
         token.username = user.username
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (token && token.sub) {
         session.user.id = token.sub
         session.user.username = token.username as string

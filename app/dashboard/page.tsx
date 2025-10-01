@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Node } from '@prisma/client'
 import { NodeEditor } from '@/components/dashboard/node-editor'
@@ -18,7 +17,6 @@ import { PlusIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline
 
 export default function DashboardPage() {
     const { data: session, status } = useSession()
-    const router = useRouter()
     const [nodes, setNodes] = useState<Node[]>([])
     const [loading, setLoading] = useState(true)
     const [selectedNode, setSelectedNode] = useState<Node | null>(null)

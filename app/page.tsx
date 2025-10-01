@@ -2,6 +2,7 @@
 
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import {
   Squares2X2Icon,
@@ -15,6 +16,8 @@ import {
   HeartIcon
 } from '@heroicons/react/24/outline'
 
+import { Node } from '@prisma/client'
+
 interface User {
   id: string
   name: string | null
@@ -22,7 +25,7 @@ interface User {
   image: string | null
   portfolio: {
     title: string
-    nodes: any[]
+    nodes: Node[]
   } | null
 }
 
@@ -36,7 +39,7 @@ export default function HomePage() {
       try {
         const response = await fetch('/api/users/public')
         if (response.ok) {
-          const data = await response.json()
+          const data: { users: User[] } = await response.json()
           setFeaturedUsers(data.users.slice(0, 3))
         }
       } catch (error) {
@@ -242,9 +245,11 @@ export default function HomePage() {
                     <div className="bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
                       <div className="flex items-center space-x-4">
                         {user.image ? (
-                          <img
+                          <Image
                             src={user.image}
                             alt={user.name || user.username}
+                            width={64}
+                            height={64}
                             className="w-16 h-16 rounded-xl object-cover shadow-md"
                           />
                         ) : (

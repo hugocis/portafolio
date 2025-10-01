@@ -1,17 +1,25 @@
 'use client'
 
 import { signIn, getProviders } from "next-auth/react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Squares2X2Icon } from "@heroicons/react/24/outline"
 
-export default function SignIn() {
-    const [providers, setProviders] = useState<any>(null)
+interface Provider {
+    id: string
+    name: string
+    type: string
+    signinUrl: string
+    callbackUrl: string
+}
+
+function SignInContent() {
+    const [providers, setProviders] = useState<Record<string, Provider> | null>(null)
     const [loading, setLoading] = useState(true)
     const searchParams = useSearchParams()
-    const callbackUrl = searchParams.get('callbackUrl') || '/'
     const error = searchParams.get('error')
+    const callbackUrl = searchParams.get('callbackUrl') || '/'
 
     useEffect(() => {
         const fetchProviders = async () => {
@@ -69,7 +77,7 @@ export default function SignIn() {
                 )}
 
                 <div className="space-y-4">
-                    {providers && Object.values(providers).map((provider: any) => {
+                    {providers && Object.values(providers).map((provider: Provider) => {
                         if (provider.id === 'credentials') {
                             return (
                                 <CredentialsForm key={provider.id} callbackUrl={callbackUrl} />
@@ -93,7 +101,7 @@ export default function SignIn() {
                         )
                     })}
 
-                    {providers && Object.values(providers).some((p: any) => p.id !== 'credentials') && (
+                    {providers && Object.values(providers).some((p: Provider) => p.id !== 'credentials') && (
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-gray-300" />
@@ -176,5 +184,17 @@ function CredentialsForm({ callbackUrl }: { callbackUrl: string }) {
                 </button>
             </div>
         </form>
+    )
+}
+
+export default function SignInPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-lg">Loading...</div>
+            </div>
+        }>
+            <SignInContent />
+        </Suspense>
     )
 }

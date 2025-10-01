@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { notFound } from 'next/navigation'
+import Image from 'next/image'
 import { InteractiveTree } from '@/components/portfolio/interactive-tree'
 import { NodeInspector } from '@/components/portfolio/node-inspector'
 import { LayoutSelector, LayoutType } from '@/components/portfolio/layout-selector'
@@ -106,8 +107,6 @@ export default function UserPage({ params }: UserPageProps) {
     notFound()
   }
 
-  const portfolio = user.portfolio
-
   return (
     <div className="min-h-screen relative">
       <AnimatedBackground variant="public" />
@@ -119,9 +118,11 @@ export default function UserPage({ params }: UserPageProps) {
               <div className="flex items-center space-x-6">
                 {user.image ? (
                   <div className="relative">
-                    <img
+                    <Image
                       src={user.image}
                       alt={user.name || user.username}
+                      width={96}
+                      height={96}
                       className="h-24 w-24 rounded-2xl object-cover shadow-lg ring-4 ring-white"
                     />
                     <div className="absolute -bottom-2 -right-2 h-8 w-8 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">

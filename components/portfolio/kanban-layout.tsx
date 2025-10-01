@@ -1,8 +1,7 @@
 'use client'
 
 import { Node } from '@prisma/client'
-import { useState } from 'react'
-import { ViewColumnsIcon, PlusIcon } from '@heroicons/react/24/outline'
+import { ViewColumnsIcon } from '@heroicons/react/24/outline'
 import { FolderIcon, DocumentIcon, AcademicCapIcon, BriefcaseIcon, BookOpenIcon, Cog6ToothIcon, CodeBracketIcon } from '@heroicons/react/24/solid'
 
 interface KanbanLayoutProps {
@@ -92,11 +91,11 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                 <div className="w-full bg-gray-200 rounded-full h-1">
                                     <div
                                         className={`h-1 rounded-full bg-gradient-to-r ${type === 'PROJECT' ? 'from-purple-400 to-purple-600' :
-                                                type === 'EXPERIENCE' ? 'from-red-400 to-red-600' :
-                                                    type === 'EDUCATION' ? 'from-orange-400 to-orange-600' :
-                                                        type === 'SKILL' ? 'from-indigo-400 to-indigo-600' :
-                                                            type === 'LANGUAGE' ? 'from-green-400 to-green-600' :
-                                                                'from-gray-400 to-gray-600'
+                                            type === 'EXPERIENCE' ? 'from-red-400 to-red-600' :
+                                                type === 'EDUCATION' ? 'from-orange-400 to-orange-600' :
+                                                    type === 'SKILL' ? 'from-indigo-400 to-indigo-600' :
+                                                        type === 'LANGUAGE' ? 'from-green-400 to-green-600' :
+                                                            'from-gray-400 to-gray-600'
                                             }`}
                                         style={{ width: `${Math.min(100, (columnNodes.length / Math.max(1, Math.max(...Object.values(nodesByType).map(arr => arr.length)))) * 100)}%` }}
                                     ></div>
@@ -179,11 +178,11 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
 
                                             {/* Card Footer - Progress Indicator */}
                                             <div className={`mt-3 h-1 w-full rounded-full bg-gradient-to-r ${type === 'PROJECT' ? 'from-purple-200 to-purple-400' :
-                                                    type === 'EXPERIENCE' ? 'from-red-200 to-red-400' :
-                                                        type === 'EDUCATION' ? 'from-orange-200 to-orange-400' :
-                                                            type === 'SKILL' ? 'from-indigo-200 to-indigo-400' :
-                                                                type === 'LANGUAGE' ? 'from-green-200 to-green-400' :
-                                                                    'from-gray-200 to-gray-400'
+                                                type === 'EXPERIENCE' ? 'from-red-200 to-red-400' :
+                                                    type === 'EDUCATION' ? 'from-orange-200 to-orange-400' :
+                                                        type === 'SKILL' ? 'from-indigo-200 to-indigo-400' :
+                                                            type === 'LANGUAGE' ? 'from-green-200 to-green-400' :
+                                                                'from-gray-200 to-gray-400'
                                                 }`}></div>
                                         </div>
                                     ))}

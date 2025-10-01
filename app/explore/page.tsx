@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import Image from 'next/image'
+import { Node } from '@prisma/client'
 import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline'
 
 interface User {
@@ -17,7 +19,7 @@ interface User {
         title: string
         subtitle: string | null
         isPublic: boolean
-        nodes: any[]
+        nodes: Node[]
     } | null
 }
 
@@ -197,9 +199,11 @@ export default function ExplorePage() {
                                         <div className="bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
                                             <div className="flex items-center space-x-4">
                                                 {user.image ? (
-                                                    <img
+                                                    <Image
                                                         src={user.image}
                                                         alt={user.name || user.username}
+                                                        width={64}
+                                                        height={64}
                                                         className="w-16 h-16 rounded-xl object-cover shadow-md"
                                                     />
                                                 ) : (

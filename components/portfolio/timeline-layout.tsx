@@ -1,7 +1,6 @@
 'use client'
 
 import { Node } from '@prisma/client'
-import { useState } from 'react'
 import { CalendarDaysIcon, ClockIcon } from '@heroicons/react/24/outline'
 import { FolderIcon, DocumentIcon, AcademicCapIcon, BriefcaseIcon, BookOpenIcon, Cog6ToothIcon, CodeBracketIcon } from '@heroicons/react/24/solid'
 
@@ -68,7 +67,7 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
 
                             {/* Nodes for this year */}
                             <div className="ml-20 space-y-6">
-                                {yearNodes.map((node, index) => {
+                                {yearNodes.map((node) => {
                                     const typeConfig = nodeTypeConfig[node.type as keyof typeof nodeTypeConfig]
                                     const TypeIcon = typeConfig?.icon || DocumentIcon
 
@@ -152,10 +151,10 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
 
                                                 {/* Visual Indicator */}
                                                 <div className={`mt-4 h-1 w-full rounded-full bg-gradient-to-r ${node.type === 'PROJECT' ? 'from-purple-200 to-purple-400' :
-                                                        node.type === 'EXPERIENCE' ? 'from-red-200 to-red-400' :
-                                                            node.type === 'EDUCATION' ? 'from-orange-200 to-orange-400' :
-                                                                node.type === 'SKILL' ? 'from-indigo-200 to-indigo-400' :
-                                                                    'from-gray-200 to-gray-400'
+                                                    node.type === 'EXPERIENCE' ? 'from-red-200 to-red-400' :
+                                                        node.type === 'EDUCATION' ? 'from-orange-200 to-orange-400' :
+                                                            node.type === 'SKILL' ? 'from-indigo-200 to-indigo-400' :
+                                                                'from-gray-200 to-gray-400'
                                                     }`}></div>
                                             </div>
                                         </div>
