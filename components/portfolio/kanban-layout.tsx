@@ -2,7 +2,6 @@
 
 import { Node } from '@prisma/client'
 import { useState } from 'react'
-import { NodeInspector } from './node-inspector'
 import { ViewColumnsIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { FolderIcon, DocumentIcon, AcademicCapIcon, BriefcaseIcon, BookOpenIcon, Cog6ToothIcon, CodeBracketIcon } from '@heroicons/react/24/solid'
 
@@ -25,7 +24,6 @@ const nodeTypeConfig = {
 const columnOrder = ['PROJECT', 'EXPERIENCE', 'EDUCATION', 'SKILL', 'LANGUAGE', 'DOCUMENTATION', 'CATEGORY']
 
 export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps) {
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null)
 
   const visibleNodes = nodes.filter(node => node.isVisible || isOwner)
 
@@ -42,7 +40,6 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
   const orderedColumns = columnOrder.filter(type => nodesByType[type]?.length > 0)
 
   const handleNodeClick = (node: Node) => {
-    setSelectedNode(node)
     onNodeClick?.(node)
   }
 
@@ -225,13 +222,6 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
           </div>
         )}
       </div>
-
-      {/* Node Inspector */}
-      <NodeInspector
-        node={selectedNode}
-        isOpen={!!selectedNode}
-        onClose={() => setSelectedNode(null)}
-      />
     </div>
   )
 }

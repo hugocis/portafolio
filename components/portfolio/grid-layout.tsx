@@ -2,7 +2,6 @@
 
 import { Node } from '@prisma/client'
 import { useState } from 'react'
-import { NodeInspector } from './node-inspector'
 import { Squares2X2Icon } from '@heroicons/react/24/outline'
 import { FolderIcon, DocumentIcon, AcademicCapIcon, BriefcaseIcon, BookOpenIcon, Cog6ToothIcon, CodeBracketIcon } from '@heroicons/react/24/solid'
 
@@ -23,7 +22,6 @@ const nodeTypeConfig = {
 }
 
 export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null)
   const [filter, setFilter] = useState<string>('all')
 
   const visibleNodes = nodes.filter(node => node.isVisible || isOwner)
@@ -32,7 +30,6 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
     : visibleNodes.filter(node => node.type === filter)
 
   const handleNodeClick = (node: Node) => {
-    setSelectedNode(node)
     onNodeClick?.(node)
   }
 
@@ -235,13 +232,6 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
           )}
         </div>
       )}
-
-      {/* Node Inspector */}
-      <NodeInspector
-        node={selectedNode}
-        isOpen={!!selectedNode}
-        onClose={() => setSelectedNode(null)}
-      />
     </div>
   )
 }

@@ -2,7 +2,6 @@
 
 import { Node } from '@prisma/client'
 import { useState } from 'react'
-import { NodeInspector } from './node-inspector'
 import { CalendarDaysIcon, ClockIcon } from '@heroicons/react/24/outline'
 import { FolderIcon, DocumentIcon, AcademicCapIcon, BriefcaseIcon, BookOpenIcon, Cog6ToothIcon, CodeBracketIcon } from '@heroicons/react/24/solid'
 
@@ -23,7 +22,6 @@ const nodeTypeConfig = {
 }
 
 export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutProps) {
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null)
 
   // Organizar nodos por fecha (usando createdAt o una fecha custom si la tienes)
   const sortedNodes = [...nodes]
@@ -31,7 +29,6 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
   const handleNodeClick = (node: Node) => {
-    setSelectedNode(node)
     onNodeClick?.(node)
   }
 
@@ -187,13 +184,6 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
           </div>
         </div>
       )}
-
-      {/* Node Inspector */}
-      <NodeInspector
-        node={selectedNode}
-        isOpen={!!selectedNode}
-        onClose={() => setSelectedNode(null)}
-      />
     </div>
   )
 }

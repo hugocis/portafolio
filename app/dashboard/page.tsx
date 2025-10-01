@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Node } from '@prisma/client'
 import { NodeEditor } from '@/components/dashboard/node-editor'
+import { NodeInspector } from '@/components/portfolio/node-inspector'
 import { InteractiveTree } from '@/components/portfolio/interactive-tree'
 import { ConfirmationDialog } from '@/components/dashboard/confirmation-dialog'
 import { LayoutSelector, LayoutType } from '@/components/portfolio/layout-selector'
@@ -22,6 +23,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [selectedNode, setSelectedNode] = useState<Node | null>(null)
   const [isEditorOpen, setIsEditorOpen] = useState(false)
+  const [isInspectorOpen, setIsInspectorOpen] = useState(false)
   const [parentNodeId, setParentNodeId] = useState<string | null>(null)
   const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>(undefined)
   const [isOwner, setIsOwner] = useState(false)
@@ -111,6 +113,13 @@ export default function DashboardPage() {
 
   const handleNodeClick = (node: Node) => {
     setSelectedNodeId(node.id)
+    setSelectedNode(node)
+    setIsInspectorOpen(true)
+  }
+
+  const handleNodeInspectorClose = () => {
+    setIsInspectorOpen(false)
+    setSelectedNode(null)
   }
 
   const handleNodeSave = async () => {
@@ -392,6 +401,13 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Node Inspector Modal */}
+      <NodeInspector
+        node={selectedNode}
+        isOpen={isInspectorOpen}
+        onClose={handleNodeInspectorClose}
+      />
 
       {/* Node Editor Modal */}
       <NodeEditor
