@@ -5,6 +5,11 @@ import { useSession } from 'next-auth/react'
 import { notFound } from 'next/navigation'
 import { InteractiveTree } from '@/components/portfolio/interactive-tree'
 import { NodeInspector } from '@/components/portfolio/node-inspector'
+import { LayoutSelector, LayoutType } from '@/components/portfolio/layout-selector'
+import { TimelineLayout } from '@/components/portfolio/timeline-layout'
+import { KanbanLayout } from '@/components/portfolio/kanban-layout'
+import { GridLayout } from '@/components/portfolio/grid-layout'
+import { AnimatedBackground } from '@/components/ui/animated-background'
 import { Node } from '@prisma/client'
 
 interface UserPageProps {
@@ -41,6 +46,7 @@ export default function UserPage({ params }: UserPageProps) {
   const [nodes, setNodes] = useState<Node[]>([])
   const [selectedNode, setSelectedNode] = useState<Node | null>(null)
   const [isInspectorOpen, setIsInspectorOpen] = useState(false)
+  const [currentLayout, setCurrentLayout] = useState<LayoutType>('tree')
 
   useEffect(() => {
     const getParams = async () => {
@@ -103,7 +109,8 @@ export default function UserPage({ params }: UserPageProps) {
   const portfolio = user.portfolio
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen relative">
+      <AnimatedBackground variant="public" />
       {/* Modern Hero Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -175,8 +182,12 @@ export default function UserPage({ params }: UserPageProps) {
                 </div>
               </div>
               
-              {isOwner && (
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
+                <LayoutSelector
+                  currentLayout={currentLayout}
+                  onLayoutChange={setCurrentLayout}
+                />
+                {isOwner && (
                   <a
                     href="/dashboard"
                     className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
@@ -186,122 +197,183 @@ export default function UserPage({ params }: UserPageProps) {
                     </svg>
                     Editar Portfolio
                   </a>
+                )}
+                {isOwner && (
                   <div className="px-4 py-2 bg-yellow-100 text-yellow-800 text-sm font-medium rounded-lg">
                     ✨ Este es tu portfolio público
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Portfolio Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <InteractiveTree
-              nodes={nodes}
-              username={user.username}
-              isOwner={false} // Public profiles are always read-only for tree interactions
-              onNodeClick={handleNodeClick}
-              onNodeEdit={undefined} // No editing in public view
-              onNodeDelete={undefined} // No deleting in public view
-              onNodeAdd={undefined} // No adding in public view
-              selectedNodeId={selectedNodeId}
-            />
-          </div>
-
-          <div className="lg:col-span-1">
-            <div className="space-y-6">
-              {/* Featured Projects */}
-              {nodes.filter(node => node.type === 'PROJECT' && node.tags?.includes('featured')).length > 0 && (
-                <div className="bg-white rounded-lg shadow p-6">
-                  <h2 className="text-lg font-semibold mb-4">Featured Projects</h2>
-                  <div className="space-y-4">
-                    {nodes
-                      .filter(node => node.type === 'PROJECT' && node.tags?.includes('featured'))
-                      .slice(0, 3)
-                      .map((node) => (
-                        <div key={node.id} className="border-l-4 border-blue-500 pl-4">
-                          <h3 className="font-medium text-gray-900">{node.title}</h3>
-                          {node.description && (
-                            <p className="text-sm text-gray-600 mt-1">{node.description}</p>
-                          )}
-                          <div className="mt-2 flex gap-2">
-                            {node.githubUrl && (
-                              <a
-                                href={node.githubUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs text-blue-600 hover:text-blue-800"
-                              >
-                                GitHub
-                              </a>
-                            )}
-                            {node.demoUrl && (
-                              <a
-                                href={node.demoUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs text-green-600 hover:text-green-800"
-                              >
-                                Live Demo
-                              </a>
-                            )}
-                          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        {nodes.length > 0 ? (
+          <div className="space-y-8">
+            {currentLayout === 'tree' && (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                  <InteractiveTree
+                    nodes={nodes}
+                    username={user.username}
+                    isOwner={false}
+                    onNodeClick={handleNodeClick}
+                    onNodeEdit={undefined}
+                    onNodeDelete={undefined}
+                    onNodeAdd={undefined}
+                    selectedNodeId={selectedNodeId}
+                  />
+                </div>
+                <div className="lg:col-span-1">
+                  <div className="space-y-6">
+                    {/* Featured Projects */}
+                    {nodes.filter(node => node.type === 'PROJECT' && node.tags?.includes('featured')).length > 0 && (
+                      <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 p-6">
+                        <h2 className="text-lg font-semibold mb-4 flex items-center">
+                          <svg className="h-5 w-5 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                          </svg>
+                          Proyectos Destacados
+                        </h2>
+                        <div className="space-y-4">
+                          {nodes
+                            .filter(node => node.type === 'PROJECT' && node.tags?.includes('featured'))
+                            .slice(0, 3)
+                            .map((node) => (
+                              <div key={node.id} className="border-l-4 border-blue-500 pl-4 bg-blue-50/50 rounded-r-lg p-3">
+                                <h3 className="font-medium text-gray-900">{node.title}</h3>
+                                {node.description && (
+                                  <p className="text-sm text-gray-600 mt-1 line-clamp-2">{node.description}</p>
+                                )}
+                                <div className="mt-2 flex gap-2">
+                                  {node.githubUrl && (
+                                    <a
+                                      href={node.githubUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                                    >
+                                      GitHub
+                                    </a>
+                                  )}
+                                  {node.demoUrl && (
+                                    <a
+                                      href={node.demoUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-xs text-green-600 hover:text-green-800 font-medium"
+                                    >
+                                      Demo
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
                         </div>
-                      ))}
-                  </div>
-                </div>
-              )}
+                      </div>
+                    )}
 
-              {/* Skills */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold mb-4">Skills & Technologies</h2>
-                <div className="flex flex-wrap gap-2">
-                  {Array.from(
-                    new Set(
-                      nodes
-                        .flatMap(node => node.tags || [])
-                        .filter(tag => tag && !['featured'].includes(tag))
-                    )
-                  ).slice(0, 15).map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Contact */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold mb-4">Get In Touch</h2>
-                <div className="space-y-3">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <span className="font-medium">Email:</span>
-                    <span className="ml-2">{user.email}</span>
-                  </div>
-                  {user.website && (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <span className="font-medium">Website:</span>
-                      <a
-                        href={user.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="ml-2 text-blue-600 hover:text-blue-800"
-                      >
-                        {user.website}
-                      </a>
+                    {/* Skills */}
+                    <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 p-6">
+                      <h2 className="text-lg font-semibold mb-4 flex items-center">
+                        <svg className="h-5 w-5 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        Tecnologías
+                      </h2>
+                      <div className="flex flex-wrap gap-2">
+                        {Array.from(
+                          new Set(
+                            nodes
+                              .flatMap(node => node.tags || [])
+                              .filter(tag => tag && !['featured'].includes(tag))
+                          )
+                        ).slice(0, 15).map((tag) => (
+                          <span
+                            key={tag}
+                            className="inline-block bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 text-xs px-3 py-1 rounded-full font-medium"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  )}
+
+                    {/* Contact */}
+                    <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 p-6">
+                      <h2 className="text-lg font-semibold mb-4 flex items-center">
+                        <svg className="h-5 w-5 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        Contacto
+                      </h2>
+                      <div className="space-y-3">
+                        <div className="flex items-center text-sm text-gray-600">
+                          <span className="font-medium">Email:</span>
+                          <span className="ml-2">{user.email}</span>
+                        </div>
+                        {user.website && (
+                          <div className="flex items-center text-sm text-gray-600">
+                            <span className="font-medium">Website:</span>
+                            <a
+                              href={user.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="ml-2 text-blue-600 hover:text-blue-800 font-medium"
+                            >
+                              {user.website}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
+            )}
+            
+            {currentLayout === 'timeline' && (
+              <TimelineLayout
+                nodes={nodes}
+                onNodeClick={handleNodeClick}
+                isOwner={false}
+              />
+            )}
+            
+            {currentLayout === 'kanban' && (
+              <KanbanLayout
+                nodes={nodes}
+                onNodeClick={handleNodeClick}
+                isOwner={false}
+              />
+            )}
+            
+            {currentLayout === 'grid' && (
+              <GridLayout
+                nodes={nodes}
+                onNodeClick={handleNodeClick}
+                isOwner={false}
+              />
+            )}
           </div>
-        </div>
+        ) : (
+          <div className="text-center py-20">
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              Portfolio Vacío
+            </h3>
+            <p className="text-gray-500">
+              Este usuario aún no ha agregado contenido a su portfolio.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Node Inspector Modal - For all public viewing (owners and visitors) */}
@@ -310,11 +382,6 @@ export default function UserPage({ params }: UserPageProps) {
         isOpen={isInspectorOpen}
         onClose={() => setIsInspectorOpen(false)}
       />
-
-      {/* No confirmation dialog needed since no editing is allowed in public view */}
-    </div>
-  )
-
     </div>
   )
 }
