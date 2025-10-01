@@ -1,6 +1,5 @@
 import { NextAuthOptions } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import GoogleProvider from "next-auth/providers/google"
 import GitHubProvider from "next-auth/providers/github"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "@/lib/prisma"
@@ -9,10 +8,6 @@ import bcrypt from "bcryptjs"
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-    }),
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID || "",
       clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
@@ -75,7 +70,7 @@ export const authOptions: NextAuthOptions = {
       return session
     },
     async signIn({ user, account }) {
-      if (account?.provider === "google" || account?.provider === "github") {
+      if (account?.provider === "github") {
         try {
           // Check if user already exists
           const existingUser = await prisma.user.findUnique({
@@ -83,23 +78,27 @@ export const authOptions: NextAuthOptions = {
           })
 
           if (!existingUser) {
-            // Generate a unique username from email or profile
-            let username = user.email!.split('@')[0]
+            // Generate a unique username from GitHub username or email
+            let username = user.name?.toLowerCase().replace(/\s+/g, '_') || user.email!.split('@')[0]
             let counter = 1
             
             // Ensure username is unique
             while (await prisma.user.findUnique({ where: { username } })) {
-              username = `${user.email!.split('@')[0]}_${counter}`
+              username = `${user.name?.toLowerCase().replace(/\s+/g, '_') || user.email!.split('@')[0]}_${counter}`
               counter++
             }
 
             // User will be created automatically by the adapter
             // We just need to update with username after creation
             setTimeout(async () => {
-              await prisma.user.update({
-                where: { email: user.email! },
-                data: { username }
-              })
+              try {
+                await prisma.user.update({
+                  where: { email: user.email! },
+                  data: { username }
+                })
+              } catch (error) {
+                console.error('Error updating username:', error)
+              }
             }, 100)
           }
         } catch (error) {

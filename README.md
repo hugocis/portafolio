@@ -59,13 +59,57 @@ Una aplicación web moderna para crear y compartir portafolios profesionales con
 
 ## 📖 Uso
 
+### Formas de Registrarse
+
+#### 1. **Registro Manual**
+1. Ve a http://localhost:3000
+2. Clic en "Get Started" o "Registrarse"
+3. Llena el formulario con:
+   - Nombre completo
+   - Username (para tu URL del portafolio)
+   - Email
+   - Contraseña
+4. ¡Automáticamente serás dirigido al dashboard!
+
+#### 2. **Login con GitHub**
+1. **Configura GitHub OAuth** (ver sección siguiente)
+2. Ve a http://localhost:3000/auth/signin
+3. Clic en "Continue with GitHub"
+4. Autoriza la aplicación
+5. Username generado automáticamente
+
+#### 3. **Login Existente**
+- Ve a `/auth/signin` 
+- Usa tu email y contraseña
+
+### Configuración de GitHub OAuth
+
+Para habilitar el login con GitHub:
+
+1. **Crea una GitHub OAuth App**:
+   - Ve a [GitHub Developer Settings](https://github.com/settings/applications/new)
+   - **Application name**: Portfolio Tree
+   - **Homepage URL**: `http://localhost:3000`
+   - **Authorization callback URL**: `http://localhost:3000/api/auth/callback/github`
+
+2. **Configura variables de entorno**:
+   ```bash
+   # En tu archivo .env
+   GITHUB_CLIENT_ID="tu-client-id"
+   GITHUB_CLIENT_SECRET="tu-client-secret"
+   ```
+
+3. **Reinicia el servidor**:
+   ```bash
+   npm run dev
+   ```
+
 ### Creando tu Portafolio
 
-1. **Regístrate**: Accede desde la página principal
-2. **Dashboard**: Ve a `/dashboard` para gestionar tu contenido
-3. **Crear Nodos**: Añade categorías, proyectos y contenido
-4. **Organizar**: Estructura tu contenido en forma de árbol
-5. **Compartir**: Tu portafolio estará disponible en `/user/[tu-username]`
+1. **Accede al Dashboard**: `/dashboard` 
+2. **Crear Nodos**: Añade categorías, proyectos y contenido
+3. **Organizar**: Estructura tu contenido en forma de árbol
+4. **Compartir**: Tu portafolio estará en `/user/[tu-username]`
 
 ### Tipos de Nodos
 
