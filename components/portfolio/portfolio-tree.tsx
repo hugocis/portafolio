@@ -76,7 +76,9 @@ function TreeNode({
           if (hasChildren) {
             setIsExpanded(!isExpanded)
           }
-          onNodeClick?.(node)
+          if (onNodeClick) {
+            onNodeClick(node)
+          }
         }}
       >
         {hasChildren && (

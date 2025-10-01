@@ -1,6 +1,8 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { notFound } from 'next/navigation'
-import { prisma } from '@/lib/prisma'
-import { PortfolioTree } from '@/components/portfolio/portfolio-tree'
+import { InteractiveTree } from '@/components/portfolio/interactive-tree'
 import { Node } from '@prisma/client'
 
 interface UserPageProps {
@@ -9,27 +11,70 @@ interface UserPageProps {
   }>
 }
 
-async function getUserPortfolio(username: string) {
-  const user = await prisma.user.findUnique({
-    where: { username },
-    include: {
-      portfolio: {
-        include: {
-          nodes: {
-            where: { isVisible: true },
-            orderBy: { order: 'asc' }
-          }
-        }
-      }
-    }
-  })
-
-  return user
+interface UserData {
+  id: string
+  name: string | null
+  username: string
+  email: string
+  bio: string | null
+  website: string | null
+  location: string | null
+  image: string | null
+  portfolio: {
+    id: string
+    title: string
+    subtitle: string | null
+    isPublic: boolean
+    nodes: Node[]
+  } | null
 }
 
-export default async function UserPage({ params }: UserPageProps) {
-  const { username } = await params
-  const user = await getUserPortfolio(username)
+export default function UserPage({ params }: UserPageProps) {
+  const [user, setUser] = useState<UserData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [username, setUsername] = useState<string>('')
+  const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    const getParams = async () => {
+      const resolvedParams = await params
+      setUsername(resolvedParams.username)
+    }
+    getParams()
+  }, [params])
+
+  useEffect(() => {
+    if (!username) return
+
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(`/api/users/${username}`)
+        if (!response.ok) {
+          if (response.status === 404) {
+            notFound()
+          }
+          throw new Error('Failed to fetch user')
+        }
+        const userData = await response.json()
+        setUser(userData)
+      } catch (error) {
+        console.error('Error fetching user:', error)
+        notFound()
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUser()
+  }, [username])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-lg">Loading...</div>
+      </div>
+    )
+  }
 
   if (!user || !user.portfolio?.isPublic) {
     notFound()
@@ -84,14 +129,15 @@ export default async function UserPage({ params }: UserPageProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <PortfolioTree
+            <InteractiveTree
               nodes={nodes}
               username={user.username}
               isOwner={false}
-              onNodeClick={(node) => {
-                // Could open a detail modal or navigate to detail page
+              onNodeClick={(node: Node) => {
+                setSelectedNodeId(node.id)
                 console.log('Node clicked:', node)
               }}
+              selectedNodeId={selectedNodeId}
             />
           </div>
 

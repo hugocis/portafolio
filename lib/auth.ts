@@ -5,8 +5,48 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 
+// Custom adapter to handle username field
+function CustomPrismaAdapter(p: typeof prisma) {
+  const adapter = PrismaAdapter(p)
+  
+  return {
+    ...adapter,
+    createUser: async (user: any) => {
+      // Generate unique username
+      let username = user.name?.toLowerCase().replace(/\s+/g, '_') || user.email?.split('@')[0] || 'user'
+      let counter = 1
+      
+      // Ensure username is unique
+      while (await p.user.findUnique({ where: { username } })) {
+        username = `${user.name?.toLowerCase().replace(/\s+/g, '_') || user.email?.split('@')[0] || 'user'}_${counter}`
+        counter++
+      }
+
+      // Create user with username
+      const newUser = await p.user.create({
+        data: {
+          ...user,
+          username
+        }
+      })
+
+      // Create default portfolio for the user
+      await p.portfolio.create({
+        data: {
+          userId: newUser.id,
+          title: `${newUser.name || 'My'} Portfolio`,
+          subtitle: 'Welcome to my professional portfolio',
+          isPublic: true
+        }
+      })
+
+      return newUser
+    }
+  }
+}
+
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: CustomPrismaAdapter(prisma),
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID || "",
@@ -69,44 +109,6 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     },
-    async signIn({ user, account }) {
-      if (account?.provider === "github") {
-        try {
-          // Check if user already exists
-          const existingUser = await prisma.user.findUnique({
-            where: { email: user.email! }
-          })
-
-          if (!existingUser) {
-            // Generate a unique username from GitHub username or email
-            let username = user.name?.toLowerCase().replace(/\s+/g, '_') || user.email!.split('@')[0]
-            let counter = 1
-            
-            // Ensure username is unique
-            while (await prisma.user.findUnique({ where: { username } })) {
-              username = `${user.name?.toLowerCase().replace(/\s+/g, '_') || user.email!.split('@')[0]}_${counter}`
-              counter++
-            }
-
-            // User will be created automatically by the adapter
-            // We just need to update with username after creation
-            setTimeout(async () => {
-              try {
-                await prisma.user.update({
-                  where: { email: user.email! },
-                  data: { username }
-                })
-              } catch (error) {
-                console.error('Error updating username:', error)
-              }
-            }, 100)
-          }
-        } catch (error) {
-          console.error('Error in signIn callback:', error)
-        }
-      }
-      return true
-    }
   },
   pages: {
     signIn: "/auth/signin",

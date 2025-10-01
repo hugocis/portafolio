@@ -51,6 +51,16 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    // Create default portfolio for the user
+    await prisma.portfolio.create({
+      data: {
+        userId: user.id,
+        title: `${user.name} Portfolio`,
+        subtitle: 'Welcome to my professional portfolio',
+        isPublic: true
+      }
+    })
+
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user
 
