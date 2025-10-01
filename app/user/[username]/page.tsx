@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { notFound } from 'next/navigation'
 import { InteractiveTree } from '@/components/portfolio/interactive-tree'
-import { NodeEditor } from '@/components/dashboard/node-editor'
 import { NodeInspector } from '@/components/portfolio/node-inspector'
-import { ConfirmationDialog } from '@/components/dashboard/confirmation-dialog'
 import { Node } from '@prisma/client'
 
 interface UserPageProps {
@@ -42,22 +40,7 @@ export default function UserPage({ params }: UserPageProps) {
   const [isOwner, setIsOwner] = useState(false)
   const [nodes, setNodes] = useState<Node[]>([])
   const [selectedNode, setSelectedNode] = useState<Node | null>(null)
-  const [isEditorOpen, setIsEditorOpen] = useState(false)
   const [isInspectorOpen, setIsInspectorOpen] = useState(false)
-  const [parentNodeId, setParentNodeId] = useState<string | null>(null)
-  const [confirmDialog, setConfirmDialog] = useState<{
-    isOpen: boolean
-    title: string
-    message: string
-    onConfirm: () => void
-    loading: boolean
-  }>({
-    isOpen: false,
-    title: '',
-    message: '',
-    onConfirm: () => {},
-    loading: false
-  })
 
   useEffect(() => {
     const getParams = async () => {
@@ -98,109 +81,11 @@ export default function UserPage({ params }: UserPageProps) {
     fetchUser()
   }, [username, session])
 
-  const handleCreateNode = async (parentId?: string) => {
-    if (!isOwner) return
-    setSelectedNode(null)
-    setParentNodeId(parentId || null)
-    setIsEditorOpen(true)
-  }
-
-  const handleEditNode = async (node: Node) => {
-    if (!isOwner) return
-    setSelectedNode(node)
-    setParentNodeId(null)
-    setIsEditorOpen(true)
-  }
-
-  const handleDeleteNode = async (nodeId: string) => {
-    if (!isOwner) return
-    
-    const nodeToDelete = nodes.find(n => n.id === nodeId)
-    
-    setConfirmDialog({
-      isOpen: true,
-      title: 'Eliminar Nodo',
-      message: `¿Estás seguro de que quieres eliminar "${nodeToDelete?.title}"? Esta acción eliminará también todos los nodos hijos y no se puede deshacer.`,
-      loading: false,
-      onConfirm: async () => {
-        setConfirmDialog(prev => ({ ...prev, loading: true }))
-        
-        try {
-          const response = await fetch(`/api/nodes/${nodeId}`, {
-            method: 'DELETE'
-          })
-
-          if (response.ok) {
-            // Remove the node and its descendants from local state
-            setNodes(prev => prev.filter(node => {
-              // Remove the node and any of its descendants
-              const isDescendant = (checkNodeId: string, targetNodeId: string): boolean => {
-                const nodeToCheck = prev.find(n => n.id === checkNodeId)
-                if (!nodeToCheck) return false
-                if (nodeToCheck.parentId === targetNodeId) return true
-                if (nodeToCheck.parentId) return isDescendant(nodeToCheck.parentId, targetNodeId)
-                return false
-              }
-              return node.id !== nodeId && !isDescendant(node.id, nodeId)
-            }))
-            
-            setSelectedNodeId(undefined)
-            setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }))
-          } else {
-            console.error('Failed to delete node')
-            setConfirmDialog(prev => ({ ...prev, loading: false }))
-          }
-        } catch (error) {
-          console.error('Error deleting node:', error)
-          setConfirmDialog(prev => ({ ...prev, loading: false }))
-        }
-      }
-    })
-  }
-
-  const handleSaveNode = async (nodeData: Partial<Node>) => {
-    if (!isOwner) return
-
-    try {
-      if (selectedNode) {
-        // Update existing node
-        const response = await fetch(`/api/nodes/${selectedNode.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(nodeData)
-        })
-
-        if (response.ok) {
-          const updatedNode = await response.json()
-          setNodes(nodes.map(node => 
-            node.id === selectedNode.id ? updatedNode : node
-          ))
-        }
-      } else {
-        // Create new node
-        const response = await fetch('/api/nodes', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(nodeData)
-        })
-
-        if (response.ok) {
-          const newNode = await response.json()
-          setNodes([...nodes, newNode])
-        }
-      }
-    } catch (error) {
-      console.error('Error saving node:', error)
-      throw error
-    }
-  }
-
   const handleNodeClick = (node: Node) => {
     setSelectedNodeId(node.id)
     setSelectedNode(node)
-    if (!isOwner) {
-      setIsInspectorOpen(true)
-    }
+    // Public profiles always use inspector, even for owners
+    setIsInspectorOpen(true)
   }
 
   if (loading) {
@@ -218,56 +103,95 @@ export default function UserPage({ params }: UserPageProps) {
   const portfolio = user.portfolio
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              {user.image && (
-                <img
-                  src={user.image}
-                  alt={user.name || user.username}
-                  className="h-20 w-20 rounded-full object-cover"
-                />
-              )}
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {user.name || user.username}
-                </h1>
-                {user.bio && (
-                  <p className="mt-2 text-lg text-gray-600">{user.bio}</p>
-                )}
-                <div className="mt-3 flex items-center space-x-4 text-sm text-gray-500">
-                  {user.location && (
-                    <span className="flex items-center">
-                      📍 {user.location}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      {/* Modern Hero Header */}
+      <div className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-12">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between space-y-6 lg:space-y-0">
+              <div className="flex items-center space-x-6">
+                {user.image ? (
+                  <div className="relative">
+                    <img
+                      src={user.image}
+                      alt={user.name || user.username}
+                      className="h-24 w-24 rounded-2xl object-cover shadow-lg ring-4 ring-white"
+                    />
+                    <div className="absolute -bottom-2 -right-2 h-8 w-8 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+                      <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="h-24 w-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <span className="text-3xl font-bold text-white">
+                      {(user.name || user.username).charAt(0).toUpperCase()}
                     </span>
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-3">
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-transparent">
+                      {user.name || user.username}
+                    </h1>
+                    <div className="px-3 py-1 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 text-sm font-medium rounded-full">
+                      Portfolio
+                    </div>
+                  </div>
+                  {user.bio && (
+                    <p className="text-lg text-gray-600 max-w-2xl leading-relaxed">{user.bio}</p>
                   )}
-                  {user.website && (
-                    <a
-                      href={user.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      🌐 Website
-                    </a>
-                  )}
+                  <div className="flex items-center space-x-6 text-sm text-gray-500">
+                    {user.location && (
+                      <span className="flex items-center space-x-2">
+                        <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>{user.location}</span>
+                      </span>
+                    )}
+                    {user.website && (
+                      <a
+                        href={user.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 transition-colors"
+                      >
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                        </svg>
+                        <span>Website</span>
+                      </a>
+                    )}
+                    <div className="flex items-center space-x-2">
+                      <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                      <span>{nodes.filter(n => n.isVisible).length} proyectos públicos</span>
+                    </div>
+                  </div>
                 </div>
               </div>
+              
+              {isOwner && (
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
+                  <a
+                    href="/dashboard"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  >
+                    <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Editar Portfolio
+                  </a>
+                  <div className="px-4 py-2 bg-yellow-100 text-yellow-800 text-sm font-medium rounded-lg">
+                    ✨ Este es tu portfolio público
+                  </div>
+                </div>
+              )}
             </div>
-            
-            {isOwner && (
-              <div className="flex items-center space-x-3">
-                <a
-                  href="/dashboard"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm font-medium"
-                >
-                  Ir al Dashboard
-                </a>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -279,11 +203,11 @@ export default function UserPage({ params }: UserPageProps) {
             <InteractiveTree
               nodes={nodes}
               username={user.username}
-              isOwner={isOwner}
+              isOwner={false} // Public profiles are always read-only for tree interactions
               onNodeClick={handleNodeClick}
-              onNodeEdit={isOwner ? handleEditNode : undefined}
-              onNodeDelete={isOwner ? handleDeleteNode : undefined}
-              onNodeAdd={isOwner ? handleCreateNode : undefined}
+              onNodeEdit={undefined} // No editing in public view
+              onNodeDelete={undefined} // No deleting in public view
+              onNodeAdd={undefined} // No adding in public view
               selectedNodeId={selectedNodeId}
             />
           </div>
@@ -376,42 +300,21 @@ export default function UserPage({ params }: UserPageProps) {
                   )}
                 </div>
               </div>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Node Editor Modal - Only for owner */}
-      {isOwner && (
-        <NodeEditor
-          node={selectedNode || undefined}
-          parentId={parentNodeId || undefined}
-          portfolioId={user.portfolio?.id || 'portfolio-id'}
-          isOpen={isEditorOpen}
-          onClose={() => setIsEditorOpen(false)}
-          onSave={handleSaveNode}
-        />
-      )}
-
-      {/* Node Inspector Modal - For public viewing */}
+      {/* Node Inspector Modal - For all public viewing (owners and visitors) */}
       <NodeInspector
         node={selectedNode}
         isOpen={isInspectorOpen}
         onClose={() => setIsInspectorOpen(false)}
       />
 
-      {/* Confirmation Dialog */}
-      <ConfirmationDialog
-        isOpen={confirmDialog.isOpen}
-        onClose={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}
-        onConfirm={confirmDialog.onConfirm}
-        title={confirmDialog.title}
-        message={confirmDialog.message}
-        confirmText="Eliminar"
-        cancelText="Cancelar"
-        type="danger"
-        loading={confirmDialog.loading}
-      />
+      {/* No confirmation dialog needed since no editing is allowed in public view */}
+    </div>
+  )
+
     </div>
   )
 }
