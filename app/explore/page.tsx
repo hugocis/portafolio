@@ -6,9 +6,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Node } from '@prisma/client'
 import { ComponentLoading } from '@/components/ui/loading'
-import { 
-    MagnifyingGlassIcon, 
-    FunnelIcon, 
+import {
+    MagnifyingGlassIcon,
+    FunnelIcon,
     Squares2X2Icon,
     SparklesIcon,
     EyeIcon,
@@ -139,11 +139,10 @@ export default function ExplorePage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900">
             {/* Navigation */}
-            <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-                scrollY > 50 
-                    ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-lg' 
+            <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrollY > 50
+                    ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-lg'
                     : 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700'
-            }`}>
+                }`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center py-4">
                         {/* Logo */}
@@ -356,10 +355,10 @@ export default function ExplorePage() {
                                                         {getFilterLabel()}
                                                     </span>
                                                 </div>
-                                                <svg 
-                                                    className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${filterDropdownOpen ? 'rotate-180' : ''}`} 
-                                                    fill="none" 
-                                                    stroke="currentColor" 
+                                                <svg
+                                                    className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${filterDropdownOpen ? 'rotate-180' : ''}`}
+                                                    fill="none"
+                                                    stroke="currentColor"
                                                     viewBox="0 0 24 24"
                                                 >
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -376,9 +375,8 @@ export default function ExplorePage() {
                                                             setFilterType(option.value)
                                                             setFilterDropdownOpen(false)
                                                         }}
-                                                        className={`w-full px-4 py-4 text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200 border-b border-gray-100 dark:border-slate-700 last:border-b-0 animate-item-in ${
-                                                            filterType === option.value ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-                                                        }`}
+                                                        className={`w-full px-4 py-4 text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200 border-b border-gray-100 dark:border-slate-700 last:border-b-0 animate-item-in ${filterType === option.value ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                                                            }`}
                                                         style={{ animationDelay: `${index * 50}ms` }}
                                                     >
                                                         <div className="flex items-center space-x-3">
@@ -426,10 +424,10 @@ export default function ExplorePage() {
                                                         {getSortLabel()}
                                                     </span>
                                                 </div>
-                                                <svg 
-                                                    className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${sortDropdownOpen ? 'rotate-180' : ''}`} 
-                                                    fill="none" 
-                                                    stroke="currentColor" 
+                                                <svg
+                                                    className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${sortDropdownOpen ? 'rotate-180' : ''}`}
+                                                    fill="none"
+                                                    stroke="currentColor"
                                                     viewBox="0 0 24 24"
                                                 >
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -446,9 +444,8 @@ export default function ExplorePage() {
                                                             setSortBy(option.value)
                                                             setSortDropdownOpen(false)
                                                         }}
-                                                        className={`w-full px-4 py-4 text-left hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors duration-200 border-b border-gray-100 dark:border-slate-700 last:border-b-0 animate-item-in ${
-                                                            sortBy === option.value ? 'bg-purple-50 dark:bg-purple-900/20' : ''
-                                                        }`}
+                                                        className={`w-full px-4 py-4 text-left hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors duration-200 border-b border-gray-100 dark:border-slate-700 last:border-b-0 animate-item-in ${sortBy === option.value ? 'bg-purple-50 dark:bg-purple-900/20' : ''
+                                                            }`}
                                                         style={{ animationDelay: `${index * 50}ms` }}
                                                     >
                                                         <div className="flex items-center space-x-3">
@@ -511,7 +508,7 @@ export default function ExplorePage() {
                                                         <HeartIcon className="h-5 w-5 text-gray-400 group-hover:text-red-500 transition-colors duration-300" />
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div className="flex items-center space-x-4">
                                                     {user.image ? (
                                                         <div className="relative">
@@ -534,7 +531,7 @@ export default function ExplorePage() {
                                                             <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white dark:border-slate-800"></div>
                                                         </div>
                                                     )}
-                                                    
+
                                                     <div className="flex-1 min-w-0">
                                                         <h3 className="font-bold text-gray-900 dark:text-white text-lg truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                                                             {user.name || user.username}
