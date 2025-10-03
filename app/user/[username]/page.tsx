@@ -11,6 +11,7 @@ import { TimelineLayout } from '@/components/portfolio/timeline-layout'
 import { KanbanLayout } from '@/components/portfolio/kanban-layout'
 import { GridLayout } from '@/components/portfolio/grid-layout'
 import { AnimatedBackground } from '@/components/ui/animated-background'
+import { PageLoading } from '@/components/ui/loading'
 import { Node } from '@prisma/client'
 
 interface UserPageProps {
@@ -96,11 +97,7 @@ export default function UserPage({ params }: UserPageProps) {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-lg">Loading...</div>
-      </div>
-    )
+    return <PageLoading text="Cargando portfolio..." />
   }
 
   if (!user || !user.portfolio?.isPublic) {
@@ -121,7 +118,7 @@ export default function UserPage({ params }: UserPageProps) {
       {/* Content overlay */}
       <div className="relative z-10">
         {/* Modern Hero Header */}
-        <div className="bg-white/70 backdrop-blur-lg border-b border-white/20 shadow-lg">
+        <div className="bg-white/70 backdrop-blur-lg border-b border-white/20 shadow-lg relative z-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="py-12">
               <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between space-y-6 lg:space-y-0">
@@ -198,6 +195,15 @@ export default function UserPage({ params }: UserPageProps) {
                     currentLayout={currentLayout}
                     onLayoutChange={setCurrentLayout}
                   />
+                  <a
+                    href="/explore"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-medium rounded-xl hover:from-indigo-700 hover:to-cyan-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  >
+                    <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    Explorar Portfolios
+                  </a>
                   {isOwner && (
                     <a
                       href="/dashboard"
@@ -221,7 +227,7 @@ export default function UserPage({ params }: UserPageProps) {
         </div>
 
         {/* Portfolio Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
           {nodes.length > 0 ? (
             <div className="space-y-8">
               {currentLayout === 'tree' && (

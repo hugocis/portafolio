@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Node, NodeType } from '@prisma/client'
 import { Dialog, Transition, Tab } from '@headlessui/react'
-import { XMarkIcon, PlusIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import { XMarkIcon, PlusIcon, EyeIcon, EyeSlashIcon, GlobeAltIcon, HashtagIcon } from '@heroicons/react/24/outline'
 import { FolderIcon, DocumentIcon, CodeBracketIcon, AcademicCapIcon, BriefcaseIcon, BookOpenIcon, Cog6ToothIcon } from '@heroicons/react/24/solid'
 import { Fragment } from 'react'
 
@@ -177,7 +177,7 @@ export function NodeEditor({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-black/20 backdrop-blur-md" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
@@ -191,71 +191,77 @@ export function NodeEditor({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-5xl transform overflow-hidden rounded-3xl bg-white dark:bg-slate-800 text-left align-middle shadow-2xl transition-all border border-gray-200 dark:border-slate-700">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
+                <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 px-8 py-6 relative overflow-hidden">
+                  {/* Animated background elements */}
+                  <div className="absolute inset-0 opacity-20">
+                    <div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full mix-blend-overlay filter blur-xl opacity-70 animate-pulse"></div>
+                    <div className="absolute bottom-0 right-0 w-24 h-24 bg-white rounded-full mix-blend-overlay filter blur-xl opacity-50 animate-pulse animation-delay-2000"></div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between relative">
+                    <div className="flex items-center space-x-4">
                       {selectedType && (
-                        <div className={`p-2 rounded-lg ${selectedType.bgColor}`}>
-                          <selectedType.icon className={`h-6 w-6 ${selectedType.color}`} />
+                        <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg border border-white/30">
+                          <selectedType.icon className="h-8 w-8 text-white" />
                         </div>
                       )}
                       <div>
-                        <Dialog.Title as="h3" className="text-lg font-medium text-white">
+                        <Dialog.Title as="h3" className="text-2xl font-bold text-white">
                           {node ? 'Editar Nodo' : 'Crear Nuevo Nodo'}
                         </Dialog.Title>
-                        <p className="text-blue-100 text-sm">
-                          {selectedType?.description || 'Configura tu contenido'}
+                        <p className="text-blue-100 text-base mt-1">
+                          {selectedType?.description || 'Configura tu contenido profesional'}
                         </p>
                       </div>
                     </div>
                     <button
                       onClick={onClose}
-                      className="text-blue-100 hover:text-white transition-colors p-1 rounded-md hover:bg-white/10"
+                      className="text-white/80 hover:text-white transition-colors p-2 rounded-xl hover:bg-white/10 backdrop-blur-sm"
                     >
-                      <XMarkIcon className="h-6 w-6" />
+                      <XMarkIcon className="h-7 w-7" />
                     </button>
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6">
+                <form onSubmit={handleSubmit} className="p-8">
                   <Tab.Group selectedIndex={selectedTab} onChange={setSelectedTab}>
-                    <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1 mb-6">
+                    <Tab.List className="flex space-x-2 rounded-2xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-2 mb-8 border border-blue-200 dark:border-blue-800">
                       <Tab className={({ selected }) =>
-                        `w-full rounded-lg py-2.5 text-sm font-medium leading-5 transition-all
+                        `flex-1 rounded-xl py-3 px-4 text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none
                          ${selected
-                          ? 'bg-white text-blue-700 shadow'
-                          : 'text-blue-600 hover:bg-white/[0.12] hover:text-blue-700'
+                          ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 shadow-lg border border-blue-200 dark:border-blue-600'
+                          : 'text-blue-600 dark:text-blue-400 hover:bg-white/50 dark:hover:bg-slate-700/50 hover:text-blue-700 dark:hover:text-blue-300'
                         }`
                       }>
                         Información Básica
                       </Tab>
                       {formData.type === 'PROJECT' && (
                         <Tab className={({ selected }) =>
-                          `w-full rounded-lg py-2.5 text-sm font-medium leading-5 transition-all
+                          `flex-1 rounded-xl py-3 px-4 text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none
                            ${selected
-                            ? 'bg-white text-blue-700 shadow'
-                            : 'text-blue-600 hover:bg-white/[0.12] hover:text-blue-700'
+                            ? 'bg-white dark:bg-slate-700 text-purple-700 dark:text-purple-300 shadow-lg border border-purple-200 dark:border-purple-600'
+                            : 'text-purple-600 dark:text-purple-400 hover:bg-white/50 dark:hover:bg-slate-700/50 hover:text-purple-700 dark:hover:text-purple-300'
                           }`
                         }>
                           Enlaces del Proyecto
                         </Tab>
                       )}
                       <Tab className={({ selected }) =>
-                        `w-full rounded-lg py-2.5 text-sm font-medium leading-5 transition-all
+                        `flex-1 rounded-xl py-3 px-4 text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none
                          ${selected
-                          ? 'bg-white text-blue-700 shadow'
-                          : 'text-blue-600 hover:bg-white/[0.12] hover:text-blue-700'
+                          ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-lg border border-indigo-200 dark:border-indigo-600'
+                          : 'text-indigo-600 dark:text-indigo-400 hover:bg-white/50 dark:hover:bg-slate-700/50 hover:text-indigo-700 dark:hover:text-indigo-300'
                         }`
                       }>
                         Contenido
                       </Tab>
                       <Tab className={({ selected }) =>
-                        `w-full rounded-lg py-2.5 text-sm font-medium leading-5 transition-all
+                        `flex-1 rounded-xl py-3 px-4 text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none
                          ${selected
-                          ? 'bg-white text-blue-700 shadow'
-                          : 'text-blue-600 hover:bg-white/[0.12] hover:text-blue-700'
+                          ? 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 shadow-lg border border-gray-200 dark:border-gray-600'
+                          : 'text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-slate-700/50 hover:text-gray-700 dark:hover:text-gray-300'
                         }`
                       }>
                         Configuración
@@ -267,10 +273,10 @@ export function NodeEditor({
                       <Tab.Panel className="space-y-6">
                         {/* Type Selection */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-3">
+                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
                             Tipo de Nodo
                           </label>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {nodeTypes.map((type) => {
                               const Icon = type.icon
                               return (
@@ -278,17 +284,17 @@ export function NodeEditor({
                                   key={type.id}
                                   type="button"
                                   onClick={() => setFormData(prev => ({ ...prev, type: type.id as NodeType }))}
-                                  className={`p-4 rounded-lg border-2 transition-all text-left
+                                  className={`group p-5 rounded-2xl border-2 transition-all duration-300 text-left hover:scale-105 hover:shadow-lg
                                     ${formData.type === type.id
-                                      ? 'border-blue-500 bg-blue-50'
-                                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                                      ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 shadow-lg'
+                                      : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700'
                                     }`}
                                 >
-                                  <div className={`inline-flex p-2 rounded-lg ${type.bgColor} mb-2`}>
-                                    <Icon className={`h-5 w-5 ${type.color}`} />
+                                  <div className={`inline-flex p-3 rounded-xl ${type.bgColor} mb-3 group-hover:scale-110 transition-transform duration-300`}>
+                                    <Icon className={`h-6 w-6 ${type.color}`} />
                                   </div>
-                                  <div className="font-medium text-gray-900 text-sm">{type.name}</div>
-                                  <div className="text-xs text-gray-500">{type.description}</div>
+                                  <div className="font-semibold text-gray-900 dark:text-white text-base">{type.name}</div>
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{type.description}</div>
                                 </button>
                               )
                             })}
@@ -297,7 +303,7 @@ export function NodeEditor({
 
                         {/* Title */}
                         <div>
-                          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                          <label htmlFor="title" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                             Título *
                           </label>
                           <input
@@ -306,24 +312,27 @@ export function NodeEditor({
                             required
                             value={formData.title || ''}
                             onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                            className={`block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg
-                              ${errors.title ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
+                            className={`block w-full rounded-2xl border-2 border-gray-200 dark:border-slate-600 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:bg-slate-700 dark:text-white text-lg py-3 px-4 transition-all duration-300
+                              ${errors.title ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : ''}`}
                             placeholder="Nombre descriptivo para tu nodo"
                           />
-                          {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
+                          {errors.title && <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
+                            <XMarkIcon className="h-4 w-4" />
+                            {errors.title}
+                          </p>}
                         </div>
 
                         {/* Description */}
                         <div>
-                          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                          <label htmlFor="description" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                             Descripción
                           </label>
                           <textarea
                             id="description"
-                            rows={3}
+                            rows={4}
                             value={formData.description || ''}
                             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                            className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full rounded-2xl border-2 border-gray-200 dark:border-slate-600 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:bg-slate-700 dark:text-white py-3 px-4 transition-all duration-300"
                             placeholder="Breve descripción de qué trata este nodo"
                           />
                         </div>
@@ -334,8 +343,9 @@ export function NodeEditor({
                         <Tab.Panel className="space-y-6">
                           <div className="grid grid-cols-1 gap-6">
                             <div>
-                              <label htmlFor="projectUrl" className="block text-sm font-medium text-gray-700 mb-1">
-                                🌐 URL del Proyecto
+                              <label htmlFor="projectUrl" className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+                                <GlobeAltIcon className="h-4 w-4 text-blue-500" />
+                                URL del Proyecto
                               </label>
                               <input
                                 type="url"
@@ -350,8 +360,11 @@ export function NodeEditor({
                             </div>
 
                             <div>
-                              <label htmlFor="githubUrl" className="block text-sm font-medium text-gray-700 mb-1">
-                                🐙 URL de GitHub
+                              <label htmlFor="githubUrl" className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+                                <svg className="h-4 w-4 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
+                                </svg>
+                                URL de GitHub
                               </label>
                               <input
                                 type="url"
@@ -366,8 +379,11 @@ export function NodeEditor({
                             </div>
 
                             <div>
-                              <label htmlFor="demoUrl" className="block text-sm font-medium text-gray-700 mb-1">
-                                🎥 URL de Demo
+                              <label htmlFor="demoUrl" className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+                                <svg className="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                                URL de Demo
                               </label>
                               <input
                                 type="url"
@@ -408,14 +424,16 @@ export function NodeEditor({
 
 [Enlace](https://ejemplo.com)"
                           />
-                          <p className="mt-1 text-sm text-gray-500">
-                            📝 Soporta formato Markdown para texto enriquecido
+                          <p className="mt-1 text-sm text-gray-500 flex items-center gap-2">
+                            <DocumentIcon className="h-4 w-4 text-blue-500" />
+                            Soporta formato Markdown para texto enriquecido
                           </p>
                         </div>
 
                         {/* Tags */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+                            <HashtagIcon className="h-4 w-4 text-indigo-500" />
                             Etiquetas
                           </label>
                           <div className="flex gap-2 mb-3">

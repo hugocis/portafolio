@@ -13,7 +13,8 @@ import { TimelineLayout } from '@/components/portfolio/timeline-layout'
 import { KanbanLayout } from '@/components/portfolio/kanban-layout'
 import { GridLayout } from '@/components/portfolio/grid-layout'
 import { AnimatedBackground } from '@/components/ui/animated-background'
-import { PlusIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline'
+import { PageLoading } from '@/components/ui/loading'
+import { PlusIcon, ArrowRightOnRectangleIcon, HomeIcon } from '@heroicons/react/24/outline'
 
 export default function DashboardPage() {
     const { data: session, status } = useSession()
@@ -120,19 +121,35 @@ export default function DashboardPage() {
         setSelectedNode(null)
     }
 
-    const handleNodeSave = async () => {
-        await fetchNodes()
-        setIsEditorOpen(false)
-        setSelectedNode(null)
-        setParentNodeId(null)
+    const handleNodeSave = async (nodeData: Partial<Node>) => {
+        try {
+            const url = selectedNode ? `/api/nodes/${selectedNode.id}` : '/api/nodes'
+            const method = selectedNode ? 'PUT' : 'POST'
+
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(nodeData),
+            })
+
+            if (!response.ok) {
+                throw new Error('Failed to save node')
+            }
+
+            await fetchNodes()
+            setIsEditorOpen(false)
+            setSelectedNode(null)
+            setParentNodeId(null)
+        } catch (error) {
+            console.error('Error saving node:', error)
+            throw error // Re-throw so the NodeEditor can handle it
+        }
     }
 
     if (status === 'loading' || loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-lg">Loading...</div>
-            </div>
-        )
+        return <PageLoading text="Cargando dashboard..." />
     }
 
     if (status === 'unauthenticated') {
@@ -180,6 +197,14 @@ export default function DashboardPage() {
                                 currentLayout={currentLayout}
                                 onLayoutChange={setCurrentLayout}
                             />
+                            <Link
+                                href="/"
+                                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-gray-500 to-slate-600 text-white text-sm font-medium rounded-lg hover:from-gray-600 hover:to-slate-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                                title="Volver al inicio"
+                            >
+                                <HomeIcon className="h-4 w-4 mr-2" />
+                                Inicio
+                            </Link>
                             <Link
                                 href={`/user/${session?.user?.username}`}
                                 target="_blank"

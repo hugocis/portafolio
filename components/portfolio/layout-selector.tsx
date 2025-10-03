@@ -52,22 +52,24 @@ export function LayoutSelector({ currentLayout, onLayoutChange, className = '' }
 
     return (
         <div className={`relative ${className}`}>
-            {/* Toggle Button */}
+            {/* Main button - always visible */}
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl px-4 py-2 hover:bg-white transition-all duration-200 shadow-sm"
+                className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl px-4 py-2 hover:bg-white hover:shadow-md transition-all duration-300 shadow-sm group"
             >
-                <div className={`p-1 rounded-lg bg-gradient-to-r ${layouts.find(l => l.id === currentLayout)?.gradient}`}>
+                <div className={`p-1 rounded-lg bg-gradient-to-r ${layouts.find(l => l.id === currentLayout)?.gradient} transition-transform duration-300 group-hover:scale-110`}>
                     {(() => {
                         const CurrentIcon = layouts.find(l => l.id === currentLayout)?.icon || Squares2X2Icon
                         return <CurrentIcon className="h-4 w-4 text-white" />
                     })()}
                 </div>
-                <span className="font-medium text-gray-700">
+                <span className="font-medium text-gray-700 transition-colors duration-300 group-hover:text-gray-900">
                     {layouts.find(l => l.id === currentLayout)?.name}
                 </span>
                 <svg
-                    className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                    className={`h-4 w-4 text-gray-400 transition-all duration-300 group-hover:text-gray-600 ${
+                        isExpanded ? 'rotate-180' : ''
+                    }`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -76,51 +78,69 @@ export function LayoutSelector({ currentLayout, onLayoutChange, className = '' }
                 </svg>
             </button>
 
-            {/* Dropdown */}
+            {/* Dropdown menu */}
             {isExpanded && (
-                <div className="absolute top-full mt-2 right-0 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50 min-w-64">
-                    <div className="p-2">
-                        <div className="text-xs font-medium text-gray-500 px-3 py-2 border-b border-gray-100">
-                            Cambiar Vista
-                        </div>
-                        {layouts.map((layout) => {
-                            const IconComponent = layout.icon
-                            const isActive = currentLayout === layout.id
+                <>
+                    {/* Overlay to close dropdown when clicking outside */}
+                    <div 
+                        className="fixed inset-0 z-30" 
+                        onClick={() => setIsExpanded(false)}
+                    />
+                    
+                    {/* Dropdown content */}
+                    <div className="absolute top-full mt-2 right-0 bg-white/95 backdrop-blur-lg rounded-xl shadow-2xl border border-gray-200/50 overflow-hidden z-40 min-w-64 animate-dropdown-in">
+                        <div className="p-2">
+                            <div className="text-xs font-medium text-gray-500 px-3 py-2 border-b border-gray-100">
+                                Cambiar Vista
+                            </div>
+                            {layouts.map((layout, index) => {
+                                const IconComponent = layout.icon
+                                const isActive = currentLayout === layout.id
 
-                            return (
-                                <button
-                                    key={layout.id}
-                                    onClick={() => {
-                                        onLayoutChange(layout.id)
-                                        setIsExpanded(false)
-                                    }}
-                                    className={`w-full flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 ${isActive
-                                            ? 'bg-gradient-to-r ' + layout.gradient + ' text-white shadow-md'
-                                            : 'hover:bg-gray-50 text-gray-700'
-                                        }`}
-                                >
-                                    <div className={`p-2 rounded-lg ${isActive
-                                            ? 'bg-white/20'
-                                            : 'bg-gradient-to-r ' + layout.gradient
-                                        }`}>
-                                        <IconComponent className={`h-4 w-4 ${isActive ? 'text-white' : 'text-white'
-                                            }`} />
-                                    </div>
-                                    <div className="flex-1 text-left">
-                                        <div className="font-medium">{layout.name}</div>
-                                        <div className={`text-xs ${isActive ? 'text-white/80' : 'text-gray-500'
+                                return (
+                                    <div
+                                        key={layout.id}
+                                        className="animate-item-in"
+                                        style={{
+                                            animationDelay: `${index * 50}ms`
+                                        }}
+                                    >
+                                        <button
+                                            onClick={() => {
+                                                onLayoutChange(layout.id)
+                                                setIsExpanded(false)
+                                            }}
+                                            className={`w-full flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group ${
+                                                isActive
+                                                    ? `bg-gradient-to-r ${layout.gradient} text-white shadow-md`
+                                                    : 'hover:bg-gray-50 text-gray-700 hover:shadow-sm'
+                                            }`}
+                                        >
+                                            <div className={`p-2 rounded-lg transition-all duration-200 ${
+                                                isActive
+                                                    ? 'bg-white/20'
+                                                    : `bg-gradient-to-r ${layout.gradient} group-hover:scale-110`
                                             }`}>
-                                            {layout.description}
-                                        </div>
+                                                <IconComponent className="h-4 w-4 text-white" />
+                                            </div>
+                                            <div className="flex-1 text-left">
+                                                <div className="font-medium">{layout.name}</div>
+                                                <div className={`text-xs ${
+                                                    isActive ? 'text-white/80' : 'text-gray-500'
+                                                }`}>
+                                                    {layout.description}
+                                                </div>
+                                            </div>
+                                            {isActive && (
+                                                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                                            )}
+                                        </button>
                                     </div>
-                                    {isActive && (
-                                        <div className="w-2 h-2 bg-white rounded-full"></div>
-                                    )}
-                                </button>
-                            )
-                        })}
+                                )
+                            })}
+                        </div>
                     </div>
-                </div>
+                </>
             )}
         </div>
     )
