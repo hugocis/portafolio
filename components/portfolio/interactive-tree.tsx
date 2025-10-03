@@ -302,16 +302,6 @@ export function InteractiveTree({
                             }
                         </p>
                     </div>
-
-                    {isOwner && (
-                        <button
-                            onClick={() => onNodeAdd && onNodeAdd()}
-                            className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg"
-                        >
-                            <PlusIcon className="h-5 w-5" />
-                            <span>Añadir Nodo Raíz</span>
-                        </button>
-                    )}
                 </div>
             </div>
 

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import {
     Squares2X2Icon,
     QueueListIcon,
@@ -49,12 +50,26 @@ const layouts = [
 
 export function LayoutSelector({ currentLayout, onLayoutChange, className = '' }: LayoutSelectorProps) {
     const [isExpanded, setIsExpanded] = useState(false)
+    const [buttonRect, setButtonRect] = useState<DOMRect | null>(null)
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
+        if (!isExpanded) {
+            const rect = event.currentTarget.getBoundingClientRect()
+            setButtonRect(rect)
+        }
+        setIsExpanded(!isExpanded)
+    }
 
     return (
         <div className={`relative ${className}`}>
             {/* Main button - always visible */}
             <button
-                onClick={() => setIsExpanded(!isExpanded)}
+                onClick={handleToggle}
                 className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl px-4 py-2 hover:bg-white hover:shadow-md transition-all duration-300 shadow-sm group"
             >
                 <div className={`p-1 rounded-lg bg-gradient-to-r ${layouts.find(l => l.id === currentLayout)?.gradient} transition-transform duration-300 group-hover:scale-110`}>
@@ -78,17 +93,25 @@ export function LayoutSelector({ currentLayout, onLayoutChange, className = '' }
                 </svg>
             </button>
 
-            {/* Dropdown menu */}
-            {isExpanded && (
+            {/* Dropdown menu using React Portal */}
+            {isExpanded && mounted && buttonRect && createPortal(
                 <>
                     {/* Overlay to close dropdown when clicking outside */}
                     <div 
-                        className="fixed inset-0 z-30" 
+                        className="fixed inset-0" 
+                        style={{ zIndex: 99998 }}
                         onClick={() => setIsExpanded(false)}
                     />
                     
                     {/* Dropdown content */}
-                    <div className="absolute top-full mt-2 right-0 bg-white/95 backdrop-blur-lg rounded-xl shadow-2xl border border-gray-200/50 overflow-hidden z-40 min-w-64 animate-dropdown-in">
+                    <div 
+                        className="fixed bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden min-w-64"
+                        style={{
+                            zIndex: 99999,
+                            top: buttonRect.bottom + 8,
+                            left: buttonRect.right - 256 // 256px = 16rem = min-w-64
+                        }}
+                    >
                         <div className="p-2">
                             <div className="text-xs font-medium text-gray-500 px-3 py-2 border-b border-gray-100">
                                 Cambiar Vista
@@ -140,7 +163,8 @@ export function LayoutSelector({ currentLayout, onLayoutChange, className = '' }
                             })}
                         </div>
                     </div>
-                </>
+                </>,
+                document.body
             )}
         </div>
     )

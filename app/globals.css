@@ -162,6 +162,23 @@ body {
   animation: slideOutToTop 0.2s ease-in forwards;
 }
 
+/* Ensure dropdown is always on top */
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9998;
+}
+
+.dropdown-content {
+  position: absolute;
+  z-index: 9999;
+  /* Create new stacking context */
+  isolation: isolate;
+}
+
 /* Staggered animation for dropdown items */
 @keyframes fadeInUp {
   from {

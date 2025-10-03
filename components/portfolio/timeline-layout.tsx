@@ -1,8 +1,9 @@
 'use client'
 
 import { Node } from '@prisma/client'
-import { CalendarDaysIcon, ClockIcon } from '@heroicons/react/24/outline'
-import { FolderIcon, DocumentIcon, AcademicCapIcon, BriefcaseIcon, BookOpenIcon, Cog6ToothIcon, CodeBracketIcon } from '@heroicons/react/24/solid'
+import { CalendarDaysIcon, ClockIcon, EyeIcon, EyeSlashIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
+import { FolderIcon, DocumentIcon, AcademicCapIcon, BriefcaseIcon, BookOpenIcon, Cog6ToothIcon, CodeBracketIcon, StarIcon, MapPinIcon } from '@heroicons/react/24/solid'
+import { useState } from 'react'
 
 interface TimelineLayoutProps {
     nodes: Node[]
@@ -11,21 +12,28 @@ interface TimelineLayoutProps {
 }
 
 const nodeTypeConfig = {
-    CATEGORY: { name: 'Categoría', icon: FolderIcon, color: 'text-blue-600', bgColor: 'bg-blue-100', borderColor: 'border-blue-200' },
-    PROJECT: { name: 'Proyecto', icon: DocumentIcon, color: 'text-purple-600', bgColor: 'bg-purple-100', borderColor: 'border-purple-200' },
-    LANGUAGE: { name: 'Lenguaje', icon: CodeBracketIcon, color: 'text-green-600', bgColor: 'bg-green-100', borderColor: 'border-green-200' },
-    SKILL: { name: 'Habilidad', icon: Cog6ToothIcon, color: 'text-indigo-600', bgColor: 'bg-indigo-100', borderColor: 'border-indigo-200' },
-    EXPERIENCE: { name: 'Experiencia', icon: BriefcaseIcon, color: 'text-red-600', bgColor: 'bg-red-100', borderColor: 'border-red-200' },
-    EDUCATION: { name: 'Educación', icon: AcademicCapIcon, color: 'text-orange-600', bgColor: 'bg-orange-100', borderColor: 'border-orange-200' },
-    DOCUMENTATION: { name: 'Documentación', icon: BookOpenIcon, color: 'text-cyan-600', bgColor: 'bg-cyan-100', borderColor: 'border-cyan-200' }
+    CATEGORY: { name: 'Categoría', icon: FolderIcon, color: 'text-blue-600', bgColor: 'bg-blue-100', borderColor: 'border-blue-200', gradient: 'from-blue-500 to-blue-600', lightBg: 'from-blue-50 to-blue-100' },
+    PROJECT: { name: 'Proyecto', icon: DocumentIcon, color: 'text-purple-600', bgColor: 'bg-purple-100', borderColor: 'border-purple-200', gradient: 'from-purple-500 to-purple-600', lightBg: 'from-purple-50 to-purple-100' },
+    LANGUAGE: { name: 'Lenguaje', icon: CodeBracketIcon, color: 'text-emerald-600', bgColor: 'bg-emerald-100', borderColor: 'border-emerald-200', gradient: 'from-emerald-500 to-emerald-600', lightBg: 'from-emerald-50 to-emerald-100' },
+    SKILL: { name: 'Habilidad', icon: Cog6ToothIcon, color: 'text-indigo-600', bgColor: 'bg-indigo-100', borderColor: 'border-indigo-200', gradient: 'from-indigo-500 to-indigo-600', lightBg: 'from-indigo-50 to-indigo-100' },
+    EXPERIENCE: { name: 'Experiencia', icon: BriefcaseIcon, color: 'text-rose-600', bgColor: 'bg-rose-100', borderColor: 'border-rose-200', gradient: 'from-rose-500 to-rose-600', lightBg: 'from-rose-50 to-rose-100' },
+    EDUCATION: { name: 'Educación', icon: AcademicCapIcon, color: 'text-amber-600', bgColor: 'bg-amber-100', borderColor: 'border-amber-200', gradient: 'from-amber-500 to-amber-600', lightBg: 'from-amber-50 to-amber-100' },
+    DOCUMENTATION: { name: 'Documentación', icon: BookOpenIcon, color: 'text-cyan-600', bgColor: 'bg-cyan-100', borderColor: 'border-cyan-200', gradient: 'from-cyan-500 to-cyan-600', lightBg: 'from-cyan-50 to-cyan-100' }
 }
 
 export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutProps) {
+    const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc')
+    const [filterType, setFilterType] = useState<string>('all')
 
-    // Organizar nodos por fecha (usando createdAt o una fecha custom si la tienes)
-    const sortedNodes = [...nodes]
+    // Organizar nodos por fecha
+    const filteredNodes = nodes
         .filter(node => node.isVisible || isOwner)
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .filter(node => filterType === 'all' || node.type === filterType)
+        .sort((a, b) => {
+            const dateA = new Date(a.createdAt).getTime()
+            const dateB = new Date(b.createdAt).getTime()
+            return sortOrder === 'desc' ? dateB - dateA : dateA - dateB
+        })
 
     const handleNodeClick = (node: Node) => {
         onNodeClick?.(node)
@@ -35,7 +43,7 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
     const getMonthFromDate = (date: Date) => new Date(date).toLocaleDateString('es-ES', { month: 'long' })
 
     // Agrupar por año
-    const nodesByYear = sortedNodes.reduce((acc, node) => {
+    const nodesByYear = filteredNodes.reduce((acc, node) => {
         const year = getYearFromDate(node.createdAt)
         if (!acc[year]) {
             acc[year] = []
@@ -44,140 +52,333 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
         return acc
     }, {} as Record<number, Node[]>)
 
-    return (
-        <div className="relative">
-            {/* Timeline Line */}
-            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-200 via-purple-200 to-indigo-200"></div>
+    // Obtener tipos únicos para el filtro
+    const availableTypes = Array.from(new Set(nodes.filter(node => node.isVisible || isOwner).map(node => node.type)))
 
-            <div className="space-y-12">
-                {Object.entries(nodesByYear)
-                    .sort(([a], [b]) => parseInt(b) - parseInt(a))
-                    .map(([year, yearNodes]) => (
-                        <div key={year} className="relative">
-                            {/* Year Marker */}
-                            <div className="flex items-center mb-8">
-                                <div className="relative z-10 flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full shadow-lg border-4 border-white">
-                                    <span className="text-white font-bold text-lg">{year}</span>
+    return (
+        <div className="space-y-8">
+            {/* Modern Header */}
+            <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-cyan-50 to-indigo-50 dark:from-blue-900/20 dark:via-cyan-900/20 dark:to-indigo-900/20 rounded-3xl border border-blue-200/50 dark:border-blue-700/50">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-30">
+                    <div className="absolute top-6 right-8 w-32 h-32 bg-gradient-to-br from-blue-200 to-cyan-200 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-6 left-8 w-24 h-24 bg-gradient-to-br from-cyan-200 to-indigo-200 rounded-full blur-2xl"></div>
+                </div>
+                
+                <div className="relative p-8">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                        <div className="space-y-4">
+                            <div className="flex items-center space-x-4">
+                                <div className="relative">
+                                    <div className="p-4 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl shadow-lg">
+                                        <CalendarDaysIcon className="h-8 w-8 text-white" />
+                                    </div>
+                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full animate-pulse"></div>
                                 </div>
-                                <div className="ml-6 flex-1">
-                                    <h2 className="text-2xl font-bold text-gray-900">{year}</h2>
-                                    <p className="text-gray-500">{yearNodes.length} elemento{yearNodes.length !== 1 ? 's' : ''}</p>
+                                <div>
+                                    <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                                        Timeline Profesional
+                                    </h2>
+                                    <p className="text-lg text-gray-600 dark:text-gray-400">
+                                        {Object.keys(nodesByYear).length} año{Object.keys(nodesByYear).length !== 1 ? 's' : ''} • {filteredNodes.length} evento{filteredNodes.length !== 1 ? 's' : ''}
+                                        {filterType !== 'all' ? ` • ${nodeTypeConfig[filterType as keyof typeof nodeTypeConfig]?.name}` : ''}
+                                    </p>
                                 </div>
                             </div>
+                        </div>
 
-                            {/* Nodes for this year */}
-                            <div className="ml-20 space-y-6">
-                                {yearNodes.map((node) => {
-                                    const typeConfig = nodeTypeConfig[node.type as keyof typeof nodeTypeConfig]
+                        {/* Controls */}
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                            {/* Sort Toggle */}
+                            <div className="flex bg-white/80 backdrop-blur-sm rounded-xl p-1 border border-gray-200/50 shadow-sm">
+                                <button
+                                    onClick={() => setSortOrder('desc')}
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                        sortOrder === 'desc'
+                                            ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-md'
+                                            : 'text-gray-600 hover:text-gray-900'
+                                    }`}
+                                >
+                                    Más Reciente
+                                </button>
+                                <button
+                                    onClick={() => setSortOrder('asc')}
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                        sortOrder === 'asc'
+                                            ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-md'
+                                            : 'text-gray-600 hover:text-gray-900'
+                                    }`}
+                                >
+                                    Más Antiguo
+                                </button>
+                            </div>
+
+                            {/* Type Filters */}
+                            <div className="flex flex-wrap gap-2">
+                                <button
+                                    onClick={() => setFilterType('all')}
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                                        filterType === 'all'
+                                            ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg'
+                                            : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
+                                    }`}
+                                >
+                                    Todos
+                                </button>
+                                {availableTypes.slice(0, 3).map((type) => {
+                                    const typeConfig = nodeTypeConfig[type as keyof typeof nodeTypeConfig]
                                     const TypeIcon = typeConfig?.icon || DocumentIcon
 
                                     return (
-                                        <div key={node.id} className="relative group">
-                                            {/* Connection Line */}
-                                            <div className="absolute -left-12 top-6 w-8 h-0.5 bg-gray-300 group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 transition-all duration-300"></div>
-
-                                            {/* Timeline Dot */}
-                                            <div className={`absolute -left-16 top-4 w-4 h-4 rounded-full border-2 border-white shadow-lg transition-all duration-300 group-hover:scale-125 ${typeConfig?.bgColor || 'bg-gray-100'}`}>
-                                                <div className={`w-full h-full rounded-full ${typeConfig?.bgColor || 'bg-gray-100'}`}></div>
-                                            </div>
-
-                                            {/* Node Card */}
-                                            <div
-                                                onClick={() => handleNodeClick(node)}
-                                                className={`bg-white rounded-xl border-2 ${typeConfig?.borderColor || 'border-gray-200'} p-6 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group-hover:-translate-y-1`}
-                                            >
-                                                {/* Header */}
-                                                <div className="flex items-start justify-between mb-4">
-                                                    <div className="flex items-center space-x-3">
-                                                        <div className={`p-3 rounded-xl ${typeConfig?.bgColor || 'bg-gray-100'}`}>
-                                                            <TypeIcon className={`h-6 w-6 ${typeConfig?.color || 'text-gray-600'}`} />
-                                                        </div>
-                                                        <div>
-                                                            <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                                                {node.title}
-                                                            </h3>
-                                                            <p className="text-sm text-gray-500">
-                                                                {typeConfig?.name || node.type} • {getMonthFromDate(node.createdAt)} {getYearFromDate(node.createdAt)}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center space-x-2 text-xs text-gray-400">
-                                                        <ClockIcon className="h-4 w-4" />
-                                                        <span>{new Date(node.createdAt).toLocaleDateString('es-ES')}</span>
-                                                    </div>
-                                                </div>
-
-                                                {/* Description */}
-                                                {node.description && (
-                                                    <p className="text-gray-600 mb-4 line-clamp-2">
-                                                        {node.description}
-                                                    </p>
-                                                )}
-
-                                                {/* Tags */}
-                                                {node.tags && node.tags.length > 0 && (
-                                                    <div className="flex flex-wrap gap-2 mb-4">
-                                                        {node.tags.slice(0, 4).map((tag, tagIndex) => (
-                                                            <span
-                                                                key={tagIndex}
-                                                                className="inline-flex items-center bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full"
-                                                            >
-                                                                {tag}
-                                                            </span>
-                                                        ))}
-                                                        {node.tags.length > 4 && (
-                                                            <span className="inline-flex items-center text-gray-500 text-xs px-3 py-1">
-                                                                +{node.tags.length - 4} más
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                )}
-
-                                                {/* Project Links */}
-                                                {node.type === 'PROJECT' && (node.projectUrl || node.githubUrl || node.demoUrl) && (
-                                                    <div className="flex items-center space-x-3">
-                                                        {node.projectUrl && (
-                                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                                        )}
-                                                        {node.githubUrl && (
-                                                            <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
-                                                        )}
-                                                        {node.demoUrl && (
-                                                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                                        )}
-                                                        <span className="text-xs text-gray-500 font-medium">Enlaces disponibles</span>
-                                                    </div>
-                                                )}
-
-                                                {/* Visual Indicator */}
-                                                <div className={`mt-4 h-1 w-full rounded-full bg-gradient-to-r ${node.type === 'PROJECT' ? 'from-purple-200 to-purple-400' :
-                                                    node.type === 'EXPERIENCE' ? 'from-red-200 to-red-400' :
-                                                        node.type === 'EDUCATION' ? 'from-orange-200 to-orange-400' :
-                                                            node.type === 'SKILL' ? 'from-indigo-200 to-indigo-400' :
-                                                                'from-gray-200 to-gray-400'
-                                                    }`}></div>
-                                            </div>
-                                        </div>
+                                        <button
+                                            key={type}
+                                            onClick={() => setFilterType(type)}
+                                            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                                                filterType === type
+                                                    ? `bg-gradient-to-r ${typeConfig?.gradient} text-white shadow-lg`
+                                                    : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
+                                            }`}
+                                        >
+                                            <TypeIcon className="h-4 w-4" />
+                                            <span className="hidden sm:inline">{typeConfig?.name}</span>
+                                        </button>
                                     )
                                 })}
                             </div>
                         </div>
-                    ))}
+                    </div>
+                </div>
+            </div>
+            {/* Enhanced Timeline */}
+            <div className="relative">
+                {/* Enhanced Timeline Line */}
+                <div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-300 via-cyan-300 to-indigo-300 rounded-full shadow-lg"></div>
+
+                <div className="space-y-12">
+                    {Object.entries(nodesByYear)
+                        .sort(([a], [b]) => sortOrder === 'desc' ? parseInt(b) - parseInt(a) : parseInt(a) - parseInt(b))
+                        .map(([year, yearNodes], yearIndex) => (
+                            <div 
+                                key={year} 
+                                className="relative animate-fade-in-scale"
+                                style={{
+                                    animationDelay: `${yearIndex * 200}ms`,
+                                    animationFillMode: 'both'
+                                }}
+                            >
+                                {/* Enhanced Year Marker */}
+                                <div className="flex items-center mb-8">
+                                    <div className="relative z-10 flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 via-cyan-600 to-indigo-600 rounded-2xl shadow-xl border-4 border-white transform hover:scale-110 transition-transform duration-300">
+                                        <div className="text-center">
+                                            <span className="text-white font-bold text-lg block leading-tight">{year}</span>
+                                            <span className="text-blue-100 text-xs font-medium">{yearNodes.length} evento{yearNodes.length !== 1 ? 's' : ''}</span>
+                                        </div>
+                                    </div>
+                                    <div className="ml-8 flex-1">
+                                        <div className="flex items-center space-x-4">
+                                            <div>
+                                                <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{year}</h2>
+                                                <p className="text-gray-600 dark:text-gray-400 text-lg">
+                                                    {yearNodes.length} elemento{yearNodes.length !== 1 ? 's' : ''} en este año
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <MapPinIcon className="h-5 w-5 text-blue-500" />
+                                                <span className="text-sm font-medium text-gray-500">
+                                                    {sortOrder === 'desc' ? 'Desde el más reciente' : 'Desde el más antiguo'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Enhanced Nodes for this year */}
+                                <div className="ml-24 space-y-8">
+                                    {yearNodes.map((node, nodeIndex) => {
+                                        const typeConfig = nodeTypeConfig[node.type as keyof typeof nodeTypeConfig]
+                                        const TypeIcon = typeConfig?.icon || DocumentIcon
+                                        const isFeatured = node.tags?.includes('featured')
+
+                                        return (
+                                            <div 
+                                                key={node.id} 
+                                                className="relative group animate-fade-in-scale"
+                                                style={{
+                                                    animationDelay: `${(yearIndex * 200) + (nodeIndex * 150)}ms`,
+                                                    animationFillMode: 'both'
+                                                }}
+                                            >
+                                                {/* Enhanced Connection Line */}
+                                                <div className="absolute -left-16 top-8 w-12 h-0.5 bg-gradient-to-r from-gray-300 to-blue-400 group-hover:from-blue-400 group-hover:to-cyan-400 transition-all duration-500 shadow-sm"></div>
+
+                                                {/* Enhanced Timeline Dot */}
+                                                <div className={`absolute -left-20 top-6 w-6 h-6 rounded-xl border-4 border-white shadow-lg transition-all duration-300 group-hover:scale-150 group-hover:rotate-45 ${typeConfig?.bgColor || 'bg-gray-100'} z-10`}>
+                                                    <div className={`w-full h-full rounded-lg bg-gradient-to-br ${typeConfig?.gradient || 'from-gray-400 to-gray-500'}`}></div>
+                                                </div>
+
+                                                {/* Enhanced Node Card */}
+                                                <div
+                                                    onClick={() => handleNodeClick(node)}
+                                                    className={`relative bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 p-8 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer group-hover:-translate-y-2 group-hover:scale-105 overflow-hidden ${
+                                                        isFeatured ? 'ring-2 ring-yellow-400/50' : ''
+                                                    }`}
+                                                >
+                                                    {/* Featured Badge */}
+                                                    {isFeatured && (
+                                                        <div className="absolute top-4 right-4 z-10">
+                                                            <div className="flex items-center space-x-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                                                                <StarIcon className="h-3 w-3" />
+                                                                <span>Destacado</span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Background Gradient */}
+                                                    <div className={`absolute inset-0 bg-gradient-to-br ${typeConfig?.lightBg || 'from-gray-50 to-gray-100'} opacity-30 group-hover:opacity-50 transition-opacity duration-500`}></div>
+
+                                                    <div className="relative">
+                                                        {/* Enhanced Header */}
+                                                        <div className="flex items-start justify-between mb-6">
+                                                            <div className="flex items-center space-x-4">
+                                                                <div className={`p-4 rounded-2xl ${typeConfig?.bgColor || 'bg-gray-100'} shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                                                                    <TypeIcon className={`h-8 w-8 ${typeConfig?.color || 'text-gray-600'}`} />
+                                                                </div>
+                                                                <div>
+                                                                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
+                                                                        {node.title}
+                                                                    </h3>
+                                                                    <div className="flex items-center space-x-4 mt-2">
+                                                                        <p className="text-sm font-medium text-gray-600">
+                                                                            {typeConfig?.name || node.type} • {getMonthFromDate(node.createdAt)} {getYearFromDate(node.createdAt)}
+                                                                        </p>
+                                                                        <div className="flex items-center space-x-2">
+                                                                            {!node.isVisible && isOwner && (
+                                                                                <div className="flex items-center space-x-1 bg-amber-100 rounded-full px-2 py-1" title="Privado">
+                                                                                    <EyeSlashIcon className="h-3 w-3 text-amber-600" />
+                                                                                    <span className="text-xs font-medium text-amber-700">Privado</span>
+                                                                                </div>
+                                                                            )}
+                                                                            {node.isVisible && (
+                                                                                <div className="flex items-center space-x-1 bg-emerald-100 rounded-full px-2 py-1" title="Público">
+                                                                                    <EyeIcon className="h-3 w-3 text-emerald-600" />
+                                                                                    <span className="text-xs font-medium text-emerald-700">Público</span>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center space-x-2 text-sm text-gray-500 bg-white/80 rounded-xl px-3 py-2 border border-gray-200/50">
+                                                                <ClockIcon className="h-4 w-4" />
+                                                                <span className="font-medium">{new Date(node.createdAt).toLocaleDateString('es-ES')}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Enhanced Description */}
+                                                        {node.description && (
+                                                            <div className="mb-6">
+                                                                <p className="text-gray-700 leading-relaxed text-lg">
+                                                                    {node.description}
+                                                                </p>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Enhanced Tags */}
+                                                        {node.tags && node.tags.length > 0 && (
+                                                            <div className="flex flex-wrap gap-2 mb-6">
+                                                                {node.tags.slice(0, 6).map((tag, tagIndex) => (
+                                                                    <span
+                                                                        key={tagIndex}
+                                                                        className="inline-flex items-center bg-gray-100/80 backdrop-blur-sm text-gray-700 text-sm px-4 py-2 rounded-full font-medium border border-gray-200/50 hover:bg-gray-200/80 transition-colors"
+                                                                    >
+                                                                        {tag}
+                                                                    </span>
+                                                                ))}
+                                                                {node.tags.length > 6 && (
+                                                                    <span className="inline-flex items-center text-gray-500 text-sm px-4 py-2 font-medium">
+                                                                        +{node.tags.length - 6} más
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        {/* Enhanced Project Links */}
+                                                        {node.type === 'PROJECT' && (node.projectUrl || node.githubUrl || node.demoUrl) && (
+                                                            <div className="flex items-center space-x-4 mb-6">
+                                                                {node.projectUrl && (
+                                                                    <div className="flex items-center space-x-2 bg-emerald-50 rounded-xl px-4 py-2 border border-emerald-200/50">
+                                                                        <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                                                                        <span className="text-sm font-medium text-emerald-700">Sitio Web</span>
+                                                                    </div>
+                                                                )}
+                                                                {node.githubUrl && (
+                                                                    <div className="flex items-center space-x-2 bg-gray-50 rounded-xl px-4 py-2 border border-gray-200/50">
+                                                                        <div className="w-3 h-3 bg-gray-700 rounded-sm"></div>
+                                                                        <span className="text-sm font-medium text-gray-700">GitHub</span>
+                                                                    </div>
+                                                                )}
+                                                                {node.demoUrl && (
+                                                                    <div className="flex items-center space-x-2 bg-blue-50 rounded-xl px-4 py-2 border border-blue-200/50">
+                                                                        <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+                                                                        <span className="text-sm font-medium text-blue-700">Demo</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        {/* Enhanced Footer */}
+                                                        <div className="flex items-center justify-between pt-6 border-t border-gray-200/50">
+                                                            <div className={`h-2 w-24 rounded-full bg-gradient-to-r ${typeConfig?.gradient || 'from-gray-400 to-gray-500'} shadow-sm`}></div>
+                                                            <ArrowRightIcon className="h-5 w-5 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-2 transition-all duration-300" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                </div>
             </div>
 
-            {/* Empty State */}
-            {sortedNodes.length === 0 && (
+            {/* Enhanced Empty State */}
+            {filteredNodes.length === 0 && (
                 <div className="text-center py-20">
-                    <div className="relative">
-                        <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200"></div>
-                        <div className="ml-20">
-                            <CalendarDaysIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                                Timeline Vacío
-                            </h3>
-                            <p className="text-gray-500">
-                                {isOwner ? 'Agrega algunos nodos para ver tu cronología profesional' : 'No hay elementos visibles en esta cronología'}
-                            </p>
+                    <div className="max-w-md mx-auto">
+                        <div className="relative">
+                            {/* Animated Background */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-3xl opacity-50 animate-pulse"></div>
+                            
+                            <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-12 border border-gray-200/50 shadow-lg">
+                                <div className="relative mb-6">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
+                                    <CalendarDaysIcon className="relative h-20 w-20 text-gray-400 mx-auto" />
+                                </div>
+                                
+                                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                                    {filterType === 'all' ? '⏰ Timeline Vacío' : `📅 Sin ${nodeTypeConfig[filterType as keyof typeof nodeTypeConfig]?.name}`}
+                                </h3>
+                                <p className="text-gray-600 mb-8 leading-relaxed">
+                                    {isOwner
+                                        ? filterType === 'all'
+                                            ? 'Tu timeline profesional está esperando tus primeros hitos. ¡Agrega eventos para crear tu cronología!'
+                                            : `Aún no tienes eventos de tipo ${nodeTypeConfig[filterType as keyof typeof nodeTypeConfig]?.name?.toLowerCase()}. ¡Crea uno para comenzar!`
+                                        : filterType === 'all'
+                                            ? 'Esta cronología está siendo construida. Vuelve pronto para ver una historia profesional increíble.'
+                                            : `No hay eventos visibles de tipo ${nodeTypeConfig[filterType as keyof typeof nodeTypeConfig]?.name?.toLowerCase()} en este momento.`
+                                    }
+                                </p>
+                                {filterType !== 'all' && (
+                                    <button
+                                        onClick={() => setFilterType('all')}
+                                        className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-medium rounded-xl hover:from-blue-600 hover:to-cyan-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                                    >
+                                        <CalendarDaysIcon className="h-5 w-5 mr-2" />
+                                        Ver Todo el Timeline
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

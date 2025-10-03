@@ -12,9 +12,9 @@ import { LayoutSelector, LayoutType } from '@/components/portfolio/layout-select
 import { TimelineLayout } from '@/components/portfolio/timeline-layout'
 import { KanbanLayout } from '@/components/portfolio/kanban-layout'
 import { GridLayout } from '@/components/portfolio/grid-layout'
-import { AnimatedBackground } from '@/components/ui/animated-background'
 import { PageLoading } from '@/components/ui/loading'
 import { PlusIcon, ArrowRightOnRectangleIcon, HomeIcon } from '@heroicons/react/24/outline'
+import { Squares2X2Icon as Squares2X2IconSolid, SparklesIcon as SparklesIconSolid } from '@heroicons/react/24/solid'
 
 export default function DashboardPage() {
     const { data: session, status } = useSession()
@@ -27,6 +27,7 @@ export default function DashboardPage() {
     const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>(undefined)
     const [isOwner, setIsOwner] = useState(false)
     const [currentLayout, setCurrentLayout] = useState<LayoutType>('tree')
+    const [scrollY, setScrollY] = useState(0)
     const [confirmDialog, setConfirmDialog] = useState<{
         isOpen: boolean
         title: string
@@ -40,6 +41,12 @@ export default function DashboardPage() {
         onConfirm: () => { },
         loading: false
     })
+
+    useEffect(() => {
+        const handleScroll = () => setScrollY(window.scrollY)
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
 
     useEffect(() => {
         if (status === 'authenticated') {
@@ -170,254 +177,324 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="min-h-screen relative">
-            <AnimatedBackground variant="dashboard" />
-
-            {/* Modern Header */}
-            <div className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-gray-200 relative z-20">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900">
+            {/* Navigation */}
+            <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+                scrollY > 50 
+                    ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-lg' 
+                    : 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700'
+            }`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center py-6">
-                        <div className="flex items-center space-x-4">
-                            <div className="p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl">
-                                <svg className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                </svg>
+                    <div className="flex justify-between items-center py-4">
+                        {/* Logo */}
+                        <Link href="/" className="flex items-center space-x-3 group">
+                            <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                                <Squares2X2IconSolid className="h-6 w-6 text-white" />
                             </div>
-                            <div>
-                                <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                                    Dashboard
-                                </h1>
-                                <p className="text-sm text-gray-600 mt-1">
-                                    Hola {session?.user?.name || session?.user?.username} 👋 Gestiona tu portafolio
-                                </p>
-                            </div>
+                            <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                                Portfolio Tree
+                            </span>
+                        </Link>
+
+                        {/* Center Title */}
+                        <div className="hidden md:block">
+                            <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                Dashboard - {session?.user?.name || session?.user?.username}
+                            </h1>
                         </div>
-                        <div className="flex items-center space-x-3">
-                            <LayoutSelector
-                                currentLayout={currentLayout}
-                                onLayoutChange={setCurrentLayout}
-                            />
+
+                        {/* Actions */}
+                        <div className="flex items-center space-x-4">
                             <Link
                                 href="/"
-                                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-gray-500 to-slate-600 text-white text-sm font-medium rounded-lg hover:from-gray-600 hover:to-slate-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
-                                title="Volver al inicio"
+                                className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors relative group"
                             >
-                                <HomeIcon className="h-4 w-4 mr-2" />
                                 Inicio
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
                             </Link>
                             <Link
                                 href={`/user/${session?.user?.username}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-sm font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl hover:scale-105"
                             >
-                                <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M6 18L18 6M8 6h10v10" />
-                                </svg>
-                                Ver Portfolio
+                                Mi Portfolio
                             </Link>
                             <button
                                 onClick={() => signOut({ callbackUrl: '/' })}
-                                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 text-white text-sm font-medium rounded-lg hover:from-red-600 hover:to-pink-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                                className="inline-flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors"
                                 title="Cerrar sesión"
                             >
-                                <ArrowRightOnRectangleIcon className="h-4 w-4 mr-2" />
-                                Logout
+                                <ArrowRightOnRectangleIcon className="h-5 w-5" />
                             </button>
                         </div>
                     </div>
                 </div>
-            </div>
+            </nav>
 
-            {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-                <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-                    {/* Portfolio Visualization - Larger area */}
-                    <div className="xl:col-span-3">
-                        {currentLayout === 'tree' && (
-                            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+            {/* Hero Section */}
+            <section className="relative overflow-hidden pt-20 z-10">
+                {/* Animated Background */}
+                <div className="absolute inset-0">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-purple-600/5 to-indigo-600/5 dark:from-blue-400/10 dark:via-purple-400/10 dark:to-indigo-400/10"></div>
+                    <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-70 animate-blob"></div>
+                    <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 dark:bg-yellow-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+                    <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 dark:bg-pink-700 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+                </div>
+
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
+                    <div className="text-center mb-8">
+                        {/* Status Badge */}
+                        <div className="inline-flex items-center space-x-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-full px-6 py-3 mb-6 border border-gray-200 dark:border-slate-600 shadow-lg animate-float">
+                            <SparklesIconSolid className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                ¡Bienvenido de vuelta, {session?.user?.name || session?.user?.username}!
+                            </span>
+                        </div>
+
+                        {/* Main Heading */}
+                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
+                            <span className="bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                                Tu
+                            </span>
+                            {' '}
+                            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent animate-gradient">
+                                Dashboard Creativo
+                            </span>
+                        </h1>
+
+                        {/* Subtitle */}
+                        <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                            Construye, organiza y administra tu portfolio profesional.
+                            <br className="hidden sm:block" />
+                            Cada nodo es una pieza de tu historia profesional.
+                        </p>
+
+                        {/* Layout Selector */}
+                        <div className="flex justify-center relative z-[9997]">
+                            <LayoutSelector
+                                currentLayout={currentLayout}
+                                onLayoutChange={setCurrentLayout}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Content */}
+            <div className="bg-white dark:bg-slate-900 relative z-20">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    {/* Main Layout */}
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        {/* Portfolio Content */}
+                        <div className="lg:col-span-3">
+                            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
+                                <div className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 dark:from-blue-900/30 dark:via-purple-900/30 dark:to-indigo-900/30 px-6 py-6 border-b border-gray-200 dark:border-slate-700">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <h2 className="text-lg font-semibold text-gray-900">Árbol de Portfolio</h2>
-                                            <p className="text-sm text-gray-600 mt-1">Haz hover sobre los nodos para ver las acciones</p>
-                                        </div>
-                                        <div className="flex items-center space-x-2 text-sm text-gray-500">
-                                            <div className="flex items-center space-x-1">
-                                                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                                                <span>Visible</span>
+                                            <div className="flex items-center space-x-3 mb-1">
+                                                {currentLayout === 'tree' && (
+                                                    <div className="p-1.5 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                                                        <svg className="h-5 w-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h3m0 0h9a2 2 0 002-2V9a2 2 0 00-2-2h-9m0 0V5a2 2 0 012-2h7a2 2 0 012 2v2m-9 4h2.5A1.5 1.5 0 0114 10v1.5a1.5 1.5 0 01-1.5 1.5H12" />
+                                                        </svg>
+                                                    </div>
+                                                )}
+                                                {currentLayout === 'timeline' && (
+                                                    <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                                        <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                    </div>
+                                                )}
+                                                {currentLayout === 'kanban' && (
+                                                    <div className="p-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                                                        <svg className="h-5 w-5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                                                        </svg>
+                                                    </div>
+                                                )}
+                                                {currentLayout === 'grid' && (
+                                                    <div className="p-1.5 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                                                        <svg className="h-5 w-5 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                                        </svg>
+                                                    </div>
+                                                )}
+                                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                                                    {currentLayout === 'tree' && 'Árbol de Portfolio'}
+                                                    {currentLayout === 'timeline' && 'Vista Timeline'}
+                                                    {currentLayout === 'kanban' && 'Vista Kanban'}
+                                                    {currentLayout === 'grid' && 'Vista Grid'}
+                                                </h3>
                                             </div>
-                                            <div className="flex items-center space-x-1">
-                                                <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                                                <span>Privado</span>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                {currentLayout === 'tree' && 'Organización jerárquica de tu contenido'}
+                                                {currentLayout === 'timeline' && 'Cronología de tu trayectoria profesional'}
+                                                {currentLayout === 'kanban' && 'Gestión visual por categorías'}
+                                                {currentLayout === 'grid' && 'Vista compacta en cuadrícula'}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center space-x-4 text-sm">
+                                            <div className="flex items-center space-x-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full px-3 py-1.5 border border-gray-200 dark:border-slate-600">
+                                                <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
+                                                <span className="text-gray-700 dark:text-gray-300 font-medium">{nodes.filter(n => n.isVisible).length} Públicos</span>
+                                            </div>
+                                            <div className="flex items-center space-x-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full px-3 py-1.5 border border-gray-200 dark:border-slate-600">
+                                                <div className="w-2.5 h-2.5 bg-gray-400 rounded-full"></div>
+                                                <span className="text-gray-700 dark:text-gray-300 font-medium">{nodes.filter(n => !n.isVisible).length} Privados</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                
                                 <div className="p-6">
                                     {nodes.length > 0 ? (
-                                        <InteractiveTree
-                                            nodes={nodes}
-                                            username={session?.user?.username || ''}
-                                            isOwner={isOwner}
-                                            onNodeClick={handleNodeClick}
-                                            onNodeEdit={handleNodeEdit}
-                                            onNodeDelete={handleNodeDelete}
-                                            onNodeAdd={handleNodeAdd}
-                                            selectedNodeId={selectedNodeId}
-                                        />
+                                        <>
+                                            {currentLayout === 'tree' && (
+                                                <InteractiveTree
+                                                    nodes={nodes}
+                                                    username={session?.user?.username || ''}
+                                                    isOwner={isOwner}
+                                                    onNodeClick={handleNodeClick}
+                                                    onNodeEdit={handleNodeEdit}
+                                                    onNodeDelete={handleNodeDelete}
+                                                    onNodeAdd={handleNodeAdd}
+                                                    selectedNodeId={selectedNodeId}
+                                                />
+                                            )}
+                                            {currentLayout === 'timeline' && (
+                                                <TimelineLayout
+                                                    nodes={nodes}
+                                                    onNodeClick={handleNodeClick}
+                                                    isOwner={isOwner}
+                                                />
+                                            )}
+                                            {currentLayout === 'kanban' && (
+                                                <KanbanLayout
+                                                    nodes={nodes}
+                                                    onNodeClick={handleNodeClick}
+                                                    isOwner={isOwner}
+                                                />
+                                            )}
+                                            {currentLayout === 'grid' && (
+                                                <GridLayout
+                                                    nodes={nodes}
+                                                    onNodeClick={handleNodeClick}
+                                                    isOwner={isOwner}
+                                                />
+                                            )}
+                                        </>
                                     ) : (
                                         <div className="text-center py-20">
-                                            <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                                <svg className="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                                                <svg className="h-12 w-12 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                                 </svg>
                                             </div>
-                                            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                                                Tu Portfolio Está Vacío
+                                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                                                ¡Comienza Tu Historia!
                                             </h3>
-                                            <p className="text-gray-600 mb-6">
-                                                Comienza agregando tu primer proyecto, experiencia o habilidad
+                                            <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg max-w-md mx-auto leading-relaxed">
+                                                Tu portfolio está listo para brillar. Agrega tu primer elemento y comienza a construir tu presencia profesional.
                                             </p>
                                             <button
                                                 onClick={() => handleNodeAdd()}
-                                                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                                                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105"
                                             >
-                                                <PlusIcon className="h-5 w-5 mr-2" />
-                                                Agregar Primer Elemento
+                                                <PlusIcon className="h-6 w-6 mr-2" />
+                                                Crear Primer Elemento
                                             </button>
                                         </div>
                                     )}
                                 </div>
                             </div>
-                        )}
+                        </div>
 
-                        {currentLayout === 'timeline' && (
-                            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                                <div className="p-6">
-                                    <TimelineLayout
-                                        nodes={nodes}
-                                        onNodeClick={handleNodeClick}
-                                        isOwner={isOwner}
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {currentLayout === 'kanban' && (
-                            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                                <div className="p-6">
-                                    <KanbanLayout
-                                        nodes={nodes}
-                                        onNodeClick={handleNodeClick}
-                                        isOwner={isOwner}
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {currentLayout === 'grid' && (
-                            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                                <div className="p-6">
-                                    <GridLayout
-                                        nodes={nodes}
-                                        onNodeClick={handleNodeClick}
-                                        isOwner={isOwner}
-                                    />
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Sidebar */}
-                    <div className="xl:col-span-1">
-                        <div className="space-y-6">
-                            {/* Add New Node */}
-                            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                                    <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg mr-3">
-                                        <PlusIcon className="h-5 w-5 text-white" />
-                                    </div>
-                                    Agregar Contenido
-                                </h3>
-                                <p className="text-sm text-gray-600 mb-4">
-                                    Expande tu portfolio con nuevos proyectos, experiencias y habilidades
-                                </p>
-                                <button
-                                    onClick={() => handleNodeAdd()}
-                                    className="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                                >
-                                    <PlusIcon className="h-5 w-5 mr-2" />
-                                    Nuevo Elemento
-                                </button>
-                            </div>
-
-                            {/* Statistics */}
-                            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                                    <div className="p-2 bg-gradient-to-r from-purple-500 to-violet-600 rounded-lg mr-3">
-                                        <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                        </svg>
-                                    </div>
-                                    Estadísticas
-                                </h3>
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                            <span className="text-sm font-medium text-gray-700">Elementos Totales</span>
+                        {/* Sidebar */}
+                        <div className="lg:col-span-1">
+                            <div className="space-y-6">
+                                {/* Acciones */}
+                                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-gray-200 dark:border-slate-700 p-6">
+                                    <div className="flex items-center mb-6">
+                                        <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl mr-3 shadow-lg">
+                                            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                            </svg>
                                         </div>
-                                        <span className="text-lg font-bold text-blue-600">{nodes.length}</span>
+                                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                                            Acciones Rápidas
+                                        </h3>
                                     </div>
-                                    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                            <span className="text-sm font-medium text-gray-700">Públicos</span>
-                                        </div>
-                                        <span className="text-lg font-bold text-green-600">{nodes.filter(n => n.isVisible).length}</span>
-                                    </div>
-                                    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-50 to-violet-50 rounded-lg">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                                            <span className="text-sm font-medium text-gray-700">Proyectos</span>
-                                        </div>
-                                        <span className="text-lg font-bold text-purple-600">{nodes.filter(n => n.type === 'PROJECT').length}</span>
+                                    <div className="space-y-3">
+                                        <button
+                                            onClick={() => handleNodeAdd()}
+                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                                        >
+                                            <PlusIcon className="h-5 w-5 mr-2" />
+                                            Nuevo Elemento
+                                        </button>
+                                        <Link
+                                            href={`/user/${session?.user?.username}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500"
+                                        >
+                                            <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M6 18L18 6M8 6h10v10" />
+                                            </svg>
+                                            Ver Portfolio
+                                        </Link>
+                                        <Link
+                                            href="/explore"
+                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-purple-300 dark:hover:border-purple-500"
+                                        >
+                                            <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
+                                            Explorar
+                                        </Link>
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* Quick Actions */}
-                            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                                    <div className="p-2 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg mr-3">
-                                        <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                        </svg>
+                                {/* Estadísticas */}
+                                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-gray-200 dark:border-slate-700 p-6">
+                                    <div className="flex items-center mb-6">
+                                        <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl mr-3 shadow-lg">
+                                            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                                            Tu Portfolio
+                                        </h3>
                                     </div>
-                                    Acciones Rápidas
-                                </h3>
-                                <div className="space-y-3">
-                                    <Link
-                                        href={`/user/${session?.user?.username}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-full inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-sm font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
-                                    >
-                                        <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M6 18L18 6M8 6h10v10" />
-                                        </svg>
-                                        Ver Portfolio Público
-                                    </Link>
-                                    <Link
-                                        href="/explore"
-                                        className="w-full inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-medium rounded-lg hover:from-indigo-600 hover:to-purple-700 transition-all duration-200"
-                                    >
-                                        <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                        </svg>
-                                        Explorar Portfolios
-                                    </Link>
+                                    <div className="space-y-4">
+                                        <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl border border-blue-200/50 dark:border-blue-700/50">
+                                            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">{nodes.length}</div>
+                                            <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Total Elementos</div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div className="text-center p-3 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/30 dark:to-emerald-800/30 rounded-xl border border-green-200/50 dark:border-green-700/50">
+                                                <div className="text-xl font-bold text-green-600 dark:text-green-400 mb-1">{nodes.filter(n => n.isVisible).length}</div>
+                                                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Públicos</div>
+                                            </div>
+                                            <div className="text-center p-3 bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-900/30 dark:to-violet-800/30 rounded-xl border border-purple-200/50 dark:border-purple-700/50">
+                                                <div className="text-xl font-bold text-purple-600 dark:text-purple-400 mb-1">{nodes.filter(n => n.type === 'PROJECT').length}</div>
+                                                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Proyectos</div>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div className="text-center p-3 bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-yellow-900/30 dark:to-orange-800/30 rounded-xl border border-yellow-200/50 dark:border-yellow-700/50">
+                                                <div className="text-xl font-bold text-yellow-600 dark:text-yellow-400 mb-1">{nodes.filter(n => n.type === 'SKILL').length}</div>
+                                                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Habilidades</div>
+                                            </div>
+                                            <div className="text-center p-3 bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-900/30 dark:to-rose-800/30 rounded-xl border border-pink-200/50 dark:border-pink-700/50">
+                                                <div className="text-xl font-bold text-pink-600 dark:text-pink-400 mb-1">{nodes.filter(n => n.type === 'EXPERIENCE').length}</div>
+                                                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Experiencia</div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
