@@ -2,6 +2,7 @@
 param(
     [switch]$Dev,
     [switch]$Prod,
+    [switch]$Server,
     [switch]$Stop,
     [switch]$Clean
 )
@@ -16,13 +17,14 @@ if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
 }
 
 # Mostrar ayuda si no hay parametros
-if (-not ($Dev -or $Prod -or $Stop -or $Clean)) {
+if (-not ($Dev -or $Prod -or $Server -or $Stop -or $Clean)) {
     Write-Host ""
     Write-Host "Uso:" -ForegroundColor Yellow
-    Write-Host "  .\deploy.ps1 -Dev    # Modo desarrollo (hot reload)" -ForegroundColor White
-    Write-Host "  .\deploy.ps1 -Prod   # Modo produccion" -ForegroundColor White
-    Write-Host "  .\deploy.ps1 -Stop   # Detener contenedores" -ForegroundColor White
-    Write-Host "  .\deploy.ps1 -Clean  # Limpiar todo (elimina datos)" -ForegroundColor White
+    Write-Host "  .\deploy.ps1 -Dev      # Modo desarrollo (hot reload)" -ForegroundColor White
+    Write-Host "  .\deploy.ps1 -Prod     # Modo produccion local" -ForegroundColor White
+    Write-Host "  .\deploy.ps1 -Server   # Modo servidor (puerto 8130)" -ForegroundColor White
+    Write-Host "  .\deploy.ps1 -Stop     # Detener contenedores" -ForegroundColor White
+    Write-Host "  .\deploy.ps1 -Clean    # Limpiar todo (elimina datos)" -ForegroundColor White
     Write-Host ""
     exit 0
 }
@@ -49,14 +51,28 @@ if ($Dev) {
     docker compose up --build
 }
 
-# Modo produccion
+# Modo produccion local
 if ($Prod) {
-    Write-Host "Iniciando en modo PRODUCCION..." -ForegroundColor Green
+    Write-Host "Iniciando en modo PRODUCCION LOCAL..." -ForegroundColor Green
     docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
     
     Write-Host ""
     Write-Host "Aplicacion iniciada en modo produccion" -ForegroundColor Green
     Write-Host "URL: http://localhost:3000" -ForegroundColor Cyan
+    Write-Host "Base de datos: localhost:5432" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "Ver logs: docker compose logs -f app" -ForegroundColor Gray
+}
+
+# Modo servidor (simula servidor de Invernalia)
+if ($Server) {
+    Write-Host "Iniciando en modo SERVIDOR (puerto 8130)..." -ForegroundColor Green
+    docker compose -f docker-compose.yml -f docker-compose.server.yml up --build -d
+    
+    Write-Host ""
+    Write-Host "Aplicacion iniciada en modo servidor" -ForegroundColor Green
+    Write-Host "URL: http://localhost:8130" -ForegroundColor Cyan
+    Write-Host "Health check: http://localhost:8130/api/health" -ForegroundColor Cyan
     Write-Host "Base de datos: localhost:5432" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Ver logs: docker compose logs -f app" -ForegroundColor Gray

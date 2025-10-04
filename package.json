@@ -9,6 +9,7 @@
     "lint": "eslint",
     "docker:dev": "docker compose up --build",
     "docker:prod": "docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d",
+    "docker:server": "docker compose -f docker-compose.yml -f docker-compose.server.yml up --build -d",
     "docker:stop": "docker compose down",
     "docker:clean": "docker compose down -v",
     "docker:logs": "docker compose logs -f app",

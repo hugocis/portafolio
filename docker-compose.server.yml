@@ -1,0 +1,31 @@
+# Override específico para servidor de Invernalia
+services:
+  # Aplicación Next.js
+  app:
+    ports:
+      - "8130:3000"  # Puerto asignado: 8130 -> puerto interno 3000
+    environment:
+      - NODE_ENV=production
+      - NEXTAUTH_URL=http://herokku.duckdns.org:8130  # URL pública del servidor
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/portafolios
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-servidor-secreto-produccion}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+    volumes: []  # Sin volúmenes en producción del servidor
+    restart: unless-stopped  # Reiniciar automáticamente
+    
+  # Base de datos PostgreSQL
+  db:
+    ports:
+      - "127.0.0.1:5432:5432"  # Solo accesible desde localhost del servidor
+    restart: unless-stopped  # Reiniciar automáticamente
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres-servidor}
+      - POSTGRES_DB=portafolios
+
+volumes:
+  postgres_data:
+    driver: local  # Asegurar persistencia en el servidor

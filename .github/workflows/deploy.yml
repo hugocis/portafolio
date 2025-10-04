@@ -2,19 +2,31 @@ name: 🚀 Deploy to Invernalia Server
 
 on:
   push:
-    branches: [ main ]  # Cambiado de master a main (GitHub usa main por defecto ahora)
-  workflow_dispatch:  # Permite ejecutar manualmente desde GitHub
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   deploy:
     name: 🌐 Deploy to Production Server
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     
     steps:
       - name: 📂 Checkout repository
         uses: actions/checkout@v4
         
-      - name: 🔐 Setup SSH
+      - name: � Test server connectivity
+        run: |
+          echo "🔍 Testing connectivity to server..."
+          
+          # Test DNS resolution
+          nslookup herokku.duckdns.org || echo "⚠️ DNS resolution issue"
+          
+          # Test SSH port specifically
+          echo "Testing SSH port 7122..."
+          timeout 10s nc -z herokku.duckdns.org 7122 && echo "✅ SSH port reachable" || echo "❌ SSH port not reachable"
+          
+      - name: �🔐 Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -26,46 +38,110 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 7122
+          timeout: 300s
+          command_timeout: 900s
           script: |
-            # Navegar al directorio del proyecto
-            cd portafolios  # Cambia esto por el nombre real de tu directorio en el servidor
+            set -e
             
-            # Actualizar código desde GitHub
-            echo "🔄 Actualizando código desde GitHub..."
-            git pull origin main
+            echo "🏠 Working directory: $(pwd)"
+            echo "👤 User: $(whoami)"
             
-            # Detener contenedores actuales
-            echo "🛑 Deteniendo contenedores..."
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+            # Crear directorio del proyecto si no existe
+            PROJECT_DIR="portafolios"
+            if [ ! -d "$PROJECT_DIR" ]; then
+              echo "📁 Creating project directory..."
+              mkdir -p "$PROJECT_DIR"
+              cd "$PROJECT_DIR"
+              echo "📦 Cloning repository..."
+              git clone https://github.com/${{ github.repository }}.git .
+            else
+              echo "📁 Entering existing project directory..."
+              cd "$PROJECT_DIR"
+            fi
             
-            # Limpiar imágenes antiguas para ahorrar espacio
-            echo "🧹 Limpiando imágenes antiguas..."
-            docker image prune -f
+            # Verificar que es un repositorio git válido
+            if [ ! -d ".git" ]; then
+              echo "🔧 Initializing git repository..."
+              rm -rf ./* ./.* 2>/dev/null || true
+              git clone https://github.com/${{ github.repository }}.git .
+            fi
             
-            # Construir y desplegar en modo producción
-            echo "🚀 Desplegando en modo producción..."
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+            # Actualizar código
+            echo "🔄 Updating code from GitHub..."
+            git fetch origin
+            git reset --hard origin/main
+            git clean -fd
             
-            # Verificar que los servicios estén funcionando
-            echo "✅ Verificando servicios..."
+            # Crear archivo .env para el servidor
+            echo "📝 Setting up environment configuration..."
+            if [ ! -f .env ]; then
+              if [ -f .env.server ]; then
+                cp .env.server .env
+              elif [ -f .env.example ]; then
+                cp .env.example .env
+              else
+                touch .env
+              fi
+              
+              # Configurar variables específicas del servidor
+              echo "" >> .env
+              echo "NODE_ENV=production" >> .env
+              echo "NEXTAUTH_URL=http://herokku.duckdns.org:8130" >> .env
+              echo "DATABASE_URL=postgresql://postgres:postgres@db:5432/portafolios" >> .env
+            fi
+            
+            # Verificar Docker
+            echo "🐳 Checking Docker..."
+            docker --version || { echo "❌ Docker not installed"; exit 1; }
+            docker compose version || { echo "❌ Docker Compose not available"; exit 1; }
+            
+            # Detener servicios existentes
+            echo "🛑 Stopping existing services..."
+            docker compose -f docker-compose.yml -f docker-compose.server.yml down || echo "No services to stop"
+            
+            # Limpiar recursos
+            echo "🧹 Cleaning up..."
+            docker image prune -f || echo "Could not prune images"
+            
+            # Construir y desplegar con configuración específica del servidor
+            echo "🚀 Deploying with server configuration..."
+            docker compose -f docker-compose.yml -f docker-compose.server.yml up -d --build
+            
+            # Esperar a que los servicios se inicien
+            echo "⏳ Waiting for services..."
+            sleep 45
+            
+            # Verificar estado
+            echo "✅ Service status:"
             docker compose ps
             
             # Mostrar logs recientes
-            echo "📋 Logs recientes:"
-            docker compose logs --tail=20 app
+            echo "📋 Recent logs:"
+            docker compose logs --tail=15 app || echo "Could not fetch logs"
+            
+            # Test de aplicación
+            echo "🔍 Testing application..."
+            curl -f -m 10 http://localhost:8130/api/health 2>/dev/null && echo "✅ Health check OK" || echo "⚠️ App may still be starting"
+            
+            echo "🎉 Deployment completed!"
+            echo "🌐 App URL: http://herokku.duckdns.org:8130"
 
-  # Job opcional para notificar el resultado
   notify:
-    name: 📢 Notify Deploy Status
+    name: 📢 Deployment Notification
     runs-on: ubuntu-latest
     needs: deploy
     if: always()
     
     steps:
-      - name: 🎉 Deploy Success
+      - name: 🎉 Success Notification
         if: needs.deploy.result == 'success'
-        run: echo "✅ Deploy completed successfully!"
-        
-      - name: ❌ Deploy Failed
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "🌐 Application URL: http://herokku.duckdns.org:8130"
+          echo "🔍 Health check: http://herokku.duckdns.org:8130/api/health"
+          
+      - name: ❌ Failure Notification
         if: needs.deploy.result == 'failure'
-        run: echo "❌ Deploy failed! Check the logs above."
+        run: |
+          echo "❌ Deployment failed!"
+          echo "🔍 Check server connectivity and SSH credentials"
