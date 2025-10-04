@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -9,9 +9,7 @@ import { ComponentLoading } from '@/components/ui/loading'
 import {
     MagnifyingGlassIcon,
     FunnelIcon,
-    Squares2X2Icon,
     SparklesIcon,
-    EyeIcon,
     HeartIcon,
     ArrowTopRightOnSquareIcon,
     UserGroupIcon,
@@ -28,7 +26,6 @@ import {
 } from '@heroicons/react/24/outline'
 import {
     Squares2X2Icon as Squares2X2IconSolid,
-    StarIcon as StarIconSolid
 } from '@heroicons/react/24/solid'
 
 interface User {
@@ -140,8 +137,8 @@ export default function ExplorePage() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900">
             {/* Navigation */}
             <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrollY > 50
-                    ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-lg'
-                    : 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700'
+                ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-lg'
+                : 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700'
                 }`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center py-4">
@@ -498,7 +495,7 @@ export default function ExplorePage() {
 
                             {/* Portfolio Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                                {filteredUsers.map((user, index) => (
+                                {filteredUsers.map((user) => (
                                     <Link key={user.id} href={`/user/${user.username}`} className="group">
                                         <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-lg border border-gray-200 dark:border-slate-700 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden">
                                             {/* Card Header */}

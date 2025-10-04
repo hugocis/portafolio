@@ -4,18 +4,15 @@ import { signIn, getProviders } from "next-auth/react"
 import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { 
-    Squares2X2Icon,
+import {
     EyeIcon,
     EyeSlashIcon,
     ArrowRightIcon,
     SparklesIcon,
-    UserIcon,
     LockClosedIcon
 } from "@heroicons/react/24/outline"
 import {
     Squares2X2Icon as Squares2X2IconSolid,
-    SparklesIcon as SparklesIconSolid
 } from "@heroicons/react/24/solid"
 
 interface Provider {
@@ -85,7 +82,7 @@ function SignInContent() {
                                 vuelta
                             </span>
                         </h1>
-                        
+
                         <p className="text-gray-600 dark:text-gray-300 mb-6">
                             ¿No tienes cuenta?{' '}
                             <Link href="/auth/register" className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">

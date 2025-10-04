@@ -4,8 +4,7 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { 
-    Squares2X2Icon,
+import {
     EyeIcon,
     EyeSlashIcon,
     UserPlusIcon,
@@ -18,7 +17,6 @@ import {
 } from "@heroicons/react/24/outline"
 import {
     Squares2X2Icon as Squares2X2IconSolid,
-    SparklesIcon as SparklesIconSolid
 } from "@heroicons/react/24/solid"
 
 export default function Register() {
@@ -52,7 +50,7 @@ export default function Register() {
             ...prev,
             [name]: value
         }))
-        
+
         if (name === 'password') {
             setPasswordStrength(checkPasswordStrength(value))
         }
@@ -164,7 +162,7 @@ export default function Register() {
                                 cuenta gratis
                             </span>
                         </h1>
-                        
+
                         <p className="text-gray-600 dark:text-gray-300 mb-6">
                             ¿Ya tienes cuenta?{' '}
                             <Link href="/auth/signin" className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
@@ -290,7 +288,7 @@ export default function Register() {
                                                 </span>
                                             </div>
                                             <div className="w-full bg-gray-200 dark:bg-slate-600 rounded-full h-2">
-                                                <div 
+                                                <div
                                                     className={`h-2 rounded-full transition-all duration-300 ${getPasswordStrengthColor()}`}
                                                     style={{ width: `${(passwordStrength / 5) * 100}%` }}
                                                 ></div>

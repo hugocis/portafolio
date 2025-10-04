@@ -13,7 +13,7 @@ import { TimelineLayout } from '@/components/portfolio/timeline-layout'
 import { KanbanLayout } from '@/components/portfolio/kanban-layout'
 import { GridLayout } from '@/components/portfolio/grid-layout'
 import { PageLoading } from '@/components/ui/loading'
-import { PlusIcon, ArrowRightOnRectangleIcon, HomeIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline'
 import { Squares2X2Icon as Squares2X2IconSolid, SparklesIcon as SparklesIconSolid } from '@heroicons/react/24/solid'
 
 export default function DashboardPage() {
@@ -179,11 +179,10 @@ export default function DashboardPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900">
             {/* Navigation */}
-            <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-                scrollY > 50 
-                    ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-lg' 
+            <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrollY > 50
+                    ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-lg'
                     : 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700'
-            }`}>
+                }`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center py-4">
                         {/* Logo */}
@@ -347,7 +346,7 @@ export default function DashboardPage() {
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div className="p-6">
                                     {nodes.length > 0 ? (
                                         <>

@@ -1,0 +1,6 @@
+# Override para modo producción - sin volúmenes montados
+services:
+  app:
+    environment:
+      - NODE_ENV=production
+    volumes: []  # Sin volúmenes en producción

@@ -1,7 +1,7 @@
 'use client'
 
 import { Node } from '@prisma/client'
-import { ViewColumnsIcon, EyeIcon, EyeSlashIcon, ArrowRightIcon, PlusIcon } from '@heroicons/react/24/outline'
+import { ViewColumnsIcon, EyeIcon, EyeSlashIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
 import { FolderIcon, DocumentIcon, AcademicCapIcon, BriefcaseIcon, BookOpenIcon, Cog6ToothIcon, CodeBracketIcon, StarIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react'
 
@@ -55,7 +55,7 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                     <div className="absolute top-6 right-8 w-32 h-32 bg-gradient-to-br from-purple-200 to-violet-200 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-6 left-8 w-24 h-24 bg-gradient-to-br from-violet-200 to-indigo-200 rounded-full blur-2xl"></div>
                 </div>
-                
+
                 <div className="relative p-8">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                         <div className="space-y-4">
@@ -75,7 +75,7 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                     </p>
                                 </div>
                             </div>
-                            
+
                             {/* Stats */}
                             <div className="flex items-center space-x-4">
                                 <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm rounded-xl px-4 py-2 border border-gray-200/50">
@@ -96,21 +96,19 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                             <div className="flex bg-white/80 backdrop-blur-sm rounded-xl p-1 border border-gray-200/50 shadow-sm">
                                 <button
                                     onClick={() => setIsCompact(false)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                        !isCompact
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${!isCompact
                                             ? 'bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-md'
                                             : 'text-gray-600 hover:text-gray-900'
-                                    }`}
+                                        }`}
                                 >
                                     Detallado
                                 </button>
                                 <button
                                     onClick={() => setIsCompact(true)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                        isCompact
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isCompact
                                             ? 'bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-md'
                                             : 'text-gray-600 hover:text-gray-900'
-                                    }`}
+                                        }`}
                                 >
                                     Compacto
                                 </button>
@@ -130,8 +128,8 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                         const maxNodes = Math.max(...Object.values(nodesByType).map(arr => arr.length))
 
                         return (
-                            <div 
-                                key={type} 
+                            <div
+                                key={type}
                                 className="flex-shrink-0 w-80 animate-fade-in-scale"
                                 style={{
                                     animationDelay: `${columnIndex * 150}ms`,
@@ -175,7 +173,7 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                             <div className="w-full bg-gray-200/80 rounded-full h-2 shadow-inner">
                                                 <div
                                                     className={`h-2 rounded-full bg-gradient-to-r ${typeConfig?.gradient} shadow-sm transition-all duration-1000 ease-out`}
-                                                    style={{ 
+                                                    style={{
                                                         width: `${Math.min(100, (columnNodes.length / Math.max(1, maxNodes)) * 100)}%`,
                                                         transitionDelay: `${columnIndex * 200}ms`
                                                     }}
@@ -186,13 +184,12 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                 </div>
 
                                 {/* Enhanced Column Body */}
-                                <div className={`border-2 border-t-0 ${typeConfig?.borderColor || 'border-gray-200'} rounded-b-2xl bg-gradient-to-b from-gray-50/50 to-white shadow-lg ${
-                                    isCompact ? 'min-h-80 max-h-80' : 'min-h-96 max-h-96'
-                                } overflow-y-auto`}>
+                                <div className={`border-2 border-t-0 ${typeConfig?.borderColor || 'border-gray-200'} rounded-b-2xl bg-gradient-to-b from-gray-50/50 to-white shadow-lg ${isCompact ? 'min-h-80 max-h-80' : 'min-h-96 max-h-96'
+                                    } overflow-y-auto`}>
                                     <div className="p-4 space-y-3">
                                         {columnNodes.map((node, nodeIndex) => {
                                             const isFeatured = node.tags?.includes('featured')
-                                            
+
                                             return (
                                                 <div
                                                     key={node.id}
@@ -204,9 +201,8 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                                     }}
                                                 >
                                                     {/* Enhanced Card */}
-                                                    <div className={`relative bg-white/90 backdrop-blur-sm rounded-xl border border-gray-200/50 p-4 shadow-sm hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-105 ${
-                                                        isFeatured ? 'ring-2 ring-yellow-400/50' : ''
-                                                    }`}>
+                                                    <div className={`relative bg-white/90 backdrop-blur-sm rounded-xl border border-gray-200/50 p-4 shadow-sm hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-105 ${isFeatured ? 'ring-2 ring-yellow-400/50' : ''
+                                                        }`}>
                                                         {/* Featured Badge */}
                                                         {isFeatured && (
                                                             <div className="absolute -top-2 -right-2">
@@ -218,9 +214,8 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
 
                                                         {/* Card Header */}
                                                         <div className="flex items-start justify-between mb-3">
-                                                            <h4 className={`font-bold text-gray-900 group-hover:text-blue-600 transition-colors ${
-                                                                isCompact ? 'text-sm line-clamp-1' : 'text-base line-clamp-2'
-                                                            }`}>
+                                                            <h4 className={`font-bold text-gray-900 group-hover:text-blue-600 transition-colors ${isCompact ? 'text-sm line-clamp-1' : 'text-base line-clamp-2'
+                                                                }`}>
                                                                 {node.title}
                                                             </h4>
                                                             <div className="flex items-center space-x-1 ml-2">
@@ -287,9 +282,9 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                                         {node.type !== 'PROJECT' && (
                                                             <div className="flex justify-between items-center mb-3">
                                                                 <span className="text-xs text-gray-500 font-medium">
-                                                                    {new Date(node.createdAt).toLocaleDateString('es-ES', { 
-                                                                        month: 'short', 
-                                                                        year: 'numeric' 
+                                                                    {new Date(node.createdAt).toLocaleDateString('es-ES', {
+                                                                        month: 'short',
+                                                                        year: 'numeric'
                                                                     })}
                                                                 </span>
                                                                 <ArrowRightIcon className="h-3 w-3 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-all duration-300" />
@@ -332,19 +327,19 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                         <div className="relative">
                             {/* Animated Background */}
                             <div className="absolute inset-0 bg-gradient-to-br from-purple-100 to-violet-100 rounded-3xl opacity-50 animate-pulse"></div>
-                            
+
                             <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-12 border border-gray-200/50 shadow-lg">
                                 <div className="relative mb-6">
                                     <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-violet-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
                                     <ViewColumnsIcon className="relative h-20 w-20 text-gray-400 mx-auto" />
                                 </div>
-                                
+
                                 <h3 className="text-2xl font-bold text-gray-900 mb-3">
                                     🏗️ Tablero en Construcción
                                 </h3>
                                 <p className="text-gray-600 leading-relaxed">
-                                    {isOwner 
-                                        ? 'Tu tablero Kanban está esperando contenido increíble. Agrega algunos elementos para organizar tu trabajo por categorías.' 
+                                    {isOwner
+                                        ? 'Tu tablero Kanban está esperando contenido increíble. Agrega algunos elementos para organizar tu trabajo por categorías.'
                                         : 'Este tablero Kanban está siendo preparado. Vuelve pronto para ver una organización increíble del contenido.'
                                     }
                                 </p>

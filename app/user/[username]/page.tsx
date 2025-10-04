@@ -10,7 +10,6 @@ import { LayoutSelector, LayoutType } from '@/components/portfolio/layout-select
 import { TimelineLayout } from '@/components/portfolio/timeline-layout'
 import { KanbanLayout } from '@/components/portfolio/kanban-layout'
 import { GridLayout } from '@/components/portfolio/grid-layout'
-import { AnimatedBackground } from '@/components/ui/animated-background'
 import { PageLoading } from '@/components/ui/loading'
 import { Node } from '@prisma/client'
 
