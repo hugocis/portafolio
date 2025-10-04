@@ -1,0 +1,71 @@
+name: 🚀 Deploy to Invernalia Server
+
+on:
+  push:
+    branches: [ main ]  # Cambiado de master a main (GitHub usa main por defecto ahora)
+  workflow_dispatch:  # Permite ejecutar manualmente desde GitHub
+
+jobs:
+  deploy:
+    name: 🌐 Deploy to Production Server
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📂 Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: 🔐 Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          
+      - name: 🌍 Deploy to Invernalia Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: herokku.duckdns.org
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 7122
+          script: |
+            # Navegar al directorio del proyecto
+            cd portafolios  # Cambia esto por el nombre real de tu directorio en el servidor
+            
+            # Actualizar código desde GitHub
+            echo "🔄 Actualizando código desde GitHub..."
+            git pull origin main
+            
+            # Detener contenedores actuales
+            echo "🛑 Deteniendo contenedores..."
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+            
+            # Limpiar imágenes antiguas para ahorrar espacio
+            echo "🧹 Limpiando imágenes antiguas..."
+            docker image prune -f
+            
+            # Construir y desplegar en modo producción
+            echo "🚀 Desplegando en modo producción..."
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+            
+            # Verificar que los servicios estén funcionando
+            echo "✅ Verificando servicios..."
+            docker compose ps
+            
+            # Mostrar logs recientes
+            echo "📋 Logs recientes:"
+            docker compose logs --tail=20 app
+
+  # Job opcional para notificar el resultado
+  notify:
+    name: 📢 Notify Deploy Status
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: always()
+    
+    steps:
+      - name: 🎉 Deploy Success
+        if: needs.deploy.result == 'success'
+        run: echo "✅ Deploy completed successfully!"
+        
+      - name: ❌ Deploy Failed
+        if: needs.deploy.result == 'failure'
+        run: echo "❌ Deploy failed! Check the logs above."
