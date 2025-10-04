@@ -1,22 +1,39 @@
-# Dockerfile unificado para desarrollo y producción
+# Dockerfile unificado para desarrollo y producción con mejor manejo de conectividad
 FROM node:18-alpine
+
+# Configurar timeouts y reintentos para npm
+ENV NPM_CONFIG_FETCH_TIMEOUT=300000
+ENV NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT=120000
+ENV NPM_CONFIG_FETCH_RETRY_MINTIMEOUT=10000
 
 WORKDIR /app
 
-# Instalar dependencias del sistema
-RUN apk add --no-cache libc6-compat
+# Instalar dependencias del sistema con reintentos
+RUN for i in 1 2 3; do \
+      apk add --no-cache libc6-compat && break || \
+      (echo "Intento $i fallido, reintentando..." && sleep 10); \
+    done
 
 # Copiar archivos de dependencias
 COPY package*.json ./
 
-# Instalar dependencias
-RUN npm ci
+# Instalar dependencias con estrategia de reintentos
+RUN for i in 1 2 3; do \
+      npm ci --prefer-offline --no-audit --production=false && break || \
+      (echo "npm install falló, intento $i/3" && \
+       npm cache clean --force && \
+       rm -rf node_modules package-lock.json && \
+       sleep 15); \
+    done
 
 # Copiar código fuente
 COPY . .
 
-# Generar cliente Prisma
-RUN npx prisma generate
+# Generar cliente Prisma con reintentos
+RUN for i in 1 2 3; do \
+      npx prisma generate && break || \
+      (echo "Prisma generate falló, intento $i/3" && sleep 5); \
+    done
 
 # Exponer puerto
 EXPOSE 3000

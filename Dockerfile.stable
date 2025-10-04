@@ -1,0 +1,49 @@
+# Dockerfile alternativo con imagen más estable para servidores con conectividad limitada
+FROM node:18-slim
+
+# Variables de entorno para mejorar conectividad
+ENV NPM_CONFIG_FETCH_TIMEOUT=600000
+ENV NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT=120000
+ENV NPM_CONFIG_FETCH_RETRY_MINTIMEOUT=10000
+ENV NPM_CONFIG_REGISTRY=https://registry.npmjs.org/
+
+WORKDIR /app
+
+# Actualizar lista de paquetes e instalar dependencias básicas
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar archivos de dependencias primero para aprovechar cache de Docker
+COPY package*.json ./
+
+# Instalar dependencias con configuración robusta
+RUN npm config set fetch-timeout 600000 && \
+    npm config set fetch-retry-maxtimeout 120000 && \
+    npm ci --prefer-offline --no-audit
+
+# Copiar resto del código
+COPY . .
+
+# Generar cliente Prisma
+RUN npx prisma generate
+
+# Crear usuario no-root para seguridad
+RUN groupadd -r nodejs && useradd -r -g nodejs nodejs
+RUN chown -R nodejs:nodejs /app
+USER nodejs
+
+# Exponer puerto
+EXPOSE 3000
+
+# Script de entrada
+COPY docker-entrypoint.sh /usr/local/bin/
+USER root
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+USER nodejs
+
+ENTRYPOINT ["docker-entrypoint.sh"]

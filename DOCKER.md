@@ -192,51 +192,68 @@ npx prisma migrate deploy || npx prisma db push
 - **Imagen mínima** y eficiente
 - **Misma configuración** que desarrollo
 
-## 🚨 Solución de Problemas
+## 🚨 Solución de Problemas de Conectividad
 
-### **Error de migraciones**
-```powershell
-# Las migraciones son automáticas, pero si hay problemas:
-docker compose exec app npx prisma migrate reset --force
-.\deploy.ps1 -Clean
-.\deploy.ps1 -Dev
+### **Error de timeout de Docker Registry**
+```bash
+# Error típico:
+# dial tcp 172.64.66.1:443: i/o timeout
+# failed to copy: httpReadSeeker: failed open
 ```
 
-### **Error de conexión a BD**
-```powershell
-# Verificar estado de la base de datos
-docker compose exec db pg_isready -U postgres
+#### **🔧 Soluciones Automáticas (GitHub Actions):**
+El workflow incluye:
+- ✅ **Reintentos automáticos** (hasta 3 intentos)
+- ✅ **Timeouts extendidos** (30 minutos total)
+- ✅ **Fallback a imágenes existentes**
+- ✅ **Dockerfile alternativo más estable**
 
-# Si falla, reiniciar todo
-.\deploy.ps1 -Stop
-.\deploy.ps1 -Dev
+#### **🛠️ Soluciones Manuales en el Servidor:**
+
+**1. Script de Recuperación Automática:**
+```bash
+# En el servidor
+cd portafolios
+chmod +x recovery-deploy.sh
+./recovery-deploy.sh
 ```
 
-### **Hot reload no funciona**
-```powershell
-# Verificar que estés en modo desarrollo
-.\deploy.ps1 -Dev  # No -Prod
-
-# Verificar volúmenes
-docker compose config | findstr volumes
+**2. Usar Dockerfile Estable:**
+```bash
+# Cambiar temporalmente a imagen más estable
+cp Dockerfile.stable Dockerfile
+docker compose -f docker-compose.yml -f docker-compose.server.yml up -d --build
 ```
 
-### **Limpiar completamente**
-```powershell
-# Eliminar todo y empezar de nuevo
-.\deploy.ps1 -Clean
-docker system prune -f
-.\deploy.ps1 -Dev
+**3. Usar Imágenes Existentes:**
+```bash
+# Si ya hay imágenes construidas
+docker compose -f docker-compose.yml -f docker-compose.server.yml up -d
 ```
 
-### **Puerto ocupado**
-```powershell
-# Verificar qué usa el puerto 3000
-netstat -ano | findstr :3000
+**4. Configurar Timeouts Extendidos:**
+```bash
+# Variables de entorno para timeouts largos
+export COMPOSE_HTTP_TIMEOUT=1800
+export DOCKER_CLIENT_TIMEOUT=1800
+export DOCKER_BUILDKIT=1
 
-# Detener servicios existentes
-.\deploy.ps1 -Stop
+# Intentar build con timeout extendido
+timeout 1800s docker compose -f docker-compose.yml -f docker-compose.server.yml up -d --build
 ```
+
+### **Archivos de Recuperación Disponibles:**
+- `Dockerfile` - Imagen principal optimizada
+- `Dockerfile.stable` - Imagen alternativa más robusta (node:18-slim)
+- `recovery-deploy.sh` - Script automático de recuperación
+- `docker-compose.server.yml` - Configuración con límites de recursos
+
+### **Estrategias por Orden de Preferencia:**
+1. **🥇 Deploy normal** - GitHub Actions automático
+2. **🥈 Deploy con reintentos** - Workflow con 3 intentos
+3. **🥉 Script de recuperación** - `./recovery-deploy.sh`
+4. **🔧 Dockerfile estable** - `cp Dockerfile.stable Dockerfile`
+5. **📦 Imágenes existentes** - `docker compose up -d` (sin --build)
 
 ## 🎉 Ventajas de Esta Configuración
 
