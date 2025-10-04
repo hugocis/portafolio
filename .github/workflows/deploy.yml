@@ -15,16 +15,34 @@ jobs:
       - name: 📂 Checkout repository
         uses: actions/checkout@v4
         
-      - name: � Test server connectivity
+      - name: 🔍 Test server connectivity
         run: |
           echo "🔍 Testing connectivity to server..."
           
-          # Test DNS resolution
-          nslookup herokku.duckdns.org || echo "⚠️ DNS resolution issue"
+          # Test multiple DNS servers
+          echo "Testing with different DNS servers..."
+          nslookup herokku.duckdns.org 8.8.8.8 || echo "⚠️ DNS resolution with Google DNS failed"
+          nslookup herokku.duckdns.org 1.1.1.1 || echo "⚠️ DNS resolution with Cloudflare DNS failed"
+          nslookup herokku.duckdns.org || echo "⚠️ DNS resolution with default DNS failed"
           
-          # Test SSH port specifically
-          echo "Testing SSH port 7122..."
-          timeout 10s nc -z herokku.duckdns.org 7122 && echo "✅ SSH port reachable" || echo "❌ SSH port not reachable"
+          # Try to get IP directly from DuckDNS
+          echo "Attempting to resolve IP..."
+          IP=$(dig +short herokku.duckdns.org @8.8.8.8 | head -n1)
+          if [ -n "$IP" ] && [ "$IP" != "" ]; then
+            echo "✅ Resolved IP: $IP"
+            echo "SERVER_IP=$IP" >> $GITHUB_ENV
+          else
+            echo "❌ Could not resolve IP"
+            # Try common DuckDNS patterns or ask user for IP
+            echo "💡 Please check if herokku.duckdns.org is the correct hostname"
+            echo "💡 Or provide the IP address directly in secrets as SERVER_IP"
+          fi
+          
+          # Test SSH port with IP if available
+          if [ -n "$IP" ]; then
+            echo "Testing SSH port with IP $IP..."
+            timeout 10s nc -z $IP 7122 && echo "✅ SSH port reachable via IP" || echo "❌ SSH port not reachable via IP"
+          fi
           
       - name: �🔐 Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
@@ -34,7 +52,7 @@ jobs:
       - name: 🌍 Deploy to Invernalia Server
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: herokku.duckdns.org
+          host: ${{ env.SERVER_IP || secrets.SERVER_IP || 'herokku.duckdns.org' }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 7122
@@ -45,10 +63,15 @@ jobs:
             
             echo "🏠 Working directory: $(pwd)"
             echo "👤 User: $(whoami)"
-            echo "🌐 Network connectivity test..."
+            echo "🌐 Server info: $(uname -a)"
             
-            # Test basic connectivity
-            ping -c 2 8.8.8.8 || echo "⚠️ Limited internet connectivity"
+            # Test connectivity from server side
+            echo "🔍 Testing server connectivity..."
+            ping -c 2 8.8.8.8 > /dev/null && echo "✅ Internet connectivity OK" || echo "⚠️ Limited internet connectivity"
+            
+            # Test DNS resolution from server
+            echo "🔍 Testing DNS from server..."
+            nslookup google.com > /dev/null && echo "✅ DNS working" || echo "⚠️ DNS issues on server"
             
             # Crear directorio del proyecto si no existe
             PROJECT_DIR="portafolios"
@@ -56,8 +79,17 @@ jobs:
               echo "📁 Creating project directory..."
               mkdir -p "$PROJECT_DIR"
               cd "$PROJECT_DIR"
+              
               echo "📦 Cloning repository..."
-              git clone https://github.com/${{ github.repository }}.git .
+              for i in {1..3}; do
+                if git clone https://github.com/${{ github.repository }}.git .; then
+                  echo "✅ Repository cloned successfully"
+                  break
+                else
+                  echo "⚠️ Clone attempt $i/3 failed"
+                  sleep 10
+                fi
+              done
             else
               echo "📁 Entering existing project directory..."
               cd "$PROJECT_DIR"
@@ -70,92 +102,168 @@ jobs:
               git clone https://github.com/${{ github.repository }}.git .
             fi
             
-            # Actualizar código con reintentos
+            # Actualizar código con reintentos y mejor manejo de errores
             echo "🔄 Updating code from GitHub..."
-            for i in {1..3}; do
-              if git fetch origin && git reset --hard origin/main; then
+            git config --global --add safe.directory $(pwd)
+            
+            for i in {1..5}; do
+              if timeout 60s git fetch origin && git reset --hard origin/main; then
                 echo "✅ Git update successful"
                 break
               else
-                echo "⚠️ Git update failed, attempt $i/3"
-                sleep 5
+                echo "⚠️ Git update failed, attempt $i/5"
+                if [ $i -eq 5 ]; then
+                  echo "❌ All git update attempts failed"
+                  echo "🔄 Continuing with existing code..."
+                else
+                  sleep 10
+                fi
               fi
             done
-            git clean -fd
+            git clean -fd || true
+            
+            # Verificar archivos críticos
+            echo "🔍 Checking critical files..."
+            ls -la Dockerfile docker-compose*.yml .env* || echo "Some files may be missing"
             
             # Crear archivo .env para el servidor
             echo "📝 Setting up environment configuration..."
             if [ ! -f .env ]; then
               if [ -f .env.server ]; then
                 cp .env.server .env
+                echo "✅ Using .env.server"
               elif [ -f .env.example ]; then
                 cp .env.example .env
+                echo "✅ Using .env.example"
               else
-                touch .env
+                echo "📝 Creating basic .env..."
+                cat > .env << EOF
+            NODE_ENV=production
+            NEXTAUTH_URL=http://herokku.duckdns.org:8130
+            DATABASE_URL=postgresql://postgres:postgres@db:5432/portafolios
+            NEXTAUTH_SECRET=servidor-secreto-cambiar-en-produccion
+            GITHUB_CLIENT_ID=
+            GITHUB_CLIENT_SECRET=
+            EOF
               fi
-              
-              # Configurar variables específicas del servidor
-              echo "" >> .env
-              echo "NODE_ENV=production" >> .env
-              echo "NEXTAUTH_URL=http://herokku.duckdns.org:8130" >> .env
-              echo "DATABASE_URL=postgresql://postgres:postgres@db:5432/portafolios" >> .env
+            else
+              echo "✅ .env already exists"
             fi
             
             # Verificar Docker
-            echo "🐳 Checking Docker..."
-            docker --version || { echo "❌ Docker not installed"; exit 1; }
-            docker compose version || { echo "❌ Docker Compose not available"; exit 1; }
+            echo "🐳 Checking Docker installation..."
+            if ! docker --version; then
+              echo "❌ Docker not installed"
+              exit 1
+            fi
             
-            # Verificar conectividad de Docker
-            echo "🔍 Testing Docker connectivity..."
-            timeout 30s docker pull hello-world:latest || echo "⚠️ Docker registry connectivity issues detected"
+            if ! docker compose version; then
+              echo "❌ Docker Compose not available"
+              exit 1
+            fi
             
-            # Detener servicios existentes
+            # Test Docker functionality
+            echo "🔍 Testing Docker functionality..."
+            if timeout 60s docker run --rm hello-world > /dev/null 2>&1; then
+              echo "✅ Docker working properly"
+            else
+              echo "⚠️ Docker may have connectivity issues"
+            fi
+            
+            # Mostrar estado actual antes de deploy
+            echo "📊 Current Docker status:"
+            docker compose ps 2>/dev/null || echo "No containers currently running"
+            
+            # Detener servicios existentes con timeout
             echo "🛑 Stopping existing services..."
-            docker compose -f docker-compose.yml -f docker-compose.server.yml down || echo "No services to stop"
+            timeout 120s docker compose -f docker-compose.yml -f docker-compose.server.yml down || echo "Timeout stopping services"
             
             # Limpiar recursos con cuidado
-            echo "🧹 Cleaning up..."
+            echo "🧹 Cleaning up resources..."
             docker image prune -f || echo "Could not prune images"
             docker container prune -f || echo "Could not prune containers"
             
-            # Estrategia de construcción con reintentos
-            echo "🚀 Building and deploying with retry strategy..."
+            # Verificar espacio en disco
+            echo "💾 Checking disk space..."
+            df -h . | tail -1
             
-            # Intentar construcción con timeout extendido
+            # Estrategia de construcción robusta
+            echo "🚀 Starting deployment with robust strategy..."
+            
+            # Configurar variables de entorno para Docker
             export DOCKER_BUILDKIT=1
             export BUILDKIT_PROGRESS=plain
+            export COMPOSE_HTTP_TIMEOUT=1800
+            export DOCKER_CLIENT_TIMEOUT=1800
             
-            for attempt in {1..3}; do
-              echo "🔨 Build attempt $attempt/3..."
+            # Intentar diferentes estrategias
+            DEPLOYMENT_SUCCESS=false
+            
+            # Estrategia 1: Build normal con timeout extendido
+            echo "📋 Strategy 1: Normal build with extended timeout..."
+            for attempt in {1..2}; do
+              echo "🔨 Build attempt $attempt/2..."
               
-              if timeout 1200s docker compose -f docker-compose.yml -f docker-compose.server.yml up -d --build; then
-                echo "✅ Build and deploy successful on attempt $attempt"
+              if timeout 1800s docker compose -f docker-compose.yml -f docker-compose.server.yml up -d --build; then
+                echo "✅ Build successful on attempt $attempt"
+                DEPLOYMENT_SUCCESS=true
                 break
               else
                 echo "❌ Build failed on attempt $attempt"
-                if [ $attempt -lt 3 ]; then
-                  echo "⏳ Waiting 30 seconds before retry..."
-                  docker compose -f docker-compose.yml -f docker-compose.server.yml down || true
-                  sleep 30
-                else
-                  echo "💡 Trying fallback strategy: using pre-built images if available..."
-                  
-                  # Fallback: intentar sin --build si hay imágenes previas
-                  if docker images | grep -q portafolios; then
-                    echo "📦 Using existing images..."
-                    docker compose -f docker-compose.yml -f docker-compose.server.yml up -d
-                  else
-                    echo "❌ No fallback available"
-                    exit 1
-                  fi
+                docker compose -f docker-compose.yml -f docker-compose.server.yml down || true
+                if [ $attempt -eq 1 ]; then
+                  echo "⏳ Waiting 60 seconds before retry..."
+                  sleep 60
                 fi
               fi
             done
             
-            # Esperar a que los servicios se inicien
-            echo "⏳ Waiting for services to start..."
-            sleep 60
+            # Estrategia 2: Usar Dockerfile estable si existe
+            if [ "$DEPLOYMENT_SUCCESS" = false ] && [ -f "Dockerfile.stable" ]; then
+              echo "📋 Strategy 2: Using stable Dockerfile..."
+              
+              # Backup y usar Dockerfile estable
+              cp Dockerfile Dockerfile.backup 2>/dev/null || true
+              cp Dockerfile.stable Dockerfile
+              
+              if timeout 1800s docker compose -f docker-compose.yml -f docker-compose.server.yml up -d --build; then
+                echo "✅ Deployment successful with stable Dockerfile"
+                DEPLOYMENT_SUCCESS=true
+              else
+                echo "❌ Stable Dockerfile also failed"
+                # Restaurar Dockerfile original
+                cp Dockerfile.backup Dockerfile 2>/dev/null || true
+              fi
+            fi
+            
+            # Estrategia 3: Usar imágenes existentes
+            if [ "$DEPLOYMENT_SUCCESS" = false ]; then
+              echo "📋 Strategy 3: Using existing images..."
+              
+              if docker images | grep -q portafolios; then
+                echo "📦 Found existing images, attempting deployment..."
+                if docker compose -f docker-compose.yml -f docker-compose.server.yml up -d; then
+                  echo "✅ Deployment successful with existing images"
+                  DEPLOYMENT_SUCCESS=true
+                else
+                  echo "❌ Existing images deployment failed"
+                fi
+              else
+                echo "❌ No existing images found"
+              fi
+            fi
+            
+            # Verificar resultado del deployment
+            if [ "$DEPLOYMENT_SUCCESS" = false ]; then
+              echo "❌ All deployment strategies failed"
+              echo "📋 Final logs:"
+              docker compose logs --tail=30 2>/dev/null || echo "Could not fetch logs"
+              exit 1
+            fi
+            
+            # Esperar a que los servicios se estabilicen
+            echo "⏳ Waiting for services to stabilize..."
+            sleep 90
             
             # Verificar estado de los servicios
             echo "✅ Final service status:"
@@ -164,41 +272,52 @@ jobs:
             # Verificar que los contenedores están corriendo
             if ! docker compose ps | grep -q "Up"; then
               echo "❌ No containers are running. Checking logs..."
-              docker compose logs --tail=20
+              docker compose logs --tail=30
               exit 1
             fi
             
-            # Mostrar logs recientes
+            # Mostrar logs recientes de la aplicación
             echo "📋 Recent application logs:"
-            docker compose logs --tail=20 app || echo "Could not fetch app logs"
+            docker compose logs --tail=25 app || echo "Could not fetch app logs"
             
-            # Test de conectividad de la aplicación con reintentos
+            # Test de salud de la aplicación con reintentos
             echo "🔍 Testing application health..."
             
-            for i in {1..6}; do
-              if curl -f -m 15 http://localhost:8130/api/health 2>/dev/null; then
-                echo "✅ Health check successful"
+            for i in {1..10}; do
+              if curl -f -m 20 http://localhost:8130/api/health 2>/dev/null; then
+                echo "✅ Health check successful - API responding"
                 break
-              elif curl -f -m 15 http://localhost:8130 2>/dev/null; then
+              elif curl -f -m 20 http://localhost:8130 2>/dev/null; then
                 echo "✅ Main application responding"
                 break
               else
-                echo "⏳ Health check attempt $i/6 failed, retrying in 10s..."
-                if [ $i -eq 6 ]; then
-                  echo "⚠️ Health checks failed, but deployment may still be successful"
+                echo "⏳ Health check attempt $i/10 failed, retrying in 15s..."
+                if [ $i -eq 10 ]; then
+                  echo "⚠️ Health checks failed, checking system status..."
                   echo "🔍 Port status:"
                   netstat -tlnp | grep :8130 || echo "Port 8130 not listening"
+                  echo "🔍 Process status:"
+                  docker compose top 2>/dev/null || echo "Could not get process info"
                   echo "📋 Container logs:"
-                  docker compose logs --tail=10 app
+                  docker compose logs --tail=15 app
+                  echo "💡 Application may still be starting up"
                 else
-                  sleep 10
+                  sleep 15
                 fi
               fi
             done
             
+            # Información final
             echo "🎉 Deployment process completed!"
             echo "🌐 Application should be available at: http://herokku.duckdns.org:8130"
-            echo "🔍 If not immediately available, the application may still be starting up"
+            echo "🔍 Health endpoint: http://herokku.duckdns.org:8130/api/health"
+            echo "📊 Container status:"
+            docker compose ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
+            
+            echo "💡 If the application is not immediately available:"
+            echo "   - Check logs: docker compose logs -f app"
+            echo "   - Check status: docker compose ps"
+            echo "   - Wait a few more minutes for startup"
 
   notify:
     name: 📢 Deployment Notification

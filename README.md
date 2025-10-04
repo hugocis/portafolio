@@ -401,22 +401,51 @@ docker-compose up -d
 docker-compose exec app npx prisma migrate deploy
 ```
 
-### **Variables de Entorno Necesarias**
-```bash
-# Configuración básica (ya configurada en Docker)
-NODE_ENV="development"
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/portafolios"
+## 🚨 **Solución de Problemas de Deployment**
 
-# NextAuth (usa tus propios valores)
-NEXTAUTH_SECRET="tu-secreto-super-seguro"
-NEXTAUTH_URL="http://localhost:3000"
-
-# OAuth (opcional - solo si usas autenticación social)
-GITHUB_CLIENT_ID="tu-github-client-id"
-GITHUB_CLIENT_SECRET="tu-github-client-secret"
-GOOGLE_CLIENT_ID="tu-google-client-id"
-GOOGLE_CLIENT_SECRET="tu-google-client-secret"
+### **❌ Error de DNS en GitHub Actions**
+Si ves errores como:
 ```
+dial tcp: lookup herokku.duckdns.org: i/o timeout
+```
+
+#### **🔍 Diagnóstico Local:**
+```powershell
+# Ejecutar diagnóstico de conectividad
+.\diagnose-connectivity.ps1
+```
+
+#### **✅ Soluciones:**
+
+**1. Verificar hostname correcto:**
+- Confirmar que `herokku.duckdns.org` es la dirección correcta
+- Verificar con el administrador del servidor
+
+**2. Usar IP directa (si conoces la IP):**
+```bash
+# En GitHub Secrets, añadir:
+SERVER_IP=xxx.xxx.xxx.xxx
+```
+
+**3. Configurar DNS alternativos:**
+```bash
+# En tu .env local para testing
+SERVER_HOST=IP_DEL_SERVIDOR
+```
+
+**4. Deployment manual de emergencia:**
+```bash
+# Si GitHub Actions falla, usar SSH directo:
+ssh usuario@herokku.duckdns.org -p 7122
+cd portafolios
+git pull origin main
+docker compose -f docker-compose.yml -f docker-compose.server.yml up -d --build
+```
+
+### **🔧 Scripts de Diagnóstico Disponibles:**
+- `diagnose-connectivity.ps1` - Test completo de conectividad
+- `recovery-deploy.sh` - Deployment con múltiples estrategias
+- `deploy.ps1 -Server` - Test local de configuración del servidor
 
 ## 🛣️ Roadmap
 
