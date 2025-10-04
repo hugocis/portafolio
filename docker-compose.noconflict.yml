@@ -1,0 +1,43 @@
+# Override para servidor con puertos alternativos (evita conflictos)
+services:
+  # Aplicación Next.js
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8130:3000"  # Puerto asignado para la aplicación
+    environment:
+      - NODE_ENV=production
+      - NEXTAUTH_URL=http://herokku.duckdns.org:8130
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/portafolios
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-servidor-secreto-produccion}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+    volumes: []
+    restart: unless-stopped
+    depends_on:
+      - db
+    
+  # Base de datos PostgreSQL (SOLO INTERNO - sin puerto externo)
+  db:
+    image: postgres:15-alpine
+    # SIN PUERTOS EXTERNOS - solo accesible desde app container
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres-servidor}
+      - POSTGRES_DB=portafolios
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local

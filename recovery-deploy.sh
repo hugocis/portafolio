@@ -52,19 +52,104 @@ use_stable_dockerfile() {
     fi
 }
 
-# Función para despliegue con reintentos
+# Función para verificar y resolver conflictos de puertos
+check_port_conflicts() {
+    echo "🔍 Verificando conflictos de puertos..."
+    
+    # Verificar puerto 8130
+    if netstat -tlnp | grep -q ":8130 "; then
+        echo "⚠️ Puerto 8130 en uso:"
+        netstat -tlnp | grep ":8130 "
+        
+        echo "🛑 Intentando detener procesos en puerto 8130..."
+        # Intentar detener contenedores Docker primero
+        docker compose down || true
+        sleep 5
+        
+        # Si aún está en uso, buscar y terminar proceso
+        local pid=$(netstat -tlnp | grep ":8130 " | awk '{print $7}' | cut -d'/' -f1)
+        if [ -n "$pid" ] && [ "$pid" != "-" ]; then
+            echo "🔫 Terminando proceso PID: $pid"
+            kill -9 "$pid" 2>/dev/null || true
+            sleep 3
+        fi
+    else
+        echo "✅ Puerto 8130 disponible"
+    fi
+    
+    # Verificar puerto 5432 (PostgreSQL)
+    if netstat -tlnp | grep -q ":5432 "; then
+        echo "⚠️ Puerto 5432 en uso (PostgreSQL existente detectado):"
+        netstat -tlnp | grep ":5432 "
+        echo "💡 Usando configuración sin conflictos (solo PostgreSQL interno)"
+        USE_NOCONFLICT_CONFIG=true
+    else
+        echo "✅ Puerto 5432 disponible"
+        USE_NOCONFLICT_CONFIG=false
+    fi
+}
+
+# Función para usar configuración sin conflictos
+use_noconflict_config() {
+    echo "🔄 Usando configuración sin conflictos de puertos..."
+    
+    if [ -f "docker-compose.noconflict.yml" ]; then
+        COMPOSE_FILES="-f docker-compose.yml -f docker-compose.noconflict.yml"
+        echo "✅ Usando docker-compose.noconflict.yml"
+    else
+        echo "⚠️ docker-compose.noconflict.yml no encontrado, creando configuración temporal..."
+        
+        # Crear configuración temporal sin puerto 5432 externo
+        cat > docker-compose.temp.yml << 'EOF'
+services:
+  app:
+    ports:
+      - "8130:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXTAUTH_URL=http://herokku.duckdns.org:8130
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/portafolios
+    volumes: []
+    restart: unless-stopped
+  
+  db:
+    # SIN PUERTOS EXTERNOS
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres-servidor
+      - POSTGRES_DB=portafolios
+    restart: unless-stopped
+EOF
+        
+        COMPOSE_FILES="-f docker-compose.yml -f docker-compose.temp.yml"
+    fi
+}
+
+# Función para despliegue con reintentos (actualizada)
 deploy_with_retries() {
     local max_attempts=3
     local wait_time=60
     
     echo "🚀 Iniciando despliegue con reintentos..."
     
+    # Verificar conflictos de puertos primero
+    check_port_conflicts
+    
+    # Determinar archivos de compose a usar
+    if [ "$USE_NOCONFLICT_CONFIG" = true ]; then
+        use_noconflict_config
+    else
+        COMPOSE_FILES="-f docker-compose.yml -f docker-compose.server.yml"
+    fi
+    
+    echo "📋 Usando archivos: $COMPOSE_FILES"
+    
     for attempt in $(seq 1 $max_attempts); do
         echo "📝 Intento $attempt/$max_attempts"
         
         # Limpiar antes de cada intento
         echo "🧹 Limpiando recursos..."
-        docker compose -f docker-compose.yml -f docker-compose.server.yml down > /dev/null 2>&1 || true
+        docker compose $COMPOSE_FILES down > /dev/null 2>&1 || true
         docker system prune -f > /dev/null 2>&1 || true
         
         # Configurar timeouts largos
@@ -73,19 +158,19 @@ deploy_with_retries() {
         
         # Intentar construir
         echo "🔨 Construyendo aplicación..."
-        if timeout 1800s docker compose -f docker-compose.yml -f docker-compose.server.yml up -d --build; then
+        if timeout 1800s docker compose $COMPOSE_FILES up -d --build; then
             echo "✅ Construcción exitosa en intento $attempt"
             
             # Verificar que está funcionando
             echo "⏳ Esperando que la aplicación inicie..."
             sleep 90
             
-            if docker compose ps | grep -q "Up"; then
+            if docker compose $COMPOSE_FILES ps | grep -q "Up"; then
                 echo "✅ Aplicación funcionando correctamente"
                 return 0
             else
                 echo "❌ La aplicación no se inició correctamente"
-                docker compose logs --tail=20 app
+                docker compose $COMPOSE_FILES logs --tail=20 app
             fi
         else
             echo "❌ Construcción fallida en intento $attempt"

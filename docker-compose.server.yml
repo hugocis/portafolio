@@ -29,8 +29,9 @@ services:
     
   # Base de datos PostgreSQL
   db:
-    ports:
-      - "127.0.0.1:5432:5432"  # Solo accesible desde localhost del servidor
+    # NO exponer puerto externo para evitar conflictos
+    # ports:
+    #   - "127.0.0.1:5432:5432"  # COMENTADO para evitar conflicto
     restart: unless-stopped  # Reiniciar automáticamente
     environment:
       - POSTGRES_USER=postgres

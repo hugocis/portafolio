@@ -170,6 +170,30 @@ jobs:
               echo "⚠️ Docker may have connectivity issues"
             fi
             
+            # Verificar conflictos de puertos antes del deploy
+            echo "🔍 Checking for port conflicts..."
+            
+            # Verificar puerto 8130 (aplicación)
+            if netstat -tlnp | grep -q ":8130 "; then
+              echo "⚠️ Port 8130 is in use. Checking what's using it..."
+              netstat -tlnp | grep ":8130 "
+              echo "🛑 Attempting to stop any existing instances..."
+              docker compose -f docker-compose.yml -f docker-compose.server.yml down || true
+              pkill -f ":8130" || true
+              sleep 5
+            else
+              echo "✅ Port 8130 available"
+            fi
+            
+            # Verificar puerto 5432 (PostgreSQL)
+            if netstat -tlnp | grep -q ":5432 "; then
+              echo "⚠️ Port 5432 is in use (PostgreSQL conflict detected)"
+              netstat -tlnp | grep ":5432 "
+              echo "📝 Note: Using internal-only PostgreSQL to avoid conflicts"
+            else
+              echo "✅ Port 5432 available"
+            fi
+            
             # Mostrar estado actual antes de deploy
             echo "📊 Current Docker status:"
             docker compose ps 2>/dev/null || echo "No containers currently running"
@@ -187,7 +211,7 @@ jobs:
             echo "💾 Checking disk space..."
             df -h . | tail -1
             
-            # Estrategia de construcción robusta
+            # Estrategia de construcción robusta con detección de conflictos
             echo "🚀 Starting deployment with robust strategy..."
             
             # Configurar variables de entorno para Docker
@@ -196,21 +220,60 @@ jobs:
             export COMPOSE_HTTP_TIMEOUT=1800
             export DOCKER_CLIENT_TIMEOUT=1800
             
+            # Determinar configuración a usar basada en conflictos de puerto
+            if netstat -tlnp | grep -q ":5432 "; then
+              echo "⚠️ PostgreSQL port conflict detected, using no-conflict configuration"
+              COMPOSE_CONFIG="-f docker-compose.yml -f docker-compose.noconflict.yml"
+              
+              # Crear configuración temporal si no existe
+              if [ ! -f docker-compose.noconflict.yml ]; then
+                echo "📝 Creating temporary no-conflict configuration..."
+                cat > docker-compose.noconflict.yml << 'EOF'
+            services:
+              app:
+                ports:
+                  - "8130:3000"
+                environment:
+                  - NODE_ENV=production
+                  - NEXTAUTH_URL=http://herokku.duckdns.org:8130
+                  - DATABASE_URL=postgresql://postgres:postgres@db:5432/portafolios
+                volumes: []
+                restart: unless-stopped
+              db:
+                environment:
+                  - POSTGRES_USER=postgres
+                  - POSTGRES_PASSWORD=postgres-servidor
+                  - POSTGRES_DB=portafolios
+                restart: unless-stopped
+                healthcheck:
+                  test: ["CMD-SHELL", "pg_isready -U postgres"]
+                  interval: 30s
+                  timeout: 10s
+                  retries: 5
+            EOF
+              fi
+            else
+              echo "✅ No port conflicts, using standard server configuration"
+              COMPOSE_CONFIG="-f docker-compose.yml -f docker-compose.server.yml"
+            fi
+            
+            echo "📋 Using configuration: $COMPOSE_CONFIG"
+            
             # Intentar diferentes estrategias
             DEPLOYMENT_SUCCESS=false
             
-            # Estrategia 1: Build normal con timeout extendido
-            echo "📋 Strategy 1: Normal build with extended timeout..."
+            # Estrategia 1: Build normal con configuración apropiada
+            echo "📋 Strategy 1: Build with appropriate configuration..."
             for attempt in {1..2}; do
               echo "🔨 Build attempt $attempt/2..."
               
-              if timeout 1800s docker compose -f docker-compose.yml -f docker-compose.server.yml up -d --build; then
+              if timeout 1800s docker compose $COMPOSE_CONFIG up -d --build; then
                 echo "✅ Build successful on attempt $attempt"
                 DEPLOYMENT_SUCCESS=true
                 break
               else
                 echo "❌ Build failed on attempt $attempt"
-                docker compose -f docker-compose.yml -f docker-compose.server.yml down || true
+                docker compose $COMPOSE_CONFIG down || true
                 if [ $attempt -eq 1 ]; then
                   echo "⏳ Waiting 60 seconds before retry..."
                   sleep 60
@@ -226,7 +289,7 @@ jobs:
               cp Dockerfile Dockerfile.backup 2>/dev/null || true
               cp Dockerfile.stable Dockerfile
               
-              if timeout 1800s docker compose -f docker-compose.yml -f docker-compose.server.yml up -d --build; then
+              if timeout 1800s docker compose $COMPOSE_CONFIG up -d --build; then
                 echo "✅ Deployment successful with stable Dockerfile"
                 DEPLOYMENT_SUCCESS=true
               else
@@ -242,7 +305,7 @@ jobs:
               
               if docker images | grep -q portafolios; then
                 echo "📦 Found existing images, attempting deployment..."
-                if docker compose -f docker-compose.yml -f docker-compose.server.yml up -d; then
+                if docker compose $COMPOSE_CONFIG up -d; then
                   echo "✅ Deployment successful with existing images"
                   DEPLOYMENT_SUCCESS=true
                 else
