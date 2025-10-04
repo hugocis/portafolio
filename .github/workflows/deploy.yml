@@ -140,10 +140,16 @@ jobs:
                 cat > .env << EOF
             NODE_ENV=production
             NEXTAUTH_URL=http://herokku.duckdns.org:8130
-            DATABASE_URL=postgresql://postgres:postgres@db:5432/portafolios
-            NEXTAUTH_SECRET=servidor-secreto-cambiar-en-produccion
-            GITHUB_CLIENT_ID=
-            GITHUB_CLIENT_SECRET=
+            DATABASE_URL=postgresql://postgres:${{ secrets.POSTGRES_PASSWORD }}@db:5432/portafolios
+            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+            POSTGRES_USER=postgres
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_DB=portafolios
+            GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}
+            GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}
+            ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
+            ENCRYPTION_IV=${{ secrets.ENCRYPTION_IV }}
+            CRON_SECRET_TOKEN=${{ secrets.CRON_SECRET_TOKEN }}
             EOF
               fi
             else
