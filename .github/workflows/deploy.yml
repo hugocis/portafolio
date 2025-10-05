@@ -137,15 +137,41 @@ jobs:
           port: 7122
           script: |
             cd portafolios
-            # Esperar un poco más para asegurar que cloudflared esté listo
-            sleep 10
-            CLOUDFLARE_URL=$(docker compose logs cloudflared 2>/dev/null | grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' | head -1)
-            if [ -n "$CLOUDFLARE_URL" ]; then
-              echo "cloudflare_url=$CLOUDFLARE_URL" >> $GITHUB_OUTPUT
-              echo "✅ Cloudflare URL: $CLOUDFLARE_URL"
-            else
-              echo "⚠️ Cloudflare URL not available yet"
-            fi
+            
+            # Verificar si cloudflared está corriendo
+            echo "🔍 Checking cloudflared status..."
+            docker compose ps cloudflared || echo "⚠️ Cloudflared container not found"
+            
+            # Intentar obtener la URL con múltiples reintentos
+            echo "🔍 Attempting to get Cloudflare URL..."
+            for i in {1..5}; do
+              sleep 5
+              
+              # Intentar con diferentes métodos
+              CLOUDFLARE_URL=$(docker compose logs cloudflared 2>/dev/null | grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' | tail -1)
+              
+              # Si no funciona, intentar con docker logs directo
+              if [ -z "$CLOUDFLARE_URL" ]; then
+                CONTAINER_ID=$(docker ps -qf "name=cloudflared")
+                if [ -n "$CONTAINER_ID" ]; then
+                  CLOUDFLARE_URL=$(docker logs "$CONTAINER_ID" 2>&1 | grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' | tail -1)
+                fi
+              fi
+              
+              if [ -n "$CLOUDFLARE_URL" ]; then
+                echo "cloudflare_url=$CLOUDFLARE_URL" >> $GITHUB_OUTPUT
+                echo "✅ Cloudflare URL found (attempt $i/5): $CLOUDFLARE_URL"
+                break
+              else
+                echo "⏳ Attempt $i/5 - URL not available yet..."
+                if [ $i -eq 5 ]; then
+                  echo "⚠️ Could not retrieve Cloudflare URL after 5 attempts"
+                  echo "💡 The Quick Tunnel may take longer to initialize"
+                  echo "📋 Recent cloudflared logs:"
+                  docker compose logs --tail=15 cloudflared 2>/dev/null || echo "No logs available"
+                fi
+              fi
+            done
             
       - name: 🎉 Deployment Summary
         if: success()
@@ -159,7 +185,10 @@ jobs:
           echo "| **Direct (HTTP)** | http://herokku.duckdns.org:8130 |" >> $GITHUB_STEP_SUMMARY
           echo "| **Health Check** | https://herokku.duckdns.org/api/health |" >> $GITHUB_STEP_SUMMARY
           if [ -n "${{ steps.get_url.outputs.cloudflare_url }}" ]; then
-            echo "| **Cloudflare Quick Tunnel** | ${{ steps.get_url.outputs.cloudflare_url }} |" >> $GITHUB_STEP_SUMMARY
+            echo "| **🌩️ Cloudflare Quick Tunnel** | ${{ steps.get_url.outputs.cloudflare_url }} |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> **Note:** Cloudflare Quick Tunnel URL not available yet. Check the deployment logs or wait a few more minutes." >> $GITHUB_STEP_SUMMARY
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "#### 🔒 Security:" >> $GITHUB_STEP_SUMMARY
