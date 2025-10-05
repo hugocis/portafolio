@@ -157,7 +157,7 @@ function TreeNode({
 
                 {/* Styled Node content */}
                 <div
-                    className={`flex-1 flex items-center p-4 rounded-xl transition-all duration-300 cursor-pointer group relative overflow-hidden ${isSelected
+                    className={`flex-1 flex items-center p-2.5 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl transition-all duration-300 cursor-pointer group relative overflow-hidden ${isSelected
                             ? `bg-gradient-to-r ${typeConfig.lightBg} border ${typeConfig.borderColor} shadow-md`
                             : 'hover:bg-gray-50/80 hover:shadow-sm'
                         } ${isFeatured ? 'ring-1 ring-yellow-300/50' : ''}`}
@@ -179,78 +179,78 @@ function TreeNode({
                         </div>
                     )}
 
-                    <div className="relative flex items-center w-full">
+                    <div className="relative flex items-center w-full min-w-0">
                         {/* Clean Expand/Collapse button */}
                         {hasChildren && (
                             <button
-                                className="mr-3 p-1.5 rounded-lg hover:bg-white/80 hover:shadow-sm transition-all duration-200"
+                                className="mr-2 sm:mr-3 p-1 sm:p-1.5 rounded-lg hover:bg-white/80 hover:shadow-sm transition-all duration-200 flex-shrink-0"
                                 onClick={(e) => {
                                     e.stopPropagation()
                                     setIsExpanded(!isExpanded)
                                 }}
                             >
                                 {isExpanded ? (
-                                    <ChevronDownIcon className={`h-4 w-4 ${typeConfig.color} transition-transform duration-200`} />
+                                    <ChevronDownIcon className={`h-3 w-3 sm:h-4 sm:w-4 ${typeConfig.color} transition-transform duration-200`} />
                                 ) : (
-                                    <ChevronRightIcon className={`h-4 w-4 ${typeConfig.color} transition-transform duration-200`} />
+                                    <ChevronRightIcon className={`h-3 w-3 sm:h-4 sm:w-4 ${typeConfig.color} transition-transform duration-200`} />
                                 )}
                             </button>
                         )}
 
-                        {!hasChildren && <div className="w-9" />}
+                        {!hasChildren && <div className="w-5 sm:w-6 lg:w-9 flex-shrink-0" />}
 
                         {/* Styled Node icon */}
-                        <div className={`relative p-2.5 rounded-lg ${typeConfig.bgColor} mr-4 shadow-sm group-hover:shadow-md transition-all duration-300`}>
-                            <Icon className={`h-5 w-5 ${typeConfig.color}`} />
+                        <div className={`relative p-1.5 sm:p-2 lg:p-2.5 rounded-lg ${typeConfig.bgColor} mr-2 sm:mr-3 lg:mr-4 shadow-sm group-hover:shadow-md transition-all duration-300 flex-shrink-0`}>
+                            <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-5 lg:w-5 ${typeConfig.color}`} />
                             {isFeatured && (
-                                <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-                                    <StarIcon className="h-2 w-2 text-white" />
+                                <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                                    <StarIcon className="h-1.5 w-1.5 text-white" />
                                 </div>
                             )}
                         </div>
 
                         {/* Clean Node content */}
                         <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                    <div className="flex items-center space-x-3 mb-2">
-                                        <span className={`font-semibold text-lg ${isSelected ? 'text-gray-900' : 'text-gray-800 group-hover:text-gray-900'
+                            <div className="flex items-center justify-between gap-2">
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center flex-wrap gap-1.5 sm:gap-2 mb-1">
+                                        <span className={`font-semibold text-sm sm:text-base lg:text-lg truncate ${isSelected ? 'text-gray-900' : 'text-gray-800 group-hover:text-gray-900'
                                             } transition-colors`}>
                                             {node.title}
                                         </span>
-                                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${typeConfig.bgColor} ${typeConfig.color}`}>
+                                        <span className={`text-[10px] sm:text-xs font-medium px-1.5 sm:px-2 lg:px-2.5 py-0.5 sm:py-1 rounded-full ${typeConfig.bgColor} ${typeConfig.color} flex-shrink-0`}>
                                             {typeConfig.name}
                                         </span>
-                                        <div className="flex items-center space-x-1">
+                                        <div className="flex items-center gap-1 flex-shrink-0">
                                             {!node.isVisible && isOwner && (
-                                                <div className="flex items-center space-x-1 bg-amber-50 rounded-full px-2 py-1 border border-amber-200" title="Privado">
-                                                    <EyeSlashIcon className="h-3 w-3 text-amber-600" />
-                                                    <span className="text-xs font-medium text-amber-700">Privado</span>
+                                                <div className="flex items-center space-x-0.5 sm:space-x-1 bg-amber-50 rounded-full px-1.5 py-0.5 border border-amber-200" title="Privado">
+                                                    <EyeSlashIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-amber-600" />
+                                                    <span className="text-[10px] sm:text-xs font-medium text-amber-700 hidden sm:inline">Privado</span>
                                                 </div>
                                             )}
                                             {node.isVisible && (
-                                                <div className="flex items-center space-x-1 bg-emerald-50 rounded-full px-2 py-1 border border-emerald-200" title="Público">
-                                                    <EyeIcon className="h-3 w-3 text-emerald-600" />
-                                                    <span className="text-xs font-medium text-emerald-700">Público</span>
+                                                <div className="flex items-center space-x-0.5 sm:space-x-1 bg-emerald-50 rounded-full px-1.5 py-0.5 border border-emerald-200" title="Público">
+                                                    <EyeIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-emerald-600" />
+                                                    <span className="text-[10px] sm:text-xs font-medium text-emerald-700 hidden sm:inline">Público</span>
                                                 </div>
                                             )}
                                         </div>
                                     </div>
                                     {node.description && (
-                                        <p className="text-sm text-gray-600 leading-relaxed mb-2 line-clamp-2">
+                                        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed mb-1 sm:mb-2 line-clamp-1 sm:line-clamp-2">
                                             {node.description}
                                         </p>
                                     )}
                                     {hasChildren && (
-                                        <p className="text-xs text-gray-500 font-medium">
-                                            {node.children!.filter(child => child.isVisible || isOwner).length} elemento{node.children!.filter(child => child.isVisible || isOwner).length !== 1 ? 's' : ''} hijo{node.children!.filter(child => child.isVisible || isOwner).length !== 1 ? 's' : ''}
+                                        <p className="text-[10px] sm:text-xs text-gray-500 font-medium">
+                                            {node.children!.filter(child => child.isVisible || isOwner).length} items
                                         </p>
                                     )}
                                 </div>
 
                                 {/* Styled Action buttons */}
                                 {isOwner && (showActions || isSelected) && (
-                                    <div className="flex items-center space-x-2 ml-4">
+                                    <div className="hidden sm:flex items-center space-x-2 ml-4 flex-shrink-0">
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation()
@@ -293,7 +293,7 @@ function TreeNode({
                                             e.stopPropagation()
                                             if (onNodeClick) onNodeClick(node)
                                         }}
-                                        className="p-2 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 hover:shadow-sm transition-all duration-200 ml-4"
+                                        className="hidden sm:block p-2 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 hover:shadow-sm transition-all duration-200 ml-4 flex-shrink-0"
                                         title="Ver detalles"
                                     >
                                         <EyeIcon className="h-4 w-4" />
@@ -303,18 +303,18 @@ function TreeNode({
 
                             {/* Clean Tags */}
                             {node.tags && node.tags.length > 0 && (
-                                <div className="mt-3 flex flex-wrap gap-2">
-                                    {node.tags.slice(0, 4).map((tag, index) => (
+                                <div className="mt-2 flex flex-wrap gap-1 sm:gap-2">
+                                    {node.tags.slice(0, 2).map((tag, index) => (
                                         <span
                                             key={index}
-                                            className="inline-block bg-gray-100/80 text-gray-700 text-xs px-3 py-1 rounded-full font-medium hover:bg-gray-200/80 transition-colors"
+                                            className="inline-block bg-gray-100/80 text-gray-700 text-[10px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-medium hover:bg-gray-200/80 transition-colors"
                                         >
                                             {tag}
                                         </span>
                                     ))}
-                                    {node.tags.length > 4 && (
-                                        <span className="text-gray-500 text-xs px-3 py-1 font-medium">
-                                            +{node.tags.length - 4} más
+                                    {node.tags.length > 2 && (
+                                        <span className="text-gray-500 text-[10px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 font-medium">
+                                            +{node.tags.length - 2}
                                         </span>
                                     )}
                                 </div>
@@ -408,80 +408,78 @@ export function InteractiveTree({
 
     return (
         <div className="space-y-6">
-            {/* Professional Header */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 dark:from-emerald-900/20 dark:via-green-900/20 dark:to-teal-900/20 rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50">
+            {/* Professional Header - Mobile Optimized */}
+            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 dark:from-emerald-900/20 dark:via-green-900/20 dark:to-teal-900/20 rounded-xl sm:rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50">
                 {/* Subtle Background Pattern */}
                 <div className="absolute inset-0 opacity-20">
                     <div className="absolute top-6 right-8 w-24 h-24 bg-gradient-to-br from-emerald-200 to-green-200 rounded-full blur-2xl"></div>
                     <div className="absolute bottom-6 left-8 w-16 h-16 bg-gradient-to-br from-green-200 to-teal-200 rounded-full blur-xl"></div>
                 </div>
 
-                <div className="relative p-6">
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                        <div className="space-y-3">
-                            <div className="flex items-center space-x-4">
-                                <div className="relative">
-                                    <div className="p-3 bg-gradient-to-br from-emerald-600 to-green-600 rounded-xl shadow-lg">
-                                        <Squares2X2Icon className="h-6 w-6 text-white" />
+                <div className="relative p-3 sm:p-4 lg:p-6">
+                    <div className="flex flex-col space-y-3 sm:space-y-4">
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+                                <div className="relative flex-shrink-0">
+                                    <div className="p-2 bg-gradient-to-br from-emerald-600 to-green-600 rounded-lg sm:rounded-xl shadow-lg">
+                                        <Squares2X2Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                                     </div>
-                                    <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse"></div>
+                                    <div className="absolute -top-0.5 -right-0.5 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse"></div>
                                 </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                                <div className="min-w-0 flex-1">
+                                    <h2 className="text-base sm:text-lg lg:text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent truncate">
                                         Árbol de Portfolio
                                     </h2>
-                                    <p className="text-gray-600 dark:text-gray-400">
-                                        {getTotalNodes()} elemento{getTotalNodes() !== 1 ? 's' : ''} total
-                                        {filteredNodes.length !== getTotalNodes() && ` • ${filteredNodes.length} mostrado${filteredNodes.length !== 1 ? 's' : ''}`}
+                                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
+                                        {getTotalNodes()} items
+                                        {filteredNodes.length !== getTotalNodes() && ` • ${filteredNodes.length} mostrados`}
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Stats */}
-                            <div className="flex items-center space-x-4">
-                                <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-1.5 border border-gray-200/50">
-                                    <EyeIcon className="h-4 w-4 text-emerald-600" />
-                                    <span className="text-sm font-medium text-gray-700">{getVisibleNodes()} Públicos</span>
+                            {/* Stats - Compact */}
+                            <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                                <div className="flex items-center space-x-1 bg-white/80 backdrop-blur-sm rounded-lg px-2 py-1 border border-gray-200/50">
+                                    <EyeIcon className="h-3 w-3 text-emerald-600" />
+                                    <span className="text-xs font-medium text-gray-700">{getVisibleNodes()}</span>
                                 </div>
                                 {isOwner && getPrivateNodes() > 0 && (
-                                    <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-1.5 border border-gray-200/50">
-                                        <EyeSlashIcon className="h-4 w-4 text-amber-600" />
-                                        <span className="text-sm font-medium text-gray-700">{getPrivateNodes()} Privados</span>
+                                    <div className="flex items-center space-x-1 bg-white/80 backdrop-blur-sm rounded-lg px-2 py-1 border border-gray-200/50">
+                                        <EyeSlashIcon className="h-3 w-3 text-amber-600" />
+                                        <span className="text-xs font-medium text-gray-700">{getPrivateNodes()}</span>
                                     </div>
                                 )}
                             </div>
                         </div>
 
-                        {/* Search Only */}
-                        <div className="flex items-center">
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
-                                </div>
-                                <input
-                                    type="text"
-                                    placeholder="Buscar en el árbol..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full sm:w-64 pl-10 pr-10 py-2.5 border border-gray-200/50 rounded-xl bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200"
-                                />
-                                {searchTerm && (
-                                    <button
-                                        onClick={() => setSearchTerm('')}
-                                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                                    >
-                                        <XMarkIcon className="h-4 w-4 text-gray-400 hover:text-gray-600" />
-                                    </button>
-                                )}
+                        {/* Search Bar - Full Width */}
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-3 flex items-center pointer-events-none">
+                                <MagnifyingGlassIcon className="h-4 w-4 text-gray-400" />
                             </div>
+                            <input
+                                type="text"
+                                placeholder="Buscar..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full pl-8 sm:pl-9 pr-8 sm:pr-9 py-2 border border-gray-200/50 rounded-lg sm:rounded-xl bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 text-sm"
+                            />
+                            {searchTerm && (
+                                <button
+                                    onClick={() => setSearchTerm('')}
+                                    className="absolute inset-y-0 right-0 pr-2.5 sm:pr-3 flex items-center"
+                                >
+                                    <XMarkIcon className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Tree Content */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-sm overflow-hidden">
-                <div className="p-6 space-y-3">
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-200/50 shadow-sm overflow-hidden">
+                <div className="p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-3">
                     {treeNodes.length === 0 ? (
                         <div className="text-center py-16">
                             <div className="max-w-md mx-auto">

@@ -106,64 +106,65 @@ export default function UserPage({ params }: UserPageProps) {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Beautiful gradient background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-purple-400/10 to-pink-400/10"></div>
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-blue-900/30 dark:to-purple-900/30">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-purple-400/10 to-pink-400/10 dark:from-blue-500/5 dark:via-purple-500/5 dark:to-pink-500/5"></div>
         {/* Animated orbs */}
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-400/15 to-pink-400/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-gradient-to-r from-indigo-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-blue-400/20 to-purple-400/20 dark:from-blue-500/10 dark:to-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-400/15 to-pink-400/15 dark:from-purple-500/8 dark:to-pink-500/8 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-gradient-to-r from-indigo-400/10 to-blue-400/10 dark:from-indigo-500/5 dark:to-blue-500/5 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
       {/* Content overlay */}
       <div className="relative z-10">
-        {/* Modern Hero Header */}
-        <div className="bg-white/70 backdrop-blur-lg border-b border-white/20 shadow-lg relative z-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="py-12">
-              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between space-y-6 lg:space-y-0">
-                <div className="flex items-center space-x-6">
+        {/* Modern Hero Header - Mobile Optimized */}
+        <div className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg border-b border-white/20 dark:border-slate-700/50 shadow-lg relative z-20">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div className="py-4 sm:py-6 lg:py-8">
+              <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row lg:items-center lg:justify-between">
+                {/* User Info Section */}
+                <div className="flex items-start space-x-3 sm:space-x-4 min-w-0">
                   {user.image ? (
-                    <div className="relative">
+                    <div className="relative flex-shrink-0">
                       <Image
                         src={user.image}
                         alt={user.name || user.username}
-                        width={96}
-                        height={96}
-                        className="h-24 w-24 rounded-2xl object-cover shadow-lg ring-4 ring-white"
+                        width={64}
+                        height={64}
+                        className="h-16 w-16 sm:h-20 sm:w-20 rounded-xl sm:rounded-2xl object-cover shadow-lg ring-2 sm:ring-4 ring-white"
                       />
-                      <div className="absolute -bottom-2 -right-2 h-8 w-8 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
-                        <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="absolute -bottom-1 -right-1 h-5 w-5 sm:h-6 sm:w-6 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+                        <svg className="h-3 w-3 sm:h-4 sm:w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
                     </div>
                   ) : (
-                    <div className="h-24 w-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                      <span className="text-3xl font-bold text-white">
+                    <div className="h-16 w-16 sm:h-20 sm:w-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
+                      <span className="text-xl sm:text-2xl font-bold text-white">
                         {(user.name || user.username).charAt(0).toUpperCase()}
                       </span>
                     </div>
                   )}
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-3">
-                      <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-transparent">
+                  <div className="space-y-1 sm:space-y-2 min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-600 dark:from-white dark:via-gray-200 dark:to-gray-400 bg-clip-text text-transparent truncate">
                         {user.name || user.username}
                       </h1>
-                      <div className="px-3 py-1 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 text-sm font-medium rounded-full">
+                      <div className="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 text-blue-800 dark:text-blue-300 text-xs font-medium rounded-full whitespace-nowrap flex-shrink-0">
                         Portfolio
                       </div>
                     </div>
                     {user.bio && (
-                      <p className="text-lg text-gray-600 max-w-2xl leading-relaxed">{user.bio}</p>
+                      <p className="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-300 line-clamp-2 leading-relaxed">{user.bio}</p>
                     )}
-                    <div className="flex items-center space-x-6 text-sm text-gray-500">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-gray-500">
                       {user.location && (
-                        <span className="flex items-center space-x-2">
-                          <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <span className="flex items-center space-x-1">
+                          <svg className="h-3 w-3 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                           </svg>
-                          <span>{user.location}</span>
+                          <span className="truncate max-w-[100px] sm:max-w-none">{user.location}</span>
                         </span>
                       )}
                       {user.website && (
@@ -171,52 +172,56 @@ export default function UserPage({ params }: UserPageProps) {
                           href={user.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 transition-colors"
+                          className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 transition-colors"
                         >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="h-3 w-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
                           </svg>
-                          <span>Website</span>
+                          <span className="hidden sm:inline truncate">Website</span>
+                          <span className="sm:hidden">Web</span>
                         </a>
                       )}
-                      <div className="flex items-center space-x-2">
-                        <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="flex items-center space-x-1">
+                        <svg className="h-3 w-3 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                         </svg>
-                        <span>{nodes.filter(n => n.isVisible).length} proyectos públicos</span>
+                        <span className="whitespace-nowrap">{nodes.filter(n => n.isVisible).length} items</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
+                {/* Action Buttons - Mobile Optimized */}
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                   <LayoutSelector
                     currentLayout={currentLayout}
                     onLayoutChange={setCurrentLayout}
+                    className="flex-1 sm:flex-none min-w-[140px]"
                   />
                   <a
                     href="/explore"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-medium rounded-xl hover:from-indigo-700 hover:to-cyan-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    className="inline-flex items-center justify-center px-3 sm:px-4 py-2 text-xs sm:text-sm bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-medium rounded-lg hover:from-indigo-700 hover:to-cyan-700 transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap"
                   >
-                    <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    Explorar Portfolios
+                    <span className="hidden sm:inline">Explorar</span>
+                    <span className="sm:hidden">Buscar</span>
                   </a>
                   {isOwner && (
                     <a
                       href="/dashboard"
-                      className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      className="inline-flex items-center justify-center px-3 sm:px-4 py-2 text-xs sm:text-sm bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap"
                     >
-                      <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
-                      Editar Portfolio
+                      Editar
                     </a>
                   )}
                   {isOwner && (
-                    <div className="px-4 py-2 bg-yellow-100 text-yellow-800 text-sm font-medium rounded-lg">
-                      ✨ Este es tu portfolio público
+                    <div className="px-2 sm:px-3 py-1.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 text-xs font-medium rounded-lg whitespace-nowrap">
+                      ✨ Tu portfolio
                     </div>
                   )}
                 </div>
@@ -226,13 +231,13 @@ export default function UserPage({ params }: UserPageProps) {
         </div>
 
         {/* Portfolio Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 relative z-10">
           {nodes.length > 0 ? (
-            <div className="space-y-8">
+            <div className="space-y-4 sm:space-y-6 lg:space-y-8">
               {currentLayout === 'tree' && (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-2">
-                    <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/30 overflow-hidden">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="lg:col-span-2 order-2 lg:order-1">
+                    <div className="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl shadow-xl border border-white/30 overflow-hidden">
                       <InteractiveTree
                         nodes={nodes}
                         username={user.username}
@@ -245,18 +250,18 @@ export default function UserPage({ params }: UserPageProps) {
                       />
                     </div>
                   </div>
-                  <div className="lg:col-span-1">
-                    <div className="space-y-6">
+                  <div className="lg:col-span-1 order-1 lg:order-2">
+                    <div className="space-y-4 sm:space-y-6 lg:sticky lg:top-24">
                       {/* Featured Projects */}
                       {nodes.filter(node => node.type === 'PROJECT' && node.tags?.includes('featured')).length > 0 && (
-                        <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/30 p-6">
-                          <h2 className="text-lg font-semibold mb-4 flex items-center">
-                            <svg className="h-5 w-5 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                        <div className="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl shadow-xl border border-white/30 p-4 sm:p-6">
+                          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center">
+                            <svg className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
                               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                             </svg>
                             Proyectos Destacados
                           </h2>
-                          <div className="space-y-4">
+                          <div className="space-y-3 sm:space-y-4">
                             {nodes
                               .filter(node => node.type === 'PROJECT' && node.tags?.includes('featured'))
                               .slice(0, 3)
@@ -295,9 +300,9 @@ export default function UserPage({ params }: UserPageProps) {
                       )}
 
                       {/* Skills */}
-                      <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/30 p-6">
-                        <h2 className="text-lg font-semibold mb-4 flex items-center">
-                          <svg className="h-5 w-5 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl shadow-xl border border-white/30 p-4 sm:p-6">
+                        <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center">
+                          <svg className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                           </svg>
                           Tecnologías
@@ -321,14 +326,14 @@ export default function UserPage({ params }: UserPageProps) {
                       </div>
 
                       {/* Contact */}
-                      <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/30 p-6">
-                        <h2 className="text-lg font-semibold mb-4 flex items-center">
-                          <svg className="h-5 w-5 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl shadow-xl border border-white/30 p-4 sm:p-6">
+                        <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center">
+                          <svg className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                           </svg>
                           Contacto
                         </h2>
-                        <div className="space-y-3">
+                        <div className="space-y-2 sm:space-y-3">
                           <div className="flex items-center text-sm text-gray-600">
                             <span className="font-medium">Email:</span>
                             <span className="ml-2">{user.email}</span>

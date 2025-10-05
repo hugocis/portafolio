@@ -26,9 +26,42 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
     const [viewMode, setViewMode] = useState<'compact' | 'detailed'>('detailed')
 
     const visibleNodes = nodes.filter(node => node.isVisible || isOwner)
+    
+    // Build hierarchy: group children under categories
+    const buildHierarchy = () => {
+        const nodeMap = new Map<string, Node & { children: Node[] }>()
+        const roots: (Node & { children: Node[] })[] = []
+        
+        // First pass: create all nodes with empty children array
+        visibleNodes.forEach(node => {
+            nodeMap.set(node.id, { ...node, children: [] })
+        })
+        
+        // Second pass: build parent-child relationships
+        visibleNodes.forEach(node => {
+            const nodeWithChildren = nodeMap.get(node.id)!
+            if (node.parentId && nodeMap.has(node.parentId)) {
+                const parent = nodeMap.get(node.parentId)!
+                parent.children.push(nodeWithChildren)
+            } else {
+                roots.push(nodeWithChildren)
+            }
+        })
+        
+        return roots
+    }
+    
+    const hierarchicalNodes = buildHierarchy()
     const filteredNodes = filter === 'all'
-        ? visibleNodes
-        : visibleNodes.filter(node => node.type === filter)
+        ? hierarchicalNodes
+        : hierarchicalNodes.filter(node => {
+            // Show node if it matches filter or has children that match
+            if (node.type === filter) return true
+            if (node.children && node.children.length > 0) {
+                return node.children.some(c => c.type === filter)
+            }
+            return false
+        })
 
     const handleNodeClick = (node: Node) => {
         onNodeClick?.(node)
@@ -133,28 +166,25 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
             </div>
 
             {/* Enhanced Grid */}
-            <div className={`grid gap-6 ${
-                viewMode === 'compact' 
-                    ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6' 
-                    : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-            }`}>
+            <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
                 {filteredNodes.map((node, index) => {
                     const typeConfig = nodeTypeConfig[node.type as keyof typeof nodeTypeConfig]
                     const TypeIcon = typeConfig?.icon || DocumentIcon
                     const isFeatured = node.tags?.includes('featured')
+                    const hasChildren = 'children' in node && node.children && node.children.length > 0
 
                     return (
                         <div
                             key={node.id}
                             onClick={() => handleNodeClick(node)}
-                            className="group cursor-pointer animate-fade-in-scale"
+                            className="group animate-fade-in-scale cursor-pointer"
                             style={{
                                 animationDelay: `${index * 100}ms`,
                                 animationFillMode: 'both'
                             }}
                         >
                             {/* Enhanced Card */}
-                            <div className={`relative bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden group-hover:-translate-y-2 group-hover:scale-105 ${
+                            <div className={`relative bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden ${
                                 isFeatured ? 'ring-2 ring-yellow-400/50' : ''
                             }`}>
                                 {/* Featured Badge */}
@@ -259,6 +289,54 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                                         </div>
                                     )}
 
+                                    {/* Children Preview */}
+                                    {hasChildren && 'children' in node && node.children && node.children.length > 0 && (
+                                        <div className="pt-4 border-t border-gray-200/50">
+                                            <h4 className="text-sm font-bold text-gray-700 mb-3 flex items-center">
+                                                <div className={`w-1 h-4 bg-gradient-to-b ${typeConfig?.gradient} rounded-full mr-2`}></div>
+                                                Contenido ({node.children.length})
+                                            </h4>
+                                            <div className="grid gap-2 grid-cols-1">
+                                                {node.children.slice(0, viewMode === 'compact' ? 2 : 3).map((child) => {
+                                                    const childConfig = nodeTypeConfig[child.type as keyof typeof nodeTypeConfig]
+                                                    const ChildIcon = childConfig?.icon || DocumentIcon
+                                                    
+                                                    return (
+                                                        <div
+                                                            key={child.id}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                handleNodeClick(child)
+                                                            }}
+                                                            className="p-3 bg-gray-50/80 rounded-xl border border-gray-200/50 hover:bg-white hover:shadow-md transition-all duration-200 cursor-pointer group/child"
+                                                        >
+                                                            <div className="flex items-start space-x-3">
+                                                                <div className={`p-2 rounded-lg ${childConfig?.bgColor} flex-shrink-0`}>
+                                                                    <ChildIcon className={`h-4 w-4 ${childConfig?.color}`} />
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <h5 className="font-semibold text-sm text-gray-900 truncate group-hover/child:text-blue-600">
+                                                                        {child.title}
+                                                                    </h5>
+                                                                    {child.description && viewMode === 'detailed' && (
+                                                                        <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                                                                            {child.description}
+                                                                        </p>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })}
+                                                {node.children.length > (viewMode === 'compact' ? 2 : 3) && (
+                                                    <div className="text-center py-2 text-xs text-gray-500 font-medium">
+                                                        +{node.children.length - (viewMode === 'compact' ? 2 : 3)} más
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
                                     {/* Footer */}
                                     <div className="flex items-center justify-between pt-4 border-t border-gray-100/50">
                                         <span className="text-xs text-gray-500 font-medium">
@@ -275,16 +353,11 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* Hover Gradient Overlay */}
-                                <div className={`absolute inset-0 bg-gradient-to-br ${typeConfig?.gradient}/0 group-hover:${typeConfig?.gradient.replace('to-', 'to-')}/5 transition-all duration-500 pointer-events-none rounded-2xl`}></div>
                             </div>
                         </div>
                     )
                 })}
-            </div>
-
-            {/* Enhanced Empty State */}
+            </div>            {/* Enhanced Empty State */}
             {filteredNodes.length === 0 && (
                 <div className="text-center py-20">
                     <div className="relative max-w-md mx-auto">

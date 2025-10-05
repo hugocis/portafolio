@@ -8,24 +8,49 @@ import { NodeType } from '@prisma/client'
 export async function GET(request: NextRequest) {
     try {
         const session = await getServerSession(authOptions)
+        
         if (!session?.user?.id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const portfolio = await prisma.portfolio.findUnique({
-            where: { userId: session.user.id },
+        const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
             include: {
-                nodes: {
-                    orderBy: { order: 'asc' }
+                portfolio: {
+                    include: {
+                        nodes: {
+                            orderBy: { order: 'asc' }
+                        }
+                    }
                 }
             }
         })
 
-        if (!portfolio) {
-            return NextResponse.json({ nodes: [] })
+        if (!user) {
+            return NextResponse.json({ 
+                error: 'User not found. Please sign out and sign in again.' 
+            }, { status: 404 })
         }
 
-        return NextResponse.json({ nodes: portfolio.nodes })
+        // If user exists but has no portfolio, create one
+        if (!user.portfolio) {
+            const newPortfolio = await prisma.portfolio.create({
+                data: {
+                    userId: user.id,
+                    title: `${user.name || 'My'} Portfolio`,
+                    subtitle: 'Welcome to my professional portfolio',
+                    isPublic: true
+                },
+                include: {
+                    nodes: {
+                        orderBy: { order: 'asc' }
+                    }
+                }
+            })
+            return NextResponse.json({ nodes: newPortfolio.nodes })
+        }
+
+        return NextResponse.json({ nodes: user.portfolio.nodes })
     } catch (error) {
         console.error('Error fetching nodes:', error)
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })

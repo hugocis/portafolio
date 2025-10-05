@@ -146,7 +146,7 @@ export default function HomePage() {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors flex-shrink-0"
               aria-label="Toggle mobile menu"
             >
               {mobileMenuOpen ? (
@@ -159,7 +159,7 @@ export default function HomePage() {
 
           {/* Mobile Navigation */}
           {mobileMenuOpen && (
-            <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-xl">
+            <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-xl z-50">
               <div className="px-4 py-6 space-y-4">
                 <Link
                   href="/explore"
@@ -185,6 +185,15 @@ export default function HomePage() {
                     >
                       Mi Portfolio
                     </Link>
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false)
+                        signOut({ callbackUrl: '/' })
+                      }}
+                      className="w-full block py-3 px-4 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 text-left"
+                    >
+                      Cerrar Sesión
+                    </button>
                   </>
                 ) : (
                   <>

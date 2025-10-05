@@ -70,7 +70,7 @@ export function LayoutSelector({ currentLayout, onLayoutChange, className = '' }
             {/* Main button - always visible */}
             <button
                 onClick={handleToggle}
-                className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl px-4 py-2 hover:bg-white hover:shadow-md transition-all duration-300 shadow-sm group"
+                className="flex items-center space-x-2 w-full sm:w-auto justify-center sm:justify-start bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-gray-200 dark:border-slate-600 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-white dark:hover:bg-slate-800 hover:shadow-md transition-all duration-300 shadow-sm group"
             >
                 <div className={`p-1 rounded-lg bg-gradient-to-r ${layouts.find(l => l.id === currentLayout)?.gradient} transition-transform duration-300 group-hover:scale-110`}>
                     {(() => {
@@ -78,11 +78,11 @@ export function LayoutSelector({ currentLayout, onLayoutChange, className = '' }
                         return <CurrentIcon className="h-4 w-4 text-white" />
                     })()}
                 </div>
-                <span className="font-medium text-gray-700 transition-colors duration-300 group-hover:text-gray-900">
+                <span className="font-medium text-sm sm:text-base text-gray-700 dark:text-gray-200 transition-colors duration-300 group-hover:text-gray-900 dark:group-hover:text-white">
                     {layouts.find(l => l.id === currentLayout)?.name}
                 </span>
                 <svg
-                    className={`h-4 w-4 text-gray-400 transition-all duration-300 group-hover:text-gray-600 ${
+                    className={`h-4 w-4 text-gray-400 dark:text-gray-500 transition-all duration-300 group-hover:text-gray-600 dark:group-hover:text-gray-300 ${
                         isExpanded ? 'rotate-180' : ''
                     }`}
                     fill="none"
@@ -105,15 +105,15 @@ export function LayoutSelector({ currentLayout, onLayoutChange, className = '' }
                     
                     {/* Dropdown content */}
                     <div 
-                        className="fixed bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden min-w-64"
+                        className="fixed bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl shadow-2xl overflow-hidden w-[calc(100vw-2rem)] sm:w-72 max-w-sm"
                         style={{
                             zIndex: 99999,
                             top: buttonRect.bottom + 8,
-                            left: buttonRect.right - 256 // 256px = 16rem = min-w-64
+                            left: Math.max(8, Math.min(buttonRect.left, window.innerWidth - (window.innerWidth < 640 ? window.innerWidth - 16 : 288) - 8))
                         }}
                     >
                         <div className="p-2">
-                            <div className="text-xs font-medium text-gray-500 px-3 py-2 border-b border-gray-100">
+                            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 px-3 py-2 border-b border-gray-100 dark:border-slate-700">
                                 Cambiar Vista
                             </div>
                             {layouts.map((layout, index) => {
@@ -133,29 +133,29 @@ export function LayoutSelector({ currentLayout, onLayoutChange, className = '' }
                                                 onLayoutChange(layout.id)
                                                 setIsExpanded(false)
                                             }}
-                                            className={`w-full flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group ${
+                                            className={`w-full flex items-center space-x-3 px-3 py-2.5 sm:py-3 rounded-lg transition-all duration-200 group ${
                                                 isActive
                                                     ? `bg-gradient-to-r ${layout.gradient} text-white shadow-md`
-                                                    : 'hover:bg-gray-50 text-gray-700 hover:shadow-sm'
+                                                    : 'hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-200 hover:shadow-sm'
                                             }`}
                                         >
-                                            <div className={`p-2 rounded-lg transition-all duration-200 ${
+                                            <div className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 ${
                                                 isActive
                                                     ? 'bg-white/20'
                                                     : `bg-gradient-to-r ${layout.gradient} group-hover:scale-110`
                                             }`}>
                                                 <IconComponent className="h-4 w-4 text-white" />
                                             </div>
-                                            <div className="flex-1 text-left">
-                                                <div className="font-medium">{layout.name}</div>
+                                            <div className="flex-1 text-left min-w-0">
+                                                <div className="font-medium text-sm sm:text-base truncate">{layout.name}</div>
                                                 <div className={`text-xs ${
-                                                    isActive ? 'text-white/80' : 'text-gray-500'
-                                                }`}>
+                                                    isActive ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
+                                                } hidden sm:block`}>
                                                     {layout.description}
                                                 </div>
                                             </div>
                                             {isActive && (
-                                                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                                                <div className="w-2 h-2 bg-white rounded-full animate-pulse flex-shrink-0"></div>
                                             )}
                                         </button>
                                     </div>

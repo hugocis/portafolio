@@ -13,7 +13,7 @@ import { TimelineLayout } from '@/components/portfolio/timeline-layout'
 import { KanbanLayout } from '@/components/portfolio/kanban-layout'
 import { GridLayout } from '@/components/portfolio/grid-layout'
 import { PageLoading } from '@/components/ui/loading'
-import { PlusIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, ArrowRightOnRectangleIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Squares2X2Icon as Squares2X2IconSolid, SparklesIcon as SparklesIconSolid } from '@heroicons/react/24/solid'
 
 export default function DashboardPage() {
@@ -28,6 +28,7 @@ export default function DashboardPage() {
     const [isOwner, setIsOwner] = useState(false)
     const [currentLayout, setCurrentLayout] = useState<LayoutType>('tree')
     const [scrollY, setScrollY] = useState(0)
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [confirmDialog, setConfirmDialog] = useState<{
         isOpen: boolean
         title: string
@@ -58,6 +59,7 @@ export default function DashboardPage() {
     const fetchNodes = async () => {
         try {
             const response = await fetch('/api/nodes')
+            
             if (response.ok) {
                 const data = await response.json()
                 setNodes(data.nodes)
@@ -195,20 +197,27 @@ export default function DashboardPage() {
                             </span>
                         </Link>
 
-                        {/* Center Title */}
+                        {/* Center Title - Hidden on mobile */}
                         <div className="hidden md:block">
                             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
                                 Dashboard - {session?.user?.name || session?.user?.username}
                             </h1>
                         </div>
 
-                        {/* Actions */}
-                        <div className="flex items-center space-x-4">
+                        {/* Desktop Navigation */}
+                        <div className="hidden md:flex items-center space-x-4">
                             <Link
                                 href="/"
                                 className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors relative group"
                             >
                                 Inicio
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
+                            </Link>
+                            <Link
+                                href="/explore"
+                                className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors relative group"
+                            >
+                                Explorar
                                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
                             </Link>
                             <Link
@@ -227,7 +236,60 @@ export default function DashboardPage() {
                                 <ArrowRightOnRectangleIcon className="h-5 w-5" />
                             </button>
                         </div>
+
+                        {/* Mobile menu button */}
+                        <button
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors flex-shrink-0"
+                            aria-label="Toggle mobile menu"
+                        >
+                            {mobileMenuOpen ? (
+                                <XMarkIcon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+                            ) : (
+                                <Bars3Icon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+                            )}
+                        </button>
                     </div>
+
+                    {/* Mobile Navigation */}
+                    {mobileMenuOpen && (
+                        <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-xl z-50">
+                            <div className="px-4 py-6 space-y-4">
+                                <Link
+                                    href="/"
+                                    className="block py-3 px-4 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Inicio
+                                </Link>
+                                <Link
+                                    href="/explore"
+                                    className="block py-3 px-4 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Explorar
+                                </Link>
+                                <Link
+                                    href={`/user/${session?.user?.username}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-center font-medium"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Mi Portfolio
+                                </Link>
+                                <button
+                                    onClick={() => {
+                                        setMobileMenuOpen(false)
+                                        signOut({ callbackUrl: '/' })
+                                    }}
+                                    className="w-full block py-3 px-4 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 text-left"
+                                >
+                                    Cerrar Sesión
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </nav>
 
@@ -282,11 +344,74 @@ export default function DashboardPage() {
 
             {/* Content */}
             <div className="bg-white dark:bg-slate-900 relative z-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    {/* Main Layout */}
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                        {/* Portfolio Content */}
-                        <div className="lg:col-span-3">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+                    {/* Main Layout - Responsive */}
+                    <div className="space-y-6">
+                        {/* Mobile Sidebar - Above content on mobile */}
+                        <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            {/* Acciones */}
+                            <div className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl shadow-xl border border-gray-200 dark:border-slate-700 p-4 sm:p-6">
+                                <div className="flex items-center mb-4 sm:mb-6">
+                                    <div className="p-1.5 sm:p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg sm:rounded-xl mr-2 sm:mr-3 shadow-lg">
+                                        <svg className="h-4 w-4 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+                                        Acciones
+                                    </h3>
+                                </div>
+                                <div className="space-y-2 sm:space-y-3">
+                                    <button
+                                        onClick={() => handleNodeAdd()}
+                                        className="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm sm:text-base font-semibold rounded-xl sm:rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                                    >
+                                        <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                                        Nuevo
+                                    </button>
+                                    <Link
+                                        href={`/user/${session?.user?.username}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 text-sm sm:text-base font-medium rounded-xl sm:rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500"
+                                    >
+                                        <svg className="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M6 18L18 6M8 6h10v10" />
+                                        </svg>
+                                        Ver
+                                    </Link>
+                                </div>
+                            </div>
+
+                            {/* Estadísticas */}
+                            <div className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl shadow-xl border border-gray-200 dark:border-slate-700 p-4 sm:p-6">
+                                <div className="flex items-center mb-4 sm:mb-6">
+                                    <div className="p-1.5 sm:p-2 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg sm:rounded-xl mr-2 sm:mr-3 shadow-lg">
+                                        <svg className="h-4 w-4 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+                                        Stats
+                                    </h3>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                                    <div className="text-center p-2 sm:p-3 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-xl border border-blue-200/50 dark:border-blue-700/50">
+                                        <div className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">{nodes.length}</div>
+                                        <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Total</div>
+                                    </div>
+                                    <div className="text-center p-2 sm:p-3 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/30 dark:to-emerald-800/30 rounded-xl border border-green-200/50 dark:border-green-700/50">
+                                        <div className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400 mb-1">{nodes.filter(n => n.isVisible).length}</div>
+                                        <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Públicos</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Main grid layout */}
+                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8">
+                            {/* Portfolio Content */}
+                            <div className="lg:col-span-3">
                             <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
                                 <div className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 dark:from-blue-900/30 dark:via-purple-900/30 dark:to-indigo-900/30 px-6 py-6 border-b border-gray-200 dark:border-slate-700">
                                     <div className="flex items-center justify-between">
@@ -410,8 +535,8 @@ export default function DashboardPage() {
                             </div>
                         </div>
 
-                        {/* Sidebar */}
-                        <div className="lg:col-span-1">
+                        {/* Sidebar - Hidden on mobile, shown on lg+ */}
+                        <div className="hidden lg:block lg:col-span-1">
                             <div className="space-y-6">
                                 {/* Acciones */}
                                 <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-gray-200 dark:border-slate-700 p-6">
@@ -496,6 +621,7 @@ export default function DashboardPage() {
                                     </div>
                                 </div>
                             </div>
+                        </div>
                         </div>
                     </div>
                 </div>

@@ -27,14 +27,38 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
     const [isCompact, setIsCompact] = useState(false)
     const visibleNodes = nodes.filter(node => node.isVisible || isOwner)
 
-    // Agrupar nodos por tipo
-    const nodesByType = visibleNodes.reduce((acc, node) => {
+    // Build hierarchy first
+    const buildHierarchy = () => {
+        const nodeMap = new Map<string, Node & { children: Node[] }>()
+        const roots: (Node & { children: Node[] })[] = []
+        
+        visibleNodes.forEach(node => {
+            nodeMap.set(node.id, { ...node, children: [] })
+        })
+        
+        visibleNodes.forEach(node => {
+            const nodeWithChildren = nodeMap.get(node.id)!
+            if (node.parentId && nodeMap.has(node.parentId)) {
+                const parent = nodeMap.get(node.parentId)!
+                parent.children.push(nodeWithChildren)
+            } else {
+                roots.push(nodeWithChildren)
+            }
+        })
+        
+        return roots
+    }
+    
+    const hierarchicalNodes = buildHierarchy()
+
+    // Agrupar nodos jerárquicos por tipo (solo nodos raíz)
+    const nodesByType = hierarchicalNodes.reduce((acc, node) => {
         if (!acc[node.type]) {
             acc[node.type] = []
         }
         acc[node.type].push(node)
         return acc
-    }, {} as Record<string, Node[]>)
+    }, {} as Record<string, (Node & { children: Node[] })[]>)
 
     // Ordenar las columnas según el orden definido
     const orderedColumns = columnOrder.filter(type => nodesByType[type]?.length > 0)
@@ -119,8 +143,8 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
             </div>
 
             {/* Enhanced Kanban Board */}
-            <div className="overflow-x-auto pb-6">
-                <div className="flex space-x-6 min-w-full">
+            <div className="overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
+                <div className="flex space-x-4 sm:space-x-6 min-w-max sm:min-w-full">
                     {orderedColumns.map((type, columnIndex) => {
                         const typeConfig = nodeTypeConfig[type as keyof typeof nodeTypeConfig]
                         const TypeIcon = typeConfig?.icon || DocumentIcon
@@ -130,7 +154,7 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                         return (
                             <div
                                 key={type}
-                                className="flex-shrink-0 w-80 animate-fade-in-scale"
+                                className="flex-shrink-0 w-80 sm:w-80 md:flex-1 md:min-w-0 animate-fade-in-scale"
                                 style={{
                                     animationDelay: `${columnIndex * 150}ms`,
                                     animationFillMode: 'both'
@@ -189,12 +213,12 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                     <div className="p-4 space-y-3">
                                         {columnNodes.map((node, nodeIndex) => {
                                             const isFeatured = node.tags?.includes('featured')
+                                            const hasChildren = 'children' in node && node.children && node.children.length > 0
 
                                             return (
                                                 <div
                                                     key={node.id}
-                                                    onClick={() => handleNodeClick(node)}
-                                                    className="group cursor-pointer animate-fade-in-scale"
+                                                    className="group animate-fade-in-scale"
                                                     style={{
                                                         animationDelay: `${(columnIndex * 150) + (nodeIndex * 100)}ms`,
                                                         animationFillMode: 'both'
@@ -288,6 +312,44 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                                                     })}
                                                                 </span>
                                                                 <ArrowRightIcon className="h-3 w-3 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-all duration-300" />
+                                                            </div>
+                                                        )}
+
+                                                        {/* Children if any */}
+                                                        {hasChildren && (
+                                                            <div className="mt-3 pt-3 border-t border-gray-100">
+                                                                <div className="text-xs font-semibold text-gray-500 mb-2 flex items-center">
+                                                                    <div className={`w-1 h-3 bg-gradient-to-b ${typeConfig?.gradient} rounded-full mr-1.5`}></div>
+                                                                    {node.children.length} elemento{node.children.length !== 1 ? 's' : ''}
+                                                                </div>
+                                                                <div className="space-y-2">
+                                                                    {node.children.slice(0, isCompact ? 2 : 3).map((child) => {
+                                                                        const childConfig = nodeTypeConfig[child.type as keyof typeof nodeTypeConfig]
+                                                                        const ChildIcon = childConfig?.icon || DocumentIcon
+                                                                        return (
+                                                                            <div
+                                                                                key={child.id}
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation()
+                                                                                    handleNodeClick(child)
+                                                                                }}
+                                                                                className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                                                                            >
+                                                                                <div className={`p-1 rounded ${childConfig?.bgColor} flex-shrink-0`}>
+                                                                                    <ChildIcon className={`h-3 w-3 ${childConfig?.color}`} />
+                                                                                </div>
+                                                                                <span className="text-xs font-medium text-gray-700 truncate">
+                                                                                    {child.title}
+                                                                                </span>
+                                                                            </div>
+                                                                        )
+                                                                    })}
+                                                                    {node.children.length > (isCompact ? 2 : 3) && (
+                                                                        <div className="text-xs text-gray-500 text-center">
+                                                                            +{node.children.length - (isCompact ? 2 : 3)} más
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         )}
 

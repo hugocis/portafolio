@@ -25,10 +25,34 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
     const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc')
     const [filterType, setFilterType] = useState<string>('all')
 
-    // Organizar nodos por fecha
-    const filteredNodes = nodes
-        .filter(node => node.isVisible || isOwner)
-        .filter(node => filterType === 'all' || node.type === filterType)
+    // Build hierarchy first
+    const buildHierarchy = () => {
+        const visibleNodes = nodes.filter(node => node.isVisible || isOwner)
+        const nodeMap = new Map<string, Node & { children: Node[] }>()
+        const roots: (Node & { children: Node[] })[] = []
+        
+        visibleNodes.forEach(node => {
+            nodeMap.set(node.id, { ...node, children: [] })
+        })
+        
+        visibleNodes.forEach(node => {
+            const nodeWithChildren = nodeMap.get(node.id)!
+            if (node.parentId && nodeMap.has(node.parentId)) {
+                const parent = nodeMap.get(node.parentId)!
+                parent.children.push(nodeWithChildren)
+            } else {
+                roots.push(nodeWithChildren)
+            }
+        })
+        
+        return roots
+    }
+    
+    const hierarchicalNodes = buildHierarchy()
+    
+    // Organizar nodos por fecha (solo nodos raíz)
+    const filteredNodes = hierarchicalNodes
+        .filter(node => filterType === 'all' || node.type === filterType || (node.children && node.children.some(c => c.type === filterType)))
         .sort((a, b) => {
             const dateA = new Date(a.createdAt).getTime()
             const dateB = new Date(b.createdAt).getTime()
@@ -90,26 +114,28 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                         {/* Controls */}
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                             {/* Sort Toggle */}
-                            <div className="flex bg-white/80 backdrop-blur-sm rounded-xl p-1 border border-gray-200/50 shadow-sm">
+                            <div className="flex bg-white/80 backdrop-blur-sm rounded-xl p-1 border border-gray-200/50 shadow-sm w-full sm:w-auto">
                                 <button
                                     onClick={() => setSortOrder('desc')}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                    className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
                                         sortOrder === 'desc'
                                             ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-md'
                                             : 'text-gray-600 hover:text-gray-900'
                                     }`}
                                 >
-                                    Más Reciente
+                                    <span className="hidden sm:inline">Más Reciente</span>
+                                    <span className="sm:hidden">Reciente</span>
                                 </button>
                                 <button
                                     onClick={() => setSortOrder('asc')}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                    className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
                                         sortOrder === 'asc'
                                             ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-md'
                                             : 'text-gray-600 hover:text-gray-900'
                                     }`}
                                 >
-                                    Más Antiguo
+                                    <span className="hidden sm:inline">Más Antiguo</span>
+                                    <span className="sm:hidden">Antiguo</span>
                                 </button>
                             </div>
 
@@ -117,7 +143,7 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                             <div className="flex flex-wrap gap-2">
                                 <button
                                     onClick={() => setFilterType('all')}
-                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                                    className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
                                         filterType === 'all'
                                             ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg'
                                             : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
@@ -133,13 +159,13 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                         <button
                                             key={type}
                                             onClick={() => setFilterType(type)}
-                                            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                                            className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
                                                 filterType === type
                                                     ? `bg-gradient-to-r ${typeConfig?.gradient} text-white shadow-lg`
                                                     : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
                                             }`}
                                         >
-                                            <TypeIcon className="h-4 w-4" />
+                                            <TypeIcon className="h-3 w-3 sm:h-4 sm:w-4" />
                                             <span className="hidden sm:inline">{typeConfig?.name}</span>
                                         </button>
                                     )
@@ -152,9 +178,9 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
             {/* Enhanced Timeline */}
             <div className="relative">
                 {/* Enhanced Timeline Line */}
-                <div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-300 via-cyan-300 to-indigo-300 rounded-full shadow-lg"></div>
+                <div className="absolute left-4 sm:left-8 top-0 bottom-0 w-0.5 sm:w-1 bg-gradient-to-b from-blue-300 via-cyan-300 to-indigo-300 rounded-full shadow-lg"></div>
 
-                <div className="space-y-12">
+                <div className="space-y-8 sm:space-y-12">
                     {Object.entries(nodesByYear)
                         .sort(([a], [b]) => sortOrder === 'desc' ? parseInt(b) - parseInt(a) : parseInt(a) - parseInt(b))
                         .map(([year, yearNodes], yearIndex) => (
@@ -167,37 +193,32 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                 }}
                             >
                                 {/* Enhanced Year Marker */}
-                                <div className="flex items-center mb-8">
-                                    <div className="relative z-10 flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 via-cyan-600 to-indigo-600 rounded-2xl shadow-xl border-4 border-white transform hover:scale-110 transition-transform duration-300">
+                                <div className="flex items-center mb-6 sm:mb-8">
+                                    <div className="relative z-10 flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-600 via-cyan-600 to-indigo-600 rounded-xl sm:rounded-2xl shadow-xl border-2 sm:border-4 border-white transform hover:scale-110 transition-transform duration-300">
                                         <div className="text-center">
-                                            <span className="text-white font-bold text-lg block leading-tight">{year}</span>
-                                            <span className="text-blue-100 text-xs font-medium">{yearNodes.length} evento{yearNodes.length !== 1 ? 's' : ''}</span>
+                                            <span className="text-white font-bold text-base sm:text-lg block leading-tight">{year}</span>
+                                            <span className="text-blue-100 text-xs font-medium">{yearNodes.length}</span>
                                         </div>
                                     </div>
-                                    <div className="ml-8 flex-1">
-                                        <div className="flex items-center space-x-4">
+                                    <div className="ml-4 sm:ml-8 flex-1">
+                                        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
                                             <div>
-                                                <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{year}</h2>
-                                                <p className="text-gray-600 dark:text-gray-400 text-lg">
-                                                    {yearNodes.length} elemento{yearNodes.length !== 1 ? 's' : ''} en este año
+                                                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{year}</h2>
+                                                <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-lg">
+                                                    {yearNodes.length} elemento{yearNodes.length !== 1 ? 's' : ''}
                                                 </p>
-                                            </div>
-                                            <div className="flex items-center space-x-2">
-                                                <MapPinIcon className="h-5 w-5 text-blue-500" />
-                                                <span className="text-sm font-medium text-gray-500">
-                                                    {sortOrder === 'desc' ? 'Desde el más reciente' : 'Desde el más antiguo'}
-                                                </span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Enhanced Nodes for this year */}
-                                <div className="ml-24 space-y-8">
+                                <div className="ml-12 sm:ml-24 space-y-6 sm:space-y-8">
                                     {yearNodes.map((node, nodeIndex) => {
                                         const typeConfig = nodeTypeConfig[node.type as keyof typeof nodeTypeConfig]
                                         const TypeIcon = typeConfig?.icon || DocumentIcon
                                         const isFeatured = node.tags?.includes('featured')
+                                        const hasChildren = 'children' in node && Array.isArray(node.children) && node.children.length > 0
 
                                         return (
                                             <div 
@@ -209,17 +230,17 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                                 }}
                                             >
                                                 {/* Enhanced Connection Line */}
-                                                <div className="absolute -left-16 top-8 w-12 h-0.5 bg-gradient-to-r from-gray-300 to-blue-400 group-hover:from-blue-400 group-hover:to-cyan-400 transition-all duration-500 shadow-sm"></div>
+                                                <div className="absolute -left-8 sm:-left-16 top-6 sm:top-8 w-6 sm:w-12 h-0.5 bg-gradient-to-r from-gray-300 to-blue-400 group-hover:from-blue-400 group-hover:to-cyan-400 transition-all duration-500 shadow-sm"></div>
 
                                                 {/* Enhanced Timeline Dot */}
-                                                <div className={`absolute -left-20 top-6 w-6 h-6 rounded-xl border-4 border-white shadow-lg transition-all duration-300 group-hover:scale-150 group-hover:rotate-45 ${typeConfig?.bgColor || 'bg-gray-100'} z-10`}>
-                                                    <div className={`w-full h-full rounded-lg bg-gradient-to-br ${typeConfig?.gradient || 'from-gray-400 to-gray-500'}`}></div>
+                                                <div className={`absolute -left-10 sm:-left-20 top-4 sm:top-6 w-5 h-5 sm:w-6 sm:h-6 rounded-lg sm:rounded-xl border-2 sm:border-4 border-white shadow-lg transition-all duration-300 group-hover:scale-150 group-hover:rotate-45 ${typeConfig?.bgColor || 'bg-gray-100'} z-10`}>
+                                                    <div className={`w-full h-full rounded-md sm:rounded-lg bg-gradient-to-br ${typeConfig?.gradient || 'from-gray-400 to-gray-500'}`}></div>
                                                 </div>
 
                                                 {/* Enhanced Node Card */}
                                                 <div
                                                     onClick={() => handleNodeClick(node)}
-                                                    className={`relative bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 p-8 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer group-hover:-translate-y-2 group-hover:scale-105 overflow-hidden ${
+                                                    className={`relative bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-200/50 p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer group-hover:-translate-y-2 group-hover:scale-105 overflow-hidden ${
                                                         isFeatured ? 'ring-2 ring-yellow-400/50' : ''
                                                     }`}
                                                 >
@@ -238,17 +259,17 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
 
                                                     <div className="relative">
                                                         {/* Enhanced Header */}
-                                                        <div className="flex items-start justify-between mb-6">
-                                                            <div className="flex items-center space-x-4">
-                                                                <div className={`p-4 rounded-2xl ${typeConfig?.bgColor || 'bg-gray-100'} shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
-                                                                    <TypeIcon className={`h-8 w-8 ${typeConfig?.color || 'text-gray-600'}`} />
+                                                        <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 sm:mb-6 gap-4">
+                                                            <div className="flex items-center space-x-3 sm:space-x-4 flex-1">
+                                                                <div className={`p-2 sm:p-4 rounded-xl sm:rounded-2xl ${typeConfig?.bgColor || 'bg-gray-100'} shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0`}>
+                                                                    <TypeIcon className={`h-6 w-6 sm:h-8 sm:w-8 ${typeConfig?.color || 'text-gray-600'}`} />
                                                                 </div>
-                                                                <div>
-                                                                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
+                                                                <div className="flex-1 min-w-0">
+                                                                    <h3 className="text-lg sm:text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 break-words">
                                                                         {node.title}
                                                                     </h3>
-                                                                    <div className="flex items-center space-x-4 mt-2">
-                                                                        <p className="text-sm font-medium text-gray-600">
+                                                                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2">
+                                                                        <p className="text-xs sm:text-sm font-medium text-gray-600">
                                                                             {typeConfig?.name || node.type} • {getMonthFromDate(node.createdAt)} {getYearFromDate(node.createdAt)}
                                                                         </p>
                                                                         <div className="flex items-center space-x-2">
@@ -268,18 +289,58 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div className="flex items-center space-x-2 text-sm text-gray-500 bg-white/80 rounded-xl px-3 py-2 border border-gray-200/50">
-                                                                <ClockIcon className="h-4 w-4" />
-                                                                <span className="font-medium">{new Date(node.createdAt).toLocaleDateString('es-ES')}</span>
+                                                            <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500 bg-white/80 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-200/50 self-start">
+                                                                <ClockIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                                                                <span className="font-medium whitespace-nowrap">{new Date(node.createdAt).toLocaleDateString('es-ES')}</span>
                                                             </div>
                                                         </div>
 
                                                         {/* Enhanced Description */}
                                                         {node.description && (
                                                             <div className="mb-6">
-                                                                <p className="text-gray-700 leading-relaxed text-lg">
+                                                                <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
                                                                     {node.description}
                                                                 </p>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Children if any */}
+                                                        {hasChildren && (
+                                                            <div className="mb-6 p-4 sm:p-6 bg-gray-50 rounded-xl border border-gray-200">
+                                                                <h4 className="text-sm sm:text-base font-bold text-gray-700 mb-4 flex items-center">
+                                                                    <div className={`w-1 h-4 bg-gradient-to-b ${typeConfig?.gradient} rounded-full mr-2`}></div>
+                                                                    Contenido ({(node as Node & { children: Node[] }).children.length})
+                                                                </h4>
+                                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                                    {(node as Node & { children: Node[] }).children.map((child: Node) => {
+                                                                        const childConfig = nodeTypeConfig[child.type as keyof typeof nodeTypeConfig]
+                                                                        const ChildIcon = childConfig?.icon || DocumentIcon
+                                                                        return (
+                                                                            <div
+                                                                                key={child.id}
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation()
+                                                                                    handleNodeClick(child)
+                                                                                }}
+                                                                                className="flex items-start space-x-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer group"
+                                                                            >
+                                                                                <div className={`p-2 rounded-lg ${childConfig?.bgColor} flex-shrink-0`}>
+                                                                                    <ChildIcon className={`h-4 w-4 ${childConfig?.color}`} />
+                                                                                </div>
+                                                                                <div className="flex-1 min-w-0">
+                                                                                    <h5 className="font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                                                                                        {child.title}
+                                                                                    </h5>
+                                                                                    {child.description && (
+                                                                                        <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                                                                                            {child.description}
+                                                                                        </p>
+                                                                                    )}
+                                                                                </div>
+                                                                            </div>
+                                                                        )
+                                                                    })}
+                                                                </div>
                                                             </div>
                                                         )}
 
