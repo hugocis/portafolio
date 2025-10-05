@@ -42,6 +42,15 @@ services:
         reservations:
           memory: 256M
 
+  # Cloudflare Tunnel para HTTPS (sin abrir puertos)
+  # Usa Quick Tunnel - URL automática sin necesidad de configurar dominio
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --url http://app:3000
+    restart: unless-stopped
+    depends_on:
+      - app
+
 volumes:
   postgres_data:
     driver: local  # Asegurar persistencia en el servidor

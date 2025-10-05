@@ -139,6 +139,7 @@ jobs:
             POSTGRES_DB=portafolios
             OAUTH_GITHUB_ID=${{ secrets.OAUTH_GITHUB_ID }}
             OAUTH_GITHUB_SECRET=${{ secrets.OAUTH_GITHUB_SECRET }}
+            CLOUDFLARE_TUNNEL_TOKEN=${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}
             LOG_LEVEL=info
             ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
             ENCRYPTION_IV=${{ secrets.ENCRYPTION_IV }}
@@ -156,7 +157,7 @@ jobs:
             echo "🔒 Checking SSL configuration..."
             
             if [ ! -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
-              echo "📝 First time SSL setup - obtaining certificate..."
+              echo "📝 Attempting SSL setup..."
               
               # Crear directorios necesarios
               mkdir -p certbot/conf certbot/www
@@ -167,21 +168,13 @@ jobs:
               docker rm certbot-standalone 2>/dev/null || true
               docker compose down 2>/dev/null || true
               
-              # Verificar puerto alternativo 8080 para el desafío
-              echo "🔍 Using port 8080 for certificate validation..."
+              echo "� Attempting to obtain SSL certificate from Let's Encrypt..."
+              echo "💡 This requires port 80 to be accessible from the Internet"
               
-              if ss -tlnp 2>/dev/null | grep -q ":8080 "; then
-                echo "⚠️ Port 8080 is in use. Stopping conflicting services..."
-                docker ps -q --filter "publish=8080" | xargs -r docker stop 2>/dev/null || true
-                sleep 2
-              fi
-              
-              # Obtener certificado usando modo standalone en puerto 8080
-              echo "🔐 Obtaining SSL certificate from Let's Encrypt (using port 8080)..."
+              # Intentar obtener certificado
               docker run --rm --name certbot-standalone \
                 -p 8080:80 \
                 -v $(pwd)/certbot/conf:/etc/letsencrypt \
-                -v $(pwd)/certbot/www:/var/www/certbot \
                 certbot/certbot certonly \
                 --standalone \
                 --preferred-challenges http \
@@ -190,26 +183,24 @@ jobs:
                 --agree-tos \
                 --no-eff-email \
                 --non-interactive \
-                -d herokku.duckdns.org \
-                && echo "✅ SSL certificate obtained successfully!" \
-                || echo "⚠️ Certificate generation failed. Continuing with HTTP..."
+                -d herokku.duckdns.org 2>&1 | tee /tmp/certbot.log
               
               # Verificar resultado
               if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
-                echo "✅ SSL certificates ready!"
-                echo "📋 Certificate info:"
-                ls -lh certbot/conf/live/herokku.duckdns.org/ || true
+                echo "✅ SSL certificate obtained successfully!"
               else
-                echo "⚠️ No SSL certificate obtained, will use HTTP for now"
-                echo "💡 Note: Let's Encrypt requires port 80 accessible from the internet"
-                echo "💡 Alternative: Configure port forwarding 80 -> 8080 in your router"
+                echo "⚠️ Could not obtain SSL certificate"
+                echo "� Reason: Port 80 not accessible from Internet (firewall/NAT)"
+                echo ""
+                echo "💡 Solutions:"
+                echo "   1. Configure port forwarding: 80 -> 8080 in your router"
+                echo "   2. Use Cloudflare for automatic SSL (see HTTPS_SETUP.md)"
+                echo "   3. Continue with HTTP on port 8130"
+                echo ""
+                echo "📝 For now, deploying with HTTP..."
               fi
             else
               echo "✅ SSL certificates already exist"
-              echo "📋 Certificate expiry info:"
-              docker run --rm \
-                -v $(pwd)/certbot/conf:/etc/letsencrypt \
-                certbot/certbot certificates 2>/dev/null || echo "Certificate info not available"
             fi
             
             # Verificar Docker
