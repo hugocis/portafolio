@@ -21,7 +21,7 @@ SSH_PRIVATE_KEY
 ```
 POSTGRES_PASSWORD
 ```
-**Valor**: `1234` (o la contraseña que prefieras para PostgreSQL)
+**Valor**: `postgres` (contraseña estándar de PostgreSQL)
 
 ### 🔒 Autenticación
 ```
@@ -30,13 +30,15 @@ NEXTAUTH_SECRET
 **Valor**: `7ebbf23385322a58181632c9c17a091be5878bf5a73aa45ee7dfa2470478c3a5`
 
 ### 🐙 GitHub OAuth
+**IMPORTANTE**: No puedes usar nombres que empiecen con `GITHUB_` (están reservados)
+
 ```
-GITHUB_CLIENT_ID
+OAUTH_GITHUB_ID
 ```
 **Valor**: `Ov23lixepi3LURYUEG0q`
 
 ```
-GITHUB_CLIENT_SECRET
+OAUTH_GITHUB_SECRET
 ```
 **Valor**: `519734849fd073a606283ebf14a90bf8b88dbfb0`
 
@@ -70,10 +72,11 @@ CRON_SECRET_TOKEN
 ## 📋 Lista de verificación
 
 - [ ] SSH_PRIVATE_KEY configurado
+- [ ] USERNAME configurado
 - [ ] POSTGRES_PASSWORD configurado
 - [ ] NEXTAUTH_SECRET configurado
-- [ ] GITHUB_CLIENT_ID configurado
-- [ ] GITHUB_CLIENT_SECRET configurado
+- [ ] OAUTH_GITHUB_ID configurado
+- [ ] OAUTH_GITHUB_SECRET configurado
 - [ ] ENCRYPTION_KEY configurado
 - [ ] ENCRYPTION_IV configurado
 - [ ] CRON_SECRET_TOKEN configurado

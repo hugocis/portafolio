@@ -145,8 +145,8 @@ jobs:
             POSTGRES_USER=postgres
             POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
             POSTGRES_DB=portafolios
-            GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}
-            GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}
+            OAUTH_GITHUB_ID=${{ secrets.OAUTH_GITHUB_ID }}
+            OAUTH_GITHUB_SECRET=${{ secrets.OAUTH_GITHUB_SECRET }}
             ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
             ENCRYPTION_IV=${{ secrets.ENCRYPTION_IV }}
             CRON_SECRET_TOKEN=${{ secrets.CRON_SECRET_TOKEN }}

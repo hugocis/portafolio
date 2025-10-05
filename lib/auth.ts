@@ -50,8 +50,8 @@ export const authOptions: NextAuthOptions = {
   adapter: CustomPrismaAdapter(prisma),
   providers: [
     GitHubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID || "",
-      clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
+      clientId: process.env.OAUTH_GITHUB_ID || "",
+      clientSecret: process.env.OAUTH_GITHUB_SECRET || "",
     }),
     CredentialsProvider({
       name: "credentials",
