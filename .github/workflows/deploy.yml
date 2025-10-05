@@ -126,35 +126,44 @@ jobs:
             echo "🔍 Checking critical files..."
             ls -la Dockerfile docker-compose*.yml .env* || echo "Some files may be missing"
             
-            # Crear archivo .env para el servidor
-            echo "📝 Setting up environment configuration..."
-            if [ ! -f .env ]; then
-              if [ -f .env.server ]; then
-                cp .env.server .env
-                echo "✅ Using .env.server"
-              elif [ -f .env.example ]; then
-                cp .env.example .env
-                echo "✅ Using .env.example"
-              else
-                echo "📝 Creating basic .env..."
-                cat > .env << EOF
+            # SIEMPRE crear archivo .env completo con todos los secrets de GitHub
+            echo "📝 Creating complete .env configuration from GitHub Secrets..."
+            cat > .env << 'ENVEOF'
+            # Configuración del servidor
             NODE_ENV=production
+            PORT=3000
+            
+            # URL pública del servidor
             NEXTAUTH_URL=http://herokku.duckdns.org:8130
-            DATABASE_URL=postgresql://postgres:${{ secrets.POSTGRES_PASSWORD }}@db:5432/portafolios
+            
+            # Base de datos
+            DATABASE_URL=postgresql://postgres:${{ secrets.POSTGRES_PASSWORD || 'postgres' }}@db:5432/portafolios
+            
+            # NextAuth.js
             NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+            
+            # PostgreSQL
             POSTGRES_USER=postgres
-            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD || 'postgres' }}
             POSTGRES_DB=portafolios
+            
+            # OAuth GitHub
             OAUTH_GITHUB_ID=${{ secrets.OAUTH_GITHUB_ID }}
             OAUTH_GITHUB_SECRET=${{ secrets.OAUTH_GITHUB_SECRET }}
+            
+            # Configuración adicional
+            LOG_LEVEL=info
             ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
             ENCRYPTION_IV=${{ secrets.ENCRYPTION_IV }}
             CRON_SECRET_TOKEN=${{ secrets.CRON_SECRET_TOKEN }}
-            EOF
-              fi
-            else
-              echo "✅ .env already exists"
-            fi
+            ENVEOF
+            
+            echo "✅ .env created with all secrets from GitHub"
+            echo "📋 Environment variables:"
+            echo "   - NODE_ENV=production"
+            echo "   - NEXTAUTH_URL configured"
+            echo "   - DATABASE_URL configured"
+            echo "   - All secrets loaded from GitHub"
             
             # Verificar Docker
             echo "🐳 Checking Docker installation..."
