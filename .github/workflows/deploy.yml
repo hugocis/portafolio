@@ -128,41 +128,28 @@ jobs:
             
             # SIEMPRE crear archivo .env completo con todos los secrets de GitHub
             echo "📝 Creating complete .env configuration from GitHub Secrets..."
-            cat > .env << 'ENVEOF'
-            # Configuración del servidor
+            cat > .env << EOF
             NODE_ENV=production
             PORT=3000
-            
-            # URL pública del servidor
             NEXTAUTH_URL=http://herokku.duckdns.org:8130
-            
-            # Base de datos
-            DATABASE_URL=postgresql://postgres:${{ secrets.POSTGRES_PASSWORD || 'postgres' }}@db:5432/portafolios
-            
-            # NextAuth.js
+            DATABASE_URL=postgresql://postgres:${{ secrets.POSTGRES_PASSWORD }}@db:5432/portafolios
             NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
-            
-            # PostgreSQL
             POSTGRES_USER=postgres
-            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD || 'postgres' }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
             POSTGRES_DB=portafolios
-            
-            # OAuth GitHub
             OAUTH_GITHUB_ID=${{ secrets.OAUTH_GITHUB_ID }}
             OAUTH_GITHUB_SECRET=${{ secrets.OAUTH_GITHUB_SECRET }}
-            
-            # Configuración adicional
             LOG_LEVEL=info
             ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
             ENCRYPTION_IV=${{ secrets.ENCRYPTION_IV }}
             CRON_SECRET_TOKEN=${{ secrets.CRON_SECRET_TOKEN }}
-            ENVEOF
+            EOF
             
             echo "✅ .env created with all secrets from GitHub"
-            echo "📋 Environment variables:"
+            echo "📋 Environment variables configured:"
             echo "   - NODE_ENV=production"
-            echo "   - NEXTAUTH_URL configured"
-            echo "   - DATABASE_URL configured"
+            echo "   - NEXTAUTH_URL=http://herokku.duckdns.org:8130"
+            echo "   - DATABASE_URL=postgresql://postgres:****@db:5432/portafolios"
             echo "   - All secrets loaded from GitHub"
             
             # Verificar Docker
