@@ -161,9 +161,16 @@ jobs:
               # Crear directorios necesarios
               mkdir -p nginx certbot/conf certbot/www
               
+              # Limpiar contenedores temporales anteriores
+              echo "🧹 Cleaning up any previous temporary containers..."
+              docker stop nginx-temp 2>/dev/null || true
+              docker rm nginx-temp 2>/dev/null || true
+              
               # Verificar si el puerto 80 está en uso y liberarlo
               echo "🔍 Checking port 80 availability..."
-              if netstat -tlnp | grep -q ":80 "; then
+              
+              # Usar ss en lugar de netstat (más moderno y siempre disponible)
+              if ss -tlnp 2>/dev/null | grep -q ":80 " || docker ps --filter "publish=80" | grep -q .; then
                 echo "⚠️ Port 80 is in use. Attempting to free it..."
                 
                 # Intentar detener servicios existentes de Docker que usen el puerto 80
@@ -174,9 +181,9 @@ jobs:
                 sleep 3
                 
                 # Verificar de nuevo
-                if netstat -tlnp | grep -q ":80 "; then
+                if ss -tlnp 2>/dev/null | grep -q ":80 " || docker ps --filter "publish=80" | grep -q .; then
                   echo "⚠️ Port 80 still in use. Checking what's using it..."
-                  netstat -tlnp | grep ":80 " || true
+                  ss -tlnp 2>/dev/null | grep ":80 " || docker ps --filter "publish=80" || true
                   echo "⚠️ Cannot obtain SSL certificate. Will use HTTP for now."
                   echo "💡 To enable HTTPS, ensure port 80 is free and redeploy."
                 else
@@ -187,7 +194,7 @@ jobs:
               fi
               
               # Solo intentar obtener certificado si el puerto 80 está libre
-              if ! netstat -tlnp | grep -q ":80 "; then
+              if ! ss -tlnp 2>/dev/null | grep -q ":80 " && ! docker ps --filter "publish=80" | grep -q .; then
                 # Configuración temporal de Nginx para obtener certificado
                 cat > nginx/nginx.temp.conf << 'NGINXCONF'
             events {
@@ -274,9 +281,9 @@ jobs:
             echo "🔍 Checking for port conflicts..."
             
             # Verificar puerto 8130 (aplicación)
-            if netstat -tlnp | grep -q ":8130 "; then
+            if ss -tlnp 2>/dev/null | grep -q ":8130 "; then
               echo "⚠️ Port 8130 is in use. Checking what's using it..."
-              netstat -tlnp | grep ":8130 "
+              ss -tlnp 2>/dev/null | grep ":8130 "
               echo "🛑 Attempting to stop any existing instances..."
               docker compose -f docker-compose.yml -f docker-compose.server.yml down || true
               pkill -f ":8130" || true
@@ -286,9 +293,9 @@ jobs:
             fi
             
             # Verificar puerto 5432 (PostgreSQL)
-            if netstat -tlnp | grep -q ":5432 "; then
+            if ss -tlnp 2>/dev/null | grep -q ":5432 "; then
               echo "⚠️ Port 5432 is in use (PostgreSQL conflict detected)"
-              netstat -tlnp | grep ":5432 "
+              ss -tlnp 2>/dev/null | grep ":5432 "
               echo "📝 Note: Using internal-only PostgreSQL to avoid conflicts"
             else
               echo "✅ Port 5432 available"
@@ -324,7 +331,7 @@ jobs:
             if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
               echo "🔒 Using HTTPS configuration"
               COMPOSE_CONFIG="-f docker-compose.yml -f docker-compose.https.yml"
-            elif netstat -tlnp | grep -q ":5432 "; then
+            elif ss -tlnp 2>/dev/null | grep -q ":5432 "; then
               echo "⚠️ PostgreSQL port conflict detected, using no-conflict configuration"
               COMPOSE_CONFIG="-f docker-compose.yml -f docker-compose.noconflict.yml"
               
@@ -470,7 +477,7 @@ jobs:
                 if [ $i -eq 10 ]; then
                   echo "⚠️ Health checks failed, checking system status..."
                   echo "🔍 Port status:"
-                  netstat -tlnp | grep -E ':(80|443|8130) ' || echo "Expected ports not listening"
+                  ss -tlnp 2>/dev/null | grep -E ':(80|443|8130) ' || echo "Expected ports not listening"
                   echo "🔍 Process status:"
                   docker compose top 2>/dev/null || echo "Could not get process info"
                   echo "📋 Container logs:"
