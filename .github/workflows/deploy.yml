@@ -131,7 +131,7 @@ jobs:
             cat > .env << EOF
             NODE_ENV=production
             PORT=3000
-            NEXTAUTH_URL=http://herokku.duckdns.org:8130
+            NEXTAUTH_URL=https://herokku.duckdns.org
             DATABASE_URL=postgresql://postgres:${{ secrets.POSTGRES_PASSWORD }}@db:5432/portafolios
             NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
             POSTGRES_USER=postgres
@@ -148,9 +148,73 @@ jobs:
             echo "✅ .env created with all secrets from GitHub"
             echo "📋 Environment variables configured:"
             echo "   - NODE_ENV=production"
-            echo "   - NEXTAUTH_URL=http://herokku.duckdns.org:8130"
+            echo "   - NEXTAUTH_URL=https://herokku.duckdns.org"
             echo "   - DATABASE_URL=postgresql://postgres:****@db:5432/portafolios"
             echo "   - All secrets loaded from GitHub"
+            
+            # 🔒 Configurar SSL si es necesario
+            echo "🔒 Checking SSL configuration..."
+            
+            if [ ! -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
+              echo "📝 First time SSL setup - obtaining certificate..."
+              
+              # Crear directorios necesarios
+              mkdir -p nginx certbot/conf certbot/www
+              
+              # Configuración temporal de Nginx para obtener certificado
+              cat > nginx/nginx.temp.conf << 'NGINXCONF'
+            events {
+                worker_connections 1024;
+            }
+            http {
+                server {
+                    listen 80;
+                    server_name herokku.duckdns.org;
+                    location /.well-known/acme-challenge/ {
+                        root /var/www/certbot;
+                    }
+                    location / {
+                        proxy_pass http://app:3000;
+                    }
+                }
+            }
+            NGINXCONF
+              
+              # Iniciar Nginx temporal
+              docker run -d --name nginx-temp \
+                -p 80:80 \
+                -v $(pwd)/nginx/nginx.temp.conf:/etc/nginx/nginx.conf:ro \
+                -v $(pwd)/certbot/www:/var/www/certbot \
+                nginx:alpine
+              
+              sleep 5
+              
+              # Obtener certificado
+              docker run --rm \
+                -v $(pwd)/certbot/conf:/etc/letsencrypt \
+                -v $(pwd)/certbot/www:/var/www/certbot \
+                certbot/certbot certonly \
+                --webroot \
+                --webroot-path=/var/www/certbot \
+                --email ${{ secrets.LETSENCRYPT_EMAIL || 'admin@herokku.duckdns.org' }} \
+                --agree-tos \
+                --no-eff-email \
+                -d herokku.duckdns.org \
+                || echo "⚠️ Certificate generation failed, will retry on next deploy"
+              
+              # Limpiar Nginx temporal
+              docker stop nginx-temp 2>/dev/null || true
+              docker rm nginx-temp 2>/dev/null || true
+              rm -f nginx/nginx.temp.conf
+              
+              if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
+                echo "✅ SSL certificate obtained successfully!"
+              else
+                echo "⚠️ SSL certificate not obtained, will use HTTP for now"
+              fi
+            else
+              echo "✅ SSL certificates already exist"
+            fi
             
             # Verificar Docker
             echo "🐳 Checking Docker installation..."
@@ -222,8 +286,11 @@ jobs:
             export COMPOSE_HTTP_TIMEOUT=1800
             export DOCKER_CLIENT_TIMEOUT=1800
             
-            # Determinar configuración a usar basada en conflictos de puerto
-            if netstat -tlnp | grep -q ":5432 "; then
+            # Determinar configuración a usar basada en SSL y conflictos de puerto
+            if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
+              echo "🔒 Using HTTPS configuration"
+              COMPOSE_CONFIG="-f docker-compose.yml -f docker-compose.https.yml"
+            elif netstat -tlnp | grep -q ":5432 "; then
               echo "⚠️ PostgreSQL port conflict detected, using no-conflict configuration"
               COMPOSE_CONFIG="-f docker-compose.yml -f docker-compose.noconflict.yml"
               
@@ -255,7 +322,7 @@ jobs:
             EOF
               fi
             else
-              echo "✅ No port conflicts, using standard server configuration"
+              echo "✅ No SSL yet, using standard server configuration"
               COMPOSE_CONFIG="-f docker-compose.yml -f docker-compose.server.yml"
             fi
             
@@ -348,11 +415,20 @@ jobs:
             # Test de salud de la aplicación con reintentos
             echo "🔍 Testing application health..."
             
+            # Determinar URL de health check según configuración
+            if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
+              HEALTH_URL="https://localhost"
+              APP_URL="https://localhost"
+            else
+              HEALTH_URL="http://localhost:8130"
+              APP_URL="http://localhost:8130"
+            fi
+            
             for i in {1..10}; do
-              if curl -f -m 20 http://localhost:8130/api/health 2>/dev/null; then
+              if curl -f -m 20 -k ${HEALTH_URL}/api/health 2>/dev/null; then
                 echo "✅ Health check successful - API responding"
                 break
-              elif curl -f -m 20 http://localhost:8130 2>/dev/null; then
+              elif curl -f -m 20 -k ${APP_URL} 2>/dev/null; then
                 echo "✅ Main application responding"
                 break
               else
@@ -360,7 +436,7 @@ jobs:
                 if [ $i -eq 10 ]; then
                   echo "⚠️ Health checks failed, checking system status..."
                   echo "🔍 Port status:"
-                  netstat -tlnp | grep :8130 || echo "Port 8130 not listening"
+                  netstat -tlnp | grep -E ':(80|443|8130) ' || echo "Expected ports not listening"
                   echo "🔍 Process status:"
                   docker compose top 2>/dev/null || echo "Could not get process info"
                   echo "📋 Container logs:"
@@ -374,8 +450,17 @@ jobs:
             
             # Información final
             echo "🎉 Deployment process completed!"
-            echo "🌐 Application should be available at: http://herokku.duckdns.org:8130"
-            echo "🔍 Health endpoint: http://herokku.duckdns.org:8130/api/health"
+            
+            if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
+              echo "🌐 Application available at: https://herokku.duckdns.org"
+              echo "🔍 Health endpoint: https://herokku.duckdns.org/api/health"
+              echo "🔒 SSL/HTTPS enabled"
+            else
+              echo "🌐 Application available at: http://herokku.duckdns.org:8130"
+              echo "🔍 Health endpoint: http://herokku.duckdns.org:8130/api/health"
+              echo "⚠️ HTTP only (SSL will be configured on next deploy)"
+            fi
+            
             echo "📊 Container status:"
             docker compose ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
             
@@ -395,8 +480,9 @@ jobs:
         if: needs.deploy.result == 'success'
         run: |
           echo "✅ Deployment completed successfully!"
-          echo "🌐 Application URL: http://herokku.duckdns.org:8130"
-          echo "🔍 Health check: http://herokku.duckdns.org:8130/api/health"
+          echo "🌐 Application URL: https://herokku.duckdns.org (or HTTP on first deploy)"
+          echo "🔍 Health check: https://herokku.duckdns.org/api/health"
+          echo "💡 SSL certificate will be automatically obtained on first deploy"
           
       - name: ❌ Failure Notification
         if: needs.deploy.result == 'failure'
