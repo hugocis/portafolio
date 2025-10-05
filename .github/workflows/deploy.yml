@@ -161,8 +161,35 @@ jobs:
               # Crear directorios necesarios
               mkdir -p nginx certbot/conf certbot/www
               
-              # Configuración temporal de Nginx para obtener certificado
-              cat > nginx/nginx.temp.conf << 'NGINXCONF'
+              # Verificar si el puerto 80 está en uso y liberarlo
+              echo "🔍 Checking port 80 availability..."
+              if netstat -tlnp | grep -q ":80 "; then
+                echo "⚠️ Port 80 is in use. Attempting to free it..."
+                
+                # Intentar detener servicios existentes de Docker que usen el puerto 80
+                docker compose down 2>/dev/null || true
+                docker ps -q --filter "publish=80" | xargs -r docker stop 2>/dev/null || true
+                docker ps -q --filter "publish=443" | xargs -r docker stop 2>/dev/null || true
+                
+                sleep 3
+                
+                # Verificar de nuevo
+                if netstat -tlnp | grep -q ":80 "; then
+                  echo "⚠️ Port 80 still in use. Checking what's using it..."
+                  netstat -tlnp | grep ":80 " || true
+                  echo "⚠️ Cannot obtain SSL certificate. Will use HTTP for now."
+                  echo "💡 To enable HTTPS, ensure port 80 is free and redeploy."
+                else
+                  echo "✅ Port 80 freed successfully"
+                fi
+              else
+                echo "✅ Port 80 is available"
+              fi
+              
+              # Solo intentar obtener certificado si el puerto 80 está libre
+              if ! netstat -tlnp | grep -q ":80 "; then
+                # Configuración temporal de Nginx para obtener certificado
+                cat > nginx/nginx.temp.conf << 'NGINXCONF'
             events {
                 worker_connections 1024;
             }
@@ -174,43 +201,50 @@ jobs:
                         root /var/www/certbot;
                     }
                     location / {
-                        proxy_pass http://app:3000;
+                        return 200 'Obtaining SSL certificate...';
+                        add_header Content-Type text/plain;
                     }
                 }
             }
             NGINXCONF
-              
-              # Iniciar Nginx temporal
-              docker run -d --name nginx-temp \
-                -p 80:80 \
-                -v $(pwd)/nginx/nginx.temp.conf:/etc/nginx/nginx.conf:ro \
-                -v $(pwd)/certbot/www:/var/www/certbot \
-                nginx:alpine
-              
-              sleep 5
-              
-              # Obtener certificado
-              docker run --rm \
-                -v $(pwd)/certbot/conf:/etc/letsencrypt \
-                -v $(pwd)/certbot/www:/var/www/certbot \
-                certbot/certbot certonly \
-                --webroot \
-                --webroot-path=/var/www/certbot \
-                --email ${{ secrets.LETSENCRYPT_EMAIL || 'admin@herokku.duckdns.org' }} \
-                --agree-tos \
-                --no-eff-email \
-                -d herokku.duckdns.org \
-                || echo "⚠️ Certificate generation failed, will retry on next deploy"
-              
-              # Limpiar Nginx temporal
-              docker stop nginx-temp 2>/dev/null || true
-              docker rm nginx-temp 2>/dev/null || true
-              rm -f nginx/nginx.temp.conf
-              
-              if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
-                echo "✅ SSL certificate obtained successfully!"
+                
+                # Iniciar Nginx temporal
+                echo "🚀 Starting temporary Nginx..."
+                docker run -d --name nginx-temp \
+                  -p 80:80 \
+                  -v $(pwd)/nginx/nginx.temp.conf:/etc/nginx/nginx.conf:ro \
+                  -v $(pwd)/certbot/www:/var/www/certbot \
+                  nginx:alpine
+                
+                sleep 5
+                
+                # Obtener certificado
+                echo "🔐 Obtaining SSL certificate from Let's Encrypt..."
+                docker run --rm \
+                  -v $(pwd)/certbot/conf:/etc/letsencrypt \
+                  -v $(pwd)/certbot/www:/var/www/certbot \
+                  certbot/certbot certonly \
+                  --webroot \
+                  --webroot-path=/var/www/certbot \
+                  --email ${{ secrets.LETSENCRYPT_EMAIL || 'admin@herokku.duckdns.org' }} \
+                  --agree-tos \
+                  --no-eff-email \
+                  -d herokku.duckdns.org \
+                  || echo "⚠️ Certificate generation failed, will retry on next deploy"
+                
+                # Limpiar Nginx temporal
+                echo "🧹 Cleaning up temporary Nginx..."
+                docker stop nginx-temp 2>/dev/null || true
+                docker rm nginx-temp 2>/dev/null || true
+                rm -f nginx/nginx.temp.conf
+                
+                if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
+                  echo "✅ SSL certificate obtained successfully!"
+                else
+                  echo "⚠️ SSL certificate not obtained, will use HTTP for now"
+                fi
               else
-                echo "⚠️ SSL certificate not obtained, will use HTTP for now"
+                echo "⚠️ Skipping SSL certificate acquisition (port 80 in use)"
               fi
             else
               echo "✅ SSL certificates already exist"
