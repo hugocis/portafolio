@@ -42,19 +42,11 @@ services:
         reservations:
           memory: 256M
 
-  # Cloudflare Tunnel para HTTPS (sin abrir puertos)
-  # Opción 1: Quick Tunnel (URL automática - comentar si usas named tunnel)
-  # cloudflared:
-  #   image: cloudflare/cloudflared:latest
-  #   command: tunnel --url http://app:3000
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - app
-  
-  # Opción 2: Named Tunnel (URL personalizada con dominio)
+  # Cloudflare Quick Tunnel para HTTPS automático
+  # URL automática tipo: https://xyz-abc-123.trycloudflare.com
   cloudflared:
     image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    command: tunnel --url http://app:3000
     restart: unless-stopped
     depends_on:
       - app

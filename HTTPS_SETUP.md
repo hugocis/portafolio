@@ -1,3 +1,28 @@
+# 🔒 HTTPS Configurado con Cloudflare Quick Tunnel
+
+## ✅ Estado Actual
+
+Tu aplicación está usando **Cloudflare Quick Tunnel** que proporciona HTTPS automático.
+
+## 🌐 Obtener tu URL HTTPS
+
+Para ver tu URL con HTTPS, ejecuta en el servidor:
+
+```bash
+ssh -p 7122 tu-usuario@herokku.duckdns.org
+docker logs portafolios-cloudflared-1
+```
+
+Busca la línea:
+```
+Your quick Tunnel has been created! Visit it at:
+https://xyz-random-123.trycloudflare.com
+```
+
+Esa es tu URL con SSL válido de Cloudflare.
+
+---
+
 # 🔒 Guía de Configuración HTTPS con Cloudflare
 
 ## 🎯 Opción 1: URL Bonita con Dominio Personalizado (RECOMENDADO)
