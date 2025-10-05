@@ -131,7 +131,7 @@ jobs:
             cat > .env << EOF
             NODE_ENV=production
             PORT=3000
-            NEXTAUTH_URL=https://herokku.duckdns.org:8443
+            NEXTAUTH_URL=http://herokku.duckdns.org:8130
             DATABASE_URL=postgresql://postgres:${{ secrets.POSTGRES_PASSWORD }}@db:5432/portafolios
             NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
             POSTGRES_USER=postgres
@@ -273,45 +273,9 @@ jobs:
             export COMPOSE_HTTP_TIMEOUT=1800
             export DOCKER_CLIENT_TIMEOUT=1800
             
-            # Determinar configuración a usar basada en SSL y conflictos de puerto
-            if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
-              echo "🔒 Using HTTPS configuration"
-              COMPOSE_CONFIG="-f docker-compose.yml -f docker-compose.https.yml"
-            elif ss -tlnp 2>/dev/null | grep -q ":5432 "; then
-              echo "⚠️ PostgreSQL port conflict detected, using no-conflict configuration"
-              COMPOSE_CONFIG="-f docker-compose.yml -f docker-compose.noconflict.yml"
-              
-              # Crear configuración temporal si no existe
-              if [ ! -f docker-compose.noconflict.yml ]; then
-                echo "📝 Creating temporary no-conflict configuration..."
-                cat > docker-compose.noconflict.yml << 'EOF'
-            services:
-              app:
-                ports:
-                  - "8130:3000"
-                environment:
-                  - NODE_ENV=production
-                  - NEXTAUTH_URL=http://herokku.duckdns.org:8130
-                  - DATABASE_URL=postgresql://postgres:postgres@db:5432/portafolios
-                volumes: []
-                restart: unless-stopped
-              db:
-                environment:
-                  - POSTGRES_USER=postgres
-                  - POSTGRES_PASSWORD=postgres-servidor
-                  - POSTGRES_DB=portafolios
-                restart: unless-stopped
-                healthcheck:
-                  test: ["CMD-SHELL", "pg_isready -U postgres"]
-                  interval: 30s
-                  timeout: 10s
-                  retries: 5
-            EOF
-              fi
-            else
-              echo "✅ No SSL yet, using standard server configuration"
-              COMPOSE_CONFIG="-f docker-compose.yml -f docker-compose.server.yml"
-            fi
+            # Determinar configuración a usar
+            echo "� Using server configuration with Cloudflare Quick Tunnel"
+            COMPOSE_CONFIG="-f docker-compose.yml -f docker-compose.server.yml"
             
             echo "📋 Using configuration: $COMPOSE_CONFIG"
             
@@ -402,20 +366,14 @@ jobs:
             # Test de salud de la aplicación con reintentos
             echo "🔍 Testing application health..."
             
-            # Determinar URL de health check según configuración
-            if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
-              HEALTH_URL="https://localhost:8443"
-              APP_URL="https://localhost:8443"
-            else
-              HEALTH_URL="http://localhost:8130"
-              APP_URL="http://localhost:8130"
-            fi
+            HEALTH_URL="http://localhost:8130"
+            APP_URL="http://localhost:8130"
             
             for i in {1..10}; do
-              if curl -f -m 20 -k ${HEALTH_URL}/api/health 2>/dev/null; then
+              if curl -f -m 20 ${HEALTH_URL}/api/health 2>/dev/null; then
                 echo "✅ Health check successful - API responding"
                 break
-              elif curl -f -m 20 -k ${APP_URL} 2>/dev/null; then
+              elif curl -f -m 20 ${APP_URL} 2>/dev/null; then
                 echo "✅ Main application responding"
                 break
               else
@@ -437,19 +395,17 @@ jobs:
             
             # Información final
             echo "🎉 Deployment process completed!"
-            
-            if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
-              echo "🌐 Application available at:"
-              echo "   - HTTPS: https://herokku.duckdns.org:8443"
-              echo "   - HTTP: http://herokku.duckdns.org:8080 (redirects to HTTPS)"
-              echo "🔍 Health endpoint: https://herokku.duckdns.org:8443/api/health"
-              echo "🔒 SSL/HTTPS enabled"
-            else
-              echo "🌐 Application available at: http://herokku.duckdns.org:8130"
-              echo "🔍 Health endpoint: http://herokku.duckdns.org:8130/api/health"
-              echo "⚠️ HTTP only (SSL will be configured on next deploy)"
-            fi
-            
+            echo ""
+            echo "🌐 Application URLs:"
+            echo "   - HTTP: http://herokku.duckdns.org:8130"
+            echo "   - HTTPS: Check Cloudflare Tunnel logs for auto-generated URL"
+            echo ""
+            echo "🔍 Health endpoint: http://herokku.duckdns.org:8130/api/health"
+            echo ""
+            echo "📝 To get your HTTPS URL, run on server:"
+            echo "   docker logs portafolios-cloudflared-1"
+            echo "   Look for: 'Your quick Tunnel has been created! Visit it at:'"
+            echo ""
             echo "📊 Container status:"
             docker compose ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
             
@@ -470,10 +426,12 @@ jobs:
         run: |
           echo "✅ Deployment completed successfully!"
           echo "🌐 Application URLs:"
-          echo "   - HTTPS: https://herokku.duckdns.org:8443 (with SSL)"
-          echo "   - HTTP: http://herokku.duckdns.org:8080 or :8130"
-          echo "🔍 Health check: https://herokku.duckdns.org:8443/api/health"
-          echo "💡 SSL certificate obtained using port 8080 (no conflicts!)"
+          echo "   - HTTP: http://herokku.duckdns.org:8130"
+          echo "   - HTTPS: Auto-generated by Cloudflare Quick Tunnel"
+          echo ""
+          echo "� Get your HTTPS URL:"
+          echo "   SSH to server and run: docker logs portafolios-cloudflared-1"
+          echo "   Look for the line with 'trycloudflare.com'"
           
       - name: ❌ Failure Notification
         if: needs.deploy.result == 'failure'

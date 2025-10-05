@@ -39,3 +39,9 @@ Thumbs.db
 # Archivos temporales
 *.tmp
 *.temp
+
+# SSL/Certificates - Excluir certbot para evitar errores de permisos
+certbot/
+*.pem
+*.key
+*.crt
