@@ -1,66 +1,104 @@
 # 🔒 Guía de Configuración HTTPS con Cloudflare
 
-## 🎯 Configuración Simple con Cloudflare Quick Tunnel
+## 🎯 Opción 1: URL Bonita con Dominio Personalizado (RECOMENDADO)
 
-### **Opción Automática (SIN configuración de dominio)**
+### **Paso 1: Obtener un dominio gratis**
 
-El proyecto está configurado para usar **Cloudflare Quick Tunnel** que te da una URL automática.
+1. Ve a **Freenom**: https://www.freenom.com
+2. Busca un dominio disponible (ej: `portafolio-hugo.tk`, `.ml`, `.ga`, `.cf`, `.gq`)
+3. Selecciona "Get it now" y regístralo gratis por 12 meses
+4. Completa el registro
 
-#### **Pasos:**
+### **Paso 2: Añadir el dominio a Cloudflare**
 
-1. **Hacer push del código:**
-   ```powershell
-   git add .
-   git commit -m "feat: Add Cloudflare Quick Tunnel for HTTPS"
-   git push origin main
-   ```
+1. En Cloudflare Dashboard: https://dash.cloudflare.com
+2. Click en **"Add a site"**
+3. Ingresa tu dominio de Freenom (ej: `portafolio-hugo.tk`)
+4. Selecciona el plan **Free**
+5. Cloudflare te mostrará 2 nameservers (ej: `john.ns.cloudflare.com` y `mary.ns.cloudflare.com`)
 
-2. **Ver los logs del servidor después del deploy:**
-   - Conéctate por SSH a tu servidor
-   - Ejecuta: `docker logs portafolios-cloudflared-1`
-   - Verás una línea como:
-     ```
-     Your quick Tunnel has been created! Visit it at:
-     https://abc-def-123.trycloudflare.com
-     ```
+### **Paso 3: Cambiar los nameservers en Freenom**
 
-3. **¡Listo!** Usa esa URL para acceder con HTTPS
+1. Ve a Freenom: https://my.freenom.com/clientarea.php
+2. Click en **"Services"** → **"My Domains"**
+3. Click en **"Manage Domain"** de tu dominio
+4. Ve a **"Management Tools"** → **"Nameservers"**
+5. Selecciona **"Use custom nameservers"**
+6. Ingresa los nameservers de Cloudflare
+7. Click en **"Change Nameservers"**
+8. Espera 5-30 minutos a que se propague
+
+### **Paso 4: Configurar el Public Hostname en Cloudflare**
+
+1. En Cloudflare, ve a **Zero Trust** → **Networks** → **Tunnels**
+2. Click en tu tunnel **"portafolio-invernalia"**
+3. Ve a la pestaña **"Public Hostname"**
+4. Click en **"Add a public hostname"**
+5. Configura:
+   - **Subdomain:** `www` (o déjalo vacío para usar `portafolio-hugo.tk` directamente)
+   - **Domain:** Selecciona tu dominio de Freenom
+   - **Path:** (déjalo vacío)
+   - **Service:**
+     - **Type:** `HTTP`
+     - **URL:** `app:3000`
+6. Click en **"Save hostname"**
+
+### **Paso 5: Añadir el token a GitHub Secrets**
+
+1. Ve a: https://github.com/hugocis/portafolio/settings/secrets/actions
+2. Verifica que existe el secret: `CLOUDFLARE_TUNNEL_TOKEN`
+3. Si no existe, añádelo con el token que copiaste antes
+
+### **Paso 6: Actualizar la URL en el código**
+
+Edita el archivo `docker-compose.server.yml` y `.github/workflows/deploy.yml` con tu dominio:
+
+```yaml
+NEXTAUTH_URL=https://portafolio-hugo.tk
+# o
+NEXTAUTH_URL=https://www.portafolio-hugo.tk
+```
+
+### **Paso 7: Hacer deploy**
+
+```powershell
+git add .
+git commit -m "feat: Configure custom domain with Cloudflare Tunnel"
+git push origin main
+```
 
 ---
 
-## 🔧 Opción Avanzada (con dominio propio)
+## 🎯 Opción 2: Quick Tunnel (URL automática)
 
-Si prefieres usar un dominio personalizado:
+Si prefieres no configurar dominio ahora:
 
-### **1️⃣ Obtener un dominio gratis**
+1. Usa la URL actual: `https://model-belfast-simon-super.trycloudflare.com`
+2. Es temporal pero funciona inmediatamente
+3. Puedes cambiar a dominio personalizado después
 
-Opciones:
-- **Freenom**: https://www.freenom.com (dominios .tk, .ml, .ga gratis)
+---
+
+## 🎯 Opción 3: Usar DuckDNS con Port Forwarding
+
+Si prefieres usar `herokku.duckdns.org`:
+
+1. Configura port forwarding en tu router: `80 → 8080`, `443 → 8443`
+2. Usa Let's Encrypt para obtener certificado
+3. URL final: `https://herokku.duckdns.org`
+
+---
+
+## 📝 Dominios gratuitos disponibles
+
+- **Freenom**: `.tk`, `.ml`, `.ga`, `.cf`, `.gq` (gratis 12 meses)
 - **DuckDNS**: Ya tienes `herokku.duckdns.org`
-- **Comprar uno**: Namecheap, Google Domains (~$10/año)
-
-### **2️⃣ Añadir dominio a Cloudflare**
-
-1. En Cloudflare Dashboard: **Add a site**
-2. Ingresa tu dominio
-3. Selecciona plan **Free**
-4. Cambia los nameservers en tu proveedor de dominio
-5. Espera a que se active (5-10 min)
-
-### **3️⃣ Configurar Tunnel con dominio**
-
-1. Añade el token a GitHub Secrets: `CLOUDFLARE_TUNNEL_TOKEN`
-2. Configura el Public Hostname en Cloudflare
-3. Actualiza `NEXTAUTH_URL` en el código
-
----
-
-## 📝 Recomendación
-
-**Usa Quick Tunnel primero** para probarlo rápido, luego puedes configurar un dominio personalizado si lo necesitas.
+- **No-IP**: Subdominios gratis como `tuapp.ddns.net`
 
 ---
 
 ## 🆘 Si tienes problemas
 
-Revisa los logs: `docker logs portafolios-cloudflared-1`
+1. Verifica que los nameservers se hayan propagado: https://www.whatsmydns.net
+2. Revisa los logs: `docker logs portafolios-cloudflared-1`
+3. Verifica el hostname en Cloudflare Dashboard
