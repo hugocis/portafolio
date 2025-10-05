@@ -131,7 +131,7 @@ jobs:
             cat > .env << EOF
             NODE_ENV=production
             PORT=3000
-            NEXTAUTH_URL=https://herokku.duckdns.org
+            NEXTAUTH_URL=https://herokku.duckdns.org:8443
             DATABASE_URL=postgresql://postgres:${{ secrets.POSTGRES_PASSWORD }}@db:5432/portafolios
             NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
             POSTGRES_USER=postgres
@@ -148,7 +148,7 @@ jobs:
             echo "✅ .env created with all secrets from GitHub"
             echo "📋 Environment variables configured:"
             echo "   - NODE_ENV=production"
-            echo "   - NEXTAUTH_URL=https://herokku.duckdns.org"
+            echo "   - NEXTAUTH_URL=https://herokku.duckdns.org:8443"
             echo "   - DATABASE_URL=postgresql://postgres:****@db:5432/portafolios"
             echo "   - All secrets loaded from GitHub"
             
@@ -159,102 +159,57 @@ jobs:
               echo "📝 First time SSL setup - obtaining certificate..."
               
               # Crear directorios necesarios
-              mkdir -p nginx certbot/conf certbot/www
+              mkdir -p certbot/conf certbot/www
               
               # Limpiar contenedores temporales anteriores
               echo "🧹 Cleaning up any previous temporary containers..."
-              docker stop nginx-temp 2>/dev/null || true
-              docker rm nginx-temp 2>/dev/null || true
+              docker stop certbot-standalone 2>/dev/null || true
+              docker rm certbot-standalone 2>/dev/null || true
+              docker compose down 2>/dev/null || true
               
-              # Verificar si el puerto 80 está en uso y liberarlo
-              echo "🔍 Checking port 80 availability..."
+              # Verificar puerto alternativo 8080 para el desafío
+              echo "🔍 Using port 8080 for certificate validation..."
               
-              # Usar ss en lugar de netstat (más moderno y siempre disponible)
-              if ss -tlnp 2>/dev/null | grep -q ":80 " || docker ps --filter "publish=80" | grep -q .; then
-                echo "⚠️ Port 80 is in use. Attempting to free it..."
-                
-                # Intentar detener servicios existentes de Docker que usen el puerto 80
-                docker compose down 2>/dev/null || true
-                docker ps -q --filter "publish=80" | xargs -r docker stop 2>/dev/null || true
-                docker ps -q --filter "publish=443" | xargs -r docker stop 2>/dev/null || true
-                
-                sleep 3
-                
-                # Verificar de nuevo
-                if ss -tlnp 2>/dev/null | grep -q ":80 " || docker ps --filter "publish=80" | grep -q .; then
-                  echo "⚠️ Port 80 still in use. Checking what's using it..."
-                  ss -tlnp 2>/dev/null | grep ":80 " || docker ps --filter "publish=80" || true
-                  echo "⚠️ Cannot obtain SSL certificate. Will use HTTP for now."
-                  echo "💡 To enable HTTPS, ensure port 80 is free and redeploy."
-                else
-                  echo "✅ Port 80 freed successfully"
-                fi
-              else
-                echo "✅ Port 80 is available"
+              if ss -tlnp 2>/dev/null | grep -q ":8080 "; then
+                echo "⚠️ Port 8080 is in use. Stopping conflicting services..."
+                docker ps -q --filter "publish=8080" | xargs -r docker stop 2>/dev/null || true
+                sleep 2
               fi
               
-              # Solo intentar obtener certificado si el puerto 80 está libre
-              if ! ss -tlnp 2>/dev/null | grep -q ":80 " && ! docker ps --filter "publish=80" | grep -q .; then
-                # Configuración temporal de Nginx para obtener certificado
-                cat > nginx/nginx.temp.conf << 'NGINXCONF'
-            events {
-                worker_connections 1024;
-            }
-            http {
-                server {
-                    listen 80;
-                    server_name herokku.duckdns.org;
-                    location /.well-known/acme-challenge/ {
-                        root /var/www/certbot;
-                    }
-                    location / {
-                        return 200 'Obtaining SSL certificate...';
-                        add_header Content-Type text/plain;
-                    }
-                }
-            }
-            NGINXCONF
-                
-                # Iniciar Nginx temporal
-                echo "🚀 Starting temporary Nginx..."
-                docker run -d --name nginx-temp \
-                  -p 80:80 \
-                  -v $(pwd)/nginx/nginx.temp.conf:/etc/nginx/nginx.conf:ro \
-                  -v $(pwd)/certbot/www:/var/www/certbot \
-                  nginx:alpine
-                
-                sleep 5
-                
-                # Obtener certificado
-                echo "🔐 Obtaining SSL certificate from Let's Encrypt..."
-                docker run --rm \
-                  -v $(pwd)/certbot/conf:/etc/letsencrypt \
-                  -v $(pwd)/certbot/www:/var/www/certbot \
-                  certbot/certbot certonly \
-                  --webroot \
-                  --webroot-path=/var/www/certbot \
-                  --email ${{ secrets.LETSENCRYPT_EMAIL || 'admin@herokku.duckdns.org' }} \
-                  --agree-tos \
-                  --no-eff-email \
-                  -d herokku.duckdns.org \
-                  || echo "⚠️ Certificate generation failed, will retry on next deploy"
-                
-                # Limpiar Nginx temporal
-                echo "🧹 Cleaning up temporary Nginx..."
-                docker stop nginx-temp 2>/dev/null || true
-                docker rm nginx-temp 2>/dev/null || true
-                rm -f nginx/nginx.temp.conf
-                
-                if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
-                  echo "✅ SSL certificate obtained successfully!"
-                else
-                  echo "⚠️ SSL certificate not obtained, will use HTTP for now"
-                fi
+              # Obtener certificado usando modo standalone en puerto 8080
+              echo "🔐 Obtaining SSL certificate from Let's Encrypt (using port 8080)..."
+              docker run --rm --name certbot-standalone \
+                -p 8080:80 \
+                -v $(pwd)/certbot/conf:/etc/letsencrypt \
+                -v $(pwd)/certbot/www:/var/www/certbot \
+                certbot/certbot certonly \
+                --standalone \
+                --preferred-challenges http \
+                --http-01-port 80 \
+                --email ${{ secrets.LETSENCRYPT_EMAIL || 'admin@herokku.duckdns.org' }} \
+                --agree-tos \
+                --no-eff-email \
+                --non-interactive \
+                -d herokku.duckdns.org \
+                && echo "✅ SSL certificate obtained successfully!" \
+                || echo "⚠️ Certificate generation failed. Continuing with HTTP..."
+              
+              # Verificar resultado
+              if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
+                echo "✅ SSL certificates ready!"
+                echo "📋 Certificate info:"
+                ls -lh certbot/conf/live/herokku.duckdns.org/ || true
               else
-                echo "⚠️ Skipping SSL certificate acquisition (port 80 in use)"
+                echo "⚠️ No SSL certificate obtained, will use HTTP for now"
+                echo "💡 Note: Let's Encrypt requires port 80 accessible from the internet"
+                echo "💡 Alternative: Configure port forwarding 80 -> 8080 in your router"
               fi
             else
               echo "✅ SSL certificates already exist"
+              echo "📋 Certificate expiry info:"
+              docker run --rm \
+                -v $(pwd)/certbot/conf:/etc/letsencrypt \
+                certbot/certbot certificates 2>/dev/null || echo "Certificate info not available"
             fi
             
             # Verificar Docker
@@ -458,8 +413,8 @@ jobs:
             
             # Determinar URL de health check según configuración
             if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
-              HEALTH_URL="https://localhost"
-              APP_URL="https://localhost"
+              HEALTH_URL="https://localhost:8443"
+              APP_URL="https://localhost:8443"
             else
               HEALTH_URL="http://localhost:8130"
               APP_URL="http://localhost:8130"
@@ -477,7 +432,7 @@ jobs:
                 if [ $i -eq 10 ]; then
                   echo "⚠️ Health checks failed, checking system status..."
                   echo "🔍 Port status:"
-                  ss -tlnp 2>/dev/null | grep -E ':(80|443|8130) ' || echo "Expected ports not listening"
+                  ss -tlnp 2>/dev/null | grep -E ':(8080|8443|8130) ' || echo "Expected ports not listening"
                   echo "🔍 Process status:"
                   docker compose top 2>/dev/null || echo "Could not get process info"
                   echo "📋 Container logs:"
@@ -493,8 +448,10 @@ jobs:
             echo "🎉 Deployment process completed!"
             
             if [ -f "certbot/conf/live/herokku.duckdns.org/fullchain.pem" ]; then
-              echo "🌐 Application available at: https://herokku.duckdns.org"
-              echo "🔍 Health endpoint: https://herokku.duckdns.org/api/health"
+              echo "🌐 Application available at:"
+              echo "   - HTTPS: https://herokku.duckdns.org:8443"
+              echo "   - HTTP: http://herokku.duckdns.org:8080 (redirects to HTTPS)"
+              echo "🔍 Health endpoint: https://herokku.duckdns.org:8443/api/health"
               echo "🔒 SSL/HTTPS enabled"
             else
               echo "🌐 Application available at: http://herokku.duckdns.org:8130"
@@ -521,9 +478,11 @@ jobs:
         if: needs.deploy.result == 'success'
         run: |
           echo "✅ Deployment completed successfully!"
-          echo "🌐 Application URL: https://herokku.duckdns.org (or HTTP on first deploy)"
-          echo "🔍 Health check: https://herokku.duckdns.org/api/health"
-          echo "💡 SSL certificate will be automatically obtained on first deploy"
+          echo "🌐 Application URLs:"
+          echo "   - HTTPS: https://herokku.duckdns.org:8443 (with SSL)"
+          echo "   - HTTP: http://herokku.duckdns.org:8080 or :8130"
+          echo "🔍 Health check: https://herokku.duckdns.org:8443/api/health"
+          echo "💡 SSL certificate obtained using port 8080 (no conflicts!)"
           
       - name: ❌ Failure Notification
         if: needs.deploy.result == 'failure'
