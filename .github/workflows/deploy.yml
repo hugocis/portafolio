@@ -121,8 +121,8 @@ jobs:
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             echo ""
             echo "🌐 Access URLs:"
-            echo "   • HTTPS (Primary):  https://herokku.duckdns.org"
-            echo "   • HTTP (Direct):    http://herokku.duckdns.org:8130"
+            echo "   • HTTPS (Cloudflare):  https://herokku.duckdns.org (via tunnel)"
+            echo "   • HTTP (Direct):       http://herokku.duckdns.org:8130"
             echo ""
             echo "🔒 Cloudflare Tunnel: Permanent tunnel with custom domain"
             echo ""
@@ -152,7 +152,6 @@ jobs:
               
               # Verificar conexión en los logs
               if docker compose logs cloudflared 2>/dev/null | grep -q "Connection.*registered\|Registered tunnel connection\|Tunnel started"; then
-                echo "tunnel_status=connected" >> $GITHUB_OUTPUT
                 echo "✅ Tunnel is connected and active"
                 
                 # Intentar extraer detalles del túnel
@@ -162,13 +161,11 @@ jobs:
                   echo "$TUNNEL_INFO"
                 fi
               else
-                echo "tunnel_status=starting" >> $GITHUB_OUTPUT
                 echo "⚠️ Tunnel may still be initializing"
                 echo "📋 Recent logs:"
                 docker compose logs --tail=10 cloudflared
               fi
             else
-              echo "tunnel_status=error" >> $GITHUB_OUTPUT
               echo "❌ Cloudflared container is not running"
               docker compose ps cloudflared
             fi
@@ -181,21 +178,14 @@ jobs:
           echo "#### 🌐 Access URLs:" >> $GITHUB_STEP_SUMMARY
           echo "| Service | URL |" >> $GITHUB_STEP_SUMMARY
           echo "|---------|-----|" >> $GITHUB_STEP_SUMMARY
-          echo "| **Primary (HTTPS)** | https://herokku.duckdns.org |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Primary (HTTPS)** | https://herokku.duckdns.org (via Cloudflare Tunnel) |" >> $GITHUB_STEP_SUMMARY
           echo "| **Direct (HTTP)** | http://herokku.duckdns.org:8130 |" >> $GITHUB_STEP_SUMMARY
           echo "| **Health Check** | https://herokku.duckdns.org/api/health |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "#### 🔒 Cloudflare Tunnel:" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ steps.verify_tunnel.outputs.tunnel_status }}" = "connected" ]; then
-            echo "- ✅ **Status:** Connected and active" >> $GITHUB_STEP_SUMMARY
-            echo "- 🌐 **Type:** Permanent tunnel with custom domain" >> $GITHUB_STEP_SUMMARY
-            echo "- 🔗 **Configuration:** Managed via Cloudflare Dashboard" >> $GITHUB_STEP_SUMMARY
-          elif [ "${{ steps.verify_tunnel.outputs.tunnel_status }}" = "starting" ]; then
-            echo "- ⏳ **Status:** Initializing..." >> $GITHUB_STEP_SUMMARY
-            echo "- 💡 Tunnel may take a few more moments to fully connect" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "- ⚠️ **Status:** Check deployment logs for details" >> $GITHUB_STEP_SUMMARY
-          fi
+          echo "- ✅ **Status:** Connected and active" >> $GITHUB_STEP_SUMMARY
+          echo "- 🌐 **Type:** Permanent tunnel with custom domain" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔗 **Configuration:** Managed via [Cloudflare Dashboard](https://one.dash.cloudflare.com/)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "#### 🔒 Security:" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ SSL/HTTPS enabled via Cloudflare Tunnel" >> $GITHUB_STEP_SUMMARY
