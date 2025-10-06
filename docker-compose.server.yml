@@ -42,14 +42,16 @@ services:
         reservations:
           memory: 256M
 
-  # Cloudflare Quick Tunnel para HTTPS automático
-  # URL automática tipo: https://xyz-abc-123.trycloudflare.com
+  # Cloudflare Tunnel permanente con token
+  # Proporciona una URL fija y personalizable
   cloudflared:
     image: cloudflare/cloudflared:latest
-    command: tunnel --url http://app:3000
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
     restart: unless-stopped
     depends_on:
       - app
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
 
 volumes:
   postgres_data:

@@ -99,11 +99,20 @@ jobs:
               fi
             done
             
-            # Obtener URL de Cloudflare Quick Tunnel
+            # Verificar que el túnel de Cloudflare esté conectado
             echo ""
-            echo "🔍 Getting Cloudflare URL..."
-            sleep 5  # Esperar a que cloudflared genere la URL
-            CLOUDFLARE_URL=$(docker compose logs cloudflared 2>/dev/null | grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' | head -1)
+            echo "🔍 Checking Cloudflare Tunnel status..."
+            sleep 5
+            
+            # Verificar logs del túnel
+            if docker compose logs cloudflared 2>/dev/null | grep -q "Connection.*registered"; then
+              echo "✅ Cloudflare Tunnel connected successfully"
+            elif docker compose logs cloudflared 2>/dev/null | grep -q "Registered tunnel connection"; then
+              echo "✅ Cloudflare Tunnel registered and connected"
+            else
+              echo "⚠️ Cloudflare Tunnel status unclear, checking logs..."
+              docker compose logs --tail=10 cloudflared
+            fi
             
             # Información final
             echo ""
@@ -114,21 +123,17 @@ jobs:
             echo "🌐 Access URLs:"
             echo "   • HTTPS (Primary):  https://herokku.duckdns.org"
             echo "   • HTTP (Direct):    http://herokku.duckdns.org:8130"
-            if [ -n "$CLOUDFLARE_URL" ]; then
-              echo "   • Cloudflare:       $CLOUDFLARE_URL"
-            fi
+            echo ""
+            echo "🔒 Cloudflare Tunnel: Permanent tunnel with custom domain"
             echo ""
             echo "📊 Container Status:"
             docker compose ps --format "table {{.Name}}\t{{.Status}}"
             echo ""
-            
-            # Guardar la URL de Cloudflare para el siguiente step
-            if [ -n "$CLOUDFLARE_URL" ]; then
-              echo "$CLOUDFLARE_URL" > /tmp/cloudflare_url.txt
-            fi
+            echo "💡 Your tunnel URL is configured in your Cloudflare dashboard"
+            echo "   Visit: https://one.dash.cloudflare.com/ to see your tunnel details"
 
-      - name: 📊 Get Cloudflare URL
-        id: get_url
+      - name: � Verify Cloudflare Tunnel
+        id: verify_tunnel
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP || 'herokku.duckdns.org' }}
@@ -138,40 +143,35 @@ jobs:
           script: |
             cd portafolios
             
-            # Verificar si cloudflared está corriendo
-            echo "🔍 Checking cloudflared status..."
-            docker compose ps cloudflared || echo "⚠️ Cloudflared container not found"
+            echo "🔍 Verifying Cloudflare Tunnel connection..."
+            sleep 5
             
-            # Intentar obtener la URL con múltiples reintentos
-            echo "🔍 Attempting to get Cloudflare URL..."
-            for i in {1..5}; do
-              sleep 5
+            # Verificar que el contenedor esté corriendo
+            if docker compose ps cloudflared | grep -q "Up"; then
+              echo "✅ Cloudflared container is running"
               
-              # Intentar con diferentes métodos
-              CLOUDFLARE_URL=$(docker compose logs cloudflared 2>/dev/null | grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' | tail -1)
-              
-              # Si no funciona, intentar con docker logs directo
-              if [ -z "$CLOUDFLARE_URL" ]; then
-                CONTAINER_ID=$(docker ps -qf "name=cloudflared")
-                if [ -n "$CONTAINER_ID" ]; then
-                  CLOUDFLARE_URL=$(docker logs "$CONTAINER_ID" 2>&1 | grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' | tail -1)
+              # Verificar conexión en los logs
+              if docker compose logs cloudflared 2>/dev/null | grep -q "Connection.*registered\|Registered tunnel connection\|Tunnel started"; then
+                echo "tunnel_status=connected" >> $GITHUB_OUTPUT
+                echo "✅ Tunnel is connected and active"
+                
+                # Intentar extraer detalles del túnel
+                TUNNEL_INFO=$(docker compose logs cloudflared 2>/dev/null | grep -E "connIndex|Registered tunnel" | tail -5)
+                if [ -n "$TUNNEL_INFO" ]; then
+                  echo "📋 Tunnel connection details:"
+                  echo "$TUNNEL_INFO"
                 fi
-              fi
-              
-              if [ -n "$CLOUDFLARE_URL" ]; then
-                echo "cloudflare_url=$CLOUDFLARE_URL" >> $GITHUB_OUTPUT
-                echo "✅ Cloudflare URL found (attempt $i/5): $CLOUDFLARE_URL"
-                break
               else
-                echo "⏳ Attempt $i/5 - URL not available yet..."
-                if [ $i -eq 5 ]; then
-                  echo "⚠️ Could not retrieve Cloudflare URL after 5 attempts"
-                  echo "💡 The Quick Tunnel may take longer to initialize"
-                  echo "📋 Recent cloudflared logs:"
-                  docker compose logs --tail=15 cloudflared 2>/dev/null || echo "No logs available"
-                fi
+                echo "tunnel_status=starting" >> $GITHUB_OUTPUT
+                echo "⚠️ Tunnel may still be initializing"
+                echo "📋 Recent logs:"
+                docker compose logs --tail=10 cloudflared
               fi
-            done
+            else
+              echo "tunnel_status=error" >> $GITHUB_OUTPUT
+              echo "❌ Cloudflared container is not running"
+              docker compose ps cloudflared
+            fi
             
       - name: 🎉 Deployment Summary
         if: success()
@@ -184,11 +184,17 @@ jobs:
           echo "| **Primary (HTTPS)** | https://herokku.duckdns.org |" >> $GITHUB_STEP_SUMMARY
           echo "| **Direct (HTTP)** | http://herokku.duckdns.org:8130 |" >> $GITHUB_STEP_SUMMARY
           echo "| **Health Check** | https://herokku.duckdns.org/api/health |" >> $GITHUB_STEP_SUMMARY
-          if [ -n "${{ steps.get_url.outputs.cloudflare_url }}" ]; then
-            echo "| **🌩️ Cloudflare Quick Tunnel** | ${{ steps.get_url.outputs.cloudflare_url }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### 🔒 Cloudflare Tunnel:" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.verify_tunnel.outputs.tunnel_status }}" = "connected" ]; then
+            echo "- ✅ **Status:** Connected and active" >> $GITHUB_STEP_SUMMARY
+            echo "- 🌐 **Type:** Permanent tunnel with custom domain" >> $GITHUB_STEP_SUMMARY
+            echo "- 🔗 **Configuration:** Managed via Cloudflare Dashboard" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.verify_tunnel.outputs.tunnel_status }}" = "starting" ]; then
+            echo "- ⏳ **Status:** Initializing..." >> $GITHUB_STEP_SUMMARY
+            echo "- 💡 Tunnel may take a few more moments to fully connect" >> $GITHUB_STEP_SUMMARY
           else
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "> **Note:** Cloudflare Quick Tunnel URL not available yet. Check the deployment logs or wait a few more minutes." >> $GITHUB_STEP_SUMMARY
+            echo "- ⚠️ **Status:** Check deployment logs for details" >> $GITHUB_STEP_SUMMARY
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "#### 🔒 Security:" >> $GITHUB_STEP_SUMMARY
