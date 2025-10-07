@@ -65,7 +65,15 @@ jobs:
             
             # Detener servicios y limpiar
             echo "🛑 Stopping existing services..."
+            docker compose -f docker-compose.yml -f docker-compose.server.yml down 2>/dev/null || true
             docker compose -f docker-compose.caddy.yml down 2>/dev/null || true
+            
+            # Liberar puertos 80 y 443
+            echo "🔓 Checking and freeing ports 80 and 443..."
+            fuser -k 80/tcp 2>/dev/null || true
+            fuser -k 443/tcp 2>/dev/null || true
+            sleep 2
+            
             docker image prune -f 2>/dev/null || true
             
             # Desplegar con Caddy
