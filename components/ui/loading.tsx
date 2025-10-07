@@ -41,15 +41,15 @@ export function Loading({
   }
 
   const containerClasses = fullScreen
-    ? 'fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50'
+    ? 'fixed inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50'
     : 'flex items-center justify-center p-8'
 
   if (variant === 'minimal') {
     return (
       <div className={`${containerClasses} ${className}`}>
         <div className="flex items-center space-x-3">
-          <div className={`${sizeClasses[size]} border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin`} />
-          {text && <span className={`${textSizeClasses[size]} text-gray-600`}>{text}{dots}</span>}
+          <div className={`${sizeClasses[size]} border-2 border-gray-300 dark:border-slate-600 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin`} />
+          {text && <span className={`${textSizeClasses[size]} text-gray-600 dark:text-gray-300`}>{text}{dots}</span>}
         </div>
       </div>
     )
@@ -68,7 +68,7 @@ export function Loading({
               />
             ))}
           </div>
-          {text && <span className={`${textSizeClasses[size]} text-gray-600 font-medium`}>{text}</span>}
+          {text && <span className={`${textSizeClasses[size]} text-gray-600 dark:text-gray-300 font-medium`}>{text}</span>}
         </div>
       </div>
     )
@@ -82,7 +82,7 @@ export function Loading({
             <div className={`${sizeClasses[size]} bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-pulse`} />
             <div className={`absolute inset-0 ${sizeClasses[size]} bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-ping opacity-30`} />
           </div>
-          {text && <span className={`${textSizeClasses[size]} text-gray-600 font-medium`}>{text}</span>}
+          {text && <span className={`${textSizeClasses[size]} text-gray-600 dark:text-gray-300 font-medium`}>{text}</span>}
         </div>
       </div>
     )
@@ -93,11 +93,11 @@ export function Loading({
       <div className={`${containerClasses} ${className}`}>
         <div className="flex flex-col items-center space-y-4">
           <div className="relative">
-            <div className={`${sizeClasses[size]} border-4 border-blue-200 rounded-full animate-spin`}>
-              <div className="absolute top-0 left-0 w-full h-full border-4 border-transparent border-t-blue-600 rounded-full" />
+            <div className={`${sizeClasses[size]} border-4 border-blue-200 dark:border-blue-800 rounded-full animate-spin`}>
+              <div className="absolute top-0 left-0 w-full h-full border-4 border-transparent border-t-blue-600 dark:border-t-blue-400 rounded-full" />
             </div>
           </div>
-          {text && <span className={`${textSizeClasses[size]} text-gray-600 font-medium`}>{text}{dots}</span>}
+          {text && <span className={`${textSizeClasses[size]} text-gray-600 dark:text-gray-300 font-medium`}>{text}{dots}</span>}
         </div>
       </div>
     )
@@ -110,15 +110,15 @@ export function Loading({
         {/* Main spinner */}
         <div className="relative">
           <div className={`${sizeClasses[size]} rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-spin`}>
-            <div className="absolute inset-1 bg-white rounded-full" />
+            <div className="absolute inset-1 bg-white dark:bg-slate-800 rounded-full" />
           </div>
 
           {/* Pulsing rings */}
           <div className="absolute inset-0 -m-2">
-            <div className={`w-full h-full border-2 border-blue-300 rounded-full animate-ping opacity-20`} />
+            <div className={`w-full h-full border-2 border-blue-300 dark:border-blue-600 rounded-full animate-ping opacity-20`} />
           </div>
           <div className="absolute inset-0 -m-4">
-            <div className={`w-full h-full border-2 border-purple-300 rounded-full animate-ping opacity-10`}
+            <div className={`w-full h-full border-2 border-purple-300 dark:border-purple-600 rounded-full animate-ping opacity-10`}
               style={{ animationDelay: '0.5s' }} />
           </div>
         </div>
@@ -126,11 +126,11 @@ export function Loading({
         {/* Text with animated dots */}
         {text && (
           <div className="text-center">
-            <h3 className={`${textSizeClasses[size]} font-semibold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent`}>
+            <h3 className={`${textSizeClasses[size]} font-semibold bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-200 dark:to-gray-400 bg-clip-text text-transparent`}>
               {text}
             </h3>
             <div className="flex justify-center mt-2">
-              <span className="text-gray-400 font-mono tracking-wider min-w-[2rem]">
+              <span className="text-gray-400 dark:text-gray-500 font-mono tracking-wider min-w-[2rem]">
                 {dots}
               </span>
             </div>
@@ -139,8 +139,8 @@ export function Loading({
 
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-200 rounded-full blur-3xl opacity-20 animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-purple-200 rounded-full blur-3xl opacity-20 animate-pulse"
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-200 dark:bg-blue-600 rounded-full blur-3xl opacity-20 animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-purple-200 dark:bg-purple-600 rounded-full blur-3xl opacity-20 animate-pulse"
             style={{ animationDelay: '1s' }} />
         </div>
       </div>
@@ -179,9 +179,9 @@ export function LoadingSkeleton({
     <div className={`space-y-3 ${className}`}>
       {Array.from({ length: lines }).map((_, i) => (
         <div key={i} className="space-y-2">
-          <div className={`h-4 bg-gray-200 rounded w-full ${animated ? 'animate-pulse' : ''}`} />
+          <div className={`h-4 bg-gray-200 dark:bg-slate-700 rounded w-full ${animated ? 'animate-pulse' : ''}`} />
           {i === 0 && (
-            <div className={`h-4 bg-gray-200 rounded w-3/4 ${animated ? 'animate-pulse' : ''}`} />
+            <div className={`h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4 ${animated ? 'animate-pulse' : ''}`} />
           )}
         </div>
       ))}
@@ -192,13 +192,13 @@ export function LoadingSkeleton({
 // Card loading skeleton
 export function LoadingCard({ className = '' }: { className?: string }) {
   return (
-    <div className={`bg-white rounded-xl border border-gray-200 p-6 shadow-sm ${className}`}>
+    <div className={`bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-6 shadow-sm ${className}`}>
       <div className="animate-pulse">
         <div className="flex items-center space-x-4 mb-4">
-          <div className="w-12 h-12 bg-gray-200 rounded-full" />
+          <div className="w-12 h-12 bg-gray-200 dark:bg-slate-700 rounded-full" />
           <div className="flex-1 space-y-2">
-            <div className="h-4 bg-gray-200 rounded w-3/4" />
-            <div className="h-3 bg-gray-200 rounded w-1/2" />
+            <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4" />
+            <div className="h-3 bg-gray-200 dark:bg-slate-700 rounded w-1/2" />
           </div>
         </div>
         <LoadingSkeleton lines={3} />

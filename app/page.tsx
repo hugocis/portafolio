@@ -731,9 +731,9 @@ export default function HomePage() {
                   </a>
                 </li>
                 <li>
-                  <a href="/api/health" className="text-gray-400 hover:text-white transition-colors">
-                    API Status
-                  </a>
+                  <Link href="/health" className="text-gray-400 hover:text-white transition-colors">
+                    Estado del Sistema
+                  </Link>
                 </li>
               </ul>
             </div>

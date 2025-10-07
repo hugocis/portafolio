@@ -257,7 +257,7 @@ export default function UserPage({ params }: UserPageProps) {
                       </>
                     )}
                   </button>
-                  <a
+                  <Link
                     href="/explore"
                     className="inline-flex items-center justify-center px-3 sm:px-4 py-2 text-xs sm:text-sm bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-medium rounded-lg hover:from-indigo-700 hover:to-cyan-700 transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap"
                   >
@@ -266,9 +266,9 @@ export default function UserPage({ params }: UserPageProps) {
                     </svg>
                     <span className="hidden sm:inline">Explorar</span>
                     <span className="sm:hidden">Buscar</span>
-                  </a>
+                  </Link>
                   {isOwner && (
-                    <a
+                    <Link
                       href="/dashboard"
                       className="inline-flex items-center justify-center px-3 sm:px-4 py-2 text-xs sm:text-sm bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap"
                     >
@@ -276,7 +276,7 @@ export default function UserPage({ params }: UserPageProps) {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                       Editar
-                    </a>
+                    </Link>
                   )}
                   {isOwner && (
                     <div className="px-2 sm:px-3 py-1.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 text-xs font-medium rounded-lg whitespace-nowrap">
