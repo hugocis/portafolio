@@ -28,8 +28,8 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       }
     ],
-    // Desactivar optimización para imágenes locales cuando no se usa Vercel Blob
-    unoptimized: !process.env.BLOB_READ_WRITE_TOKEN,
+    // Siempre desactivar optimización en servidor (usar solo con Vercel Blob en Vercel)
+    unoptimized: true,
   },
   // Configurar headers para servir archivos estáticos
   async headers() {

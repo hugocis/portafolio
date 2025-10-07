@@ -29,9 +29,9 @@ RUN for i in 1 2 3; do \
 # Copiar código fuente
 COPY . .
 
-# Crear directorio de uploads
+# Crear directorio de uploads con permisos completos
 RUN mkdir -p /app/public/uploads && \
-  chmod 755 /app/public/uploads
+  chmod 777 /app/public/uploads
 
 # Generar cliente Prisma con reintentos
 RUN for i in 1 2 3; do \

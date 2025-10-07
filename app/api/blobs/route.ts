@@ -128,25 +128,30 @@ export async function POST(request: NextRequest) {
       blobUrl = blob.url;
       blobKey = blob.pathname;
     } else {
-      // Use local storage (for development)
+      // Use local storage (for development and self-hosted)
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
       // Save to public folder
       const uploadsDir = join(process.cwd(), 'public', 'uploads');
 
-      if (!existsSync(uploadsDir)) {
-        await mkdir(uploadsDir, { recursive: true });
+      try {
+        if (!existsSync(uploadsDir)) {
+          await mkdir(uploadsDir, { recursive: true, mode: 0o755 });
+        }
+
+        const timestamp = Date.now();
+        const filename = `${timestamp}-${file.name}`;
+        const filepath = join(uploadsDir, filename);
+
+        await writeFile(filepath, buffer, { mode: 0o644 });
+
+        blobUrl = `/uploads/${filename}`;
+        blobKey = filename;
+      } catch (fsError) {
+        console.error('File system error:', fsError);
+        throw new Error('Failed to save file to disk');
       }
-
-      const timestamp = Date.now();
-      const filename = `${timestamp}-${file.name}`;
-      const filepath = join(uploadsDir, filename);
-
-      await writeFile(filepath, buffer);
-
-      blobUrl = `/uploads/${filename}`;
-      blobKey = filename;
     }
 
     // Save blob metadata to database

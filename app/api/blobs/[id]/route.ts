@@ -51,10 +51,18 @@ export async function DELETE(
       });
     } else {
       // Delete from local storage
+      // blob.url is already like "/uploads/filename.jpg"
       const filepath = join(process.cwd(), 'public', blob.url);
 
-      if (existsSync(filepath)) {
-        await unlink(filepath);
+      try {
+        if (existsSync(filepath)) {
+          await unlink(filepath);
+        } else {
+          console.warn(`File not found for deletion: ${filepath}`);
+        }
+      } catch (fsError) {
+        console.error('Error deleting file from disk:', fsError);
+        // Continue anyway to remove from database
       }
     }
 
