@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
+import Link from 'next/link'
 import { InteractiveTree } from '@/components/portfolio/interactive-tree'
 import { NodeInspector } from '@/components/portfolio/node-inspector'
 import { LayoutSelector, LayoutType } from '@/components/portfolio/layout-selector'
+import { BackToTop } from '@/components/ui/back-to-top'
 import { TimelineLayout } from '@/components/portfolio/timeline-layout'
 import { KanbanLayout } from '@/components/portfolio/kanban-layout'
 import { GridLayout } from '@/components/portfolio/grid-layout'
@@ -48,6 +50,7 @@ export default function UserPage({ params }: UserPageProps) {
   const [selectedNode, setSelectedNode] = useState<Node | null>(null)
   const [isInspectorOpen, setIsInspectorOpen] = useState(false)
   const [currentLayout, setCurrentLayout] = useState<LayoutType>('tree')
+  const [copiedLink, setCopiedLink] = useState(false)
 
   useEffect(() => {
     const getParams = async () => {
@@ -95,6 +98,25 @@ export default function UserPage({ params }: UserPageProps) {
     setIsInspectorOpen(true)
   }
 
+  const handleShare = async () => {
+    const url = window.location.href
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `Portfolio de ${user?.name || user?.username}`,
+          text: `Mira el portfolio de ${user?.name || user?.username}`,
+          url: url,
+        })
+      } else {
+        await navigator.clipboard.writeText(url)
+        setCopiedLink(true)
+        setTimeout(() => setCopiedLink(false), 2000)
+      }
+    } catch (error) {
+      console.error('Error sharing:', error)
+    }
+  }
+
   if (loading) {
     return <PageLoading text="Cargando portfolio..." />
   }
@@ -119,6 +141,22 @@ export default function UserPage({ params }: UserPageProps) {
         {/* Modern Hero Header - Mobile Optimized */}
         <div className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg border-b border-white/20 dark:border-slate-700/50 shadow-lg relative z-20">
           <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            {/* Breadcrumbs */}
+            <nav className="flex items-center space-x-2 text-sm pt-4">
+              <Link href="/" className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                Inicio
+              </Link>
+              <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+              <Link href="/explore" className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                Explorar
+              </Link>
+              <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+              <span className="text-gray-900 dark:text-white font-medium">{user.username}</span>
+            </nav>
             <div className="py-4 sm:py-6 lg:py-8">
               <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row lg:items-center lg:justify-between">
                 {/* User Info Section */}
@@ -198,6 +236,27 @@ export default function UserPage({ params }: UserPageProps) {
                     onLayoutChange={setCurrentLayout}
                     className="flex-1 sm:flex-none min-w-[140px]"
                   />
+                  <button
+                    onClick={handleShare}
+                    className="inline-flex items-center justify-center px-3 sm:px-4 py-2 text-xs sm:text-sm bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap"
+                  >
+                    {copiedLink ? (
+                      <>
+                        <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="hidden sm:inline">¡Copiado!</span>
+                        <span className="sm:hidden">✓</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        Compartir
+                      </>
+                    )}
+                  </button>
                   <a
                     href="/explore"
                     className="inline-flex items-center justify-center px-3 sm:px-4 py-2 text-xs sm:text-sm bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-medium rounded-lg hover:from-indigo-700 hover:to-cyan-700 transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap"
@@ -414,6 +473,9 @@ export default function UserPage({ params }: UserPageProps) {
         isOpen={isInspectorOpen}
         onClose={() => setIsInspectorOpen(false)}
       />
+
+      {/* Back to Top */}
+      <BackToTop />
     </div>
   )
 }

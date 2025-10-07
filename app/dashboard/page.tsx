@@ -2,18 +2,20 @@
 
 import { useState, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Node } from '@prisma/client'
 import { NodeEditor } from '@/components/dashboard/node-editor'
 import { NodeInspector } from '@/components/portfolio/node-inspector'
 import { InteractiveTree } from '@/components/portfolio/interactive-tree'
 import { ConfirmationDialog } from '@/components/dashboard/confirmation-dialog'
+import { BackToTop } from '@/components/ui/back-to-top'
 import { LayoutSelector, LayoutType } from '@/components/portfolio/layout-selector'
 import { TimelineLayout } from '@/components/portfolio/timeline-layout'
 import { KanbanLayout } from '@/components/portfolio/kanban-layout'
 import { GridLayout } from '@/components/portfolio/grid-layout'
 import { PageLoading } from '@/components/ui/loading'
-import { ArrowRightOnRectangleIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { ArrowRightStartOnRectangleIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Squares2X2Icon as Squares2X2IconSolid, SparklesIcon as SparklesIconSolid, FolderPlusIcon } from '@heroicons/react/24/solid'
 
 export default function DashboardPage() {
@@ -264,7 +266,7 @@ export default function DashboardPage() {
                                 className="inline-flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors"
                                 title="Cerrar sesión"
                             >
-                                <ArrowRightOnRectangleIcon className="h-5 w-5" />
+                                <ArrowRightStartOnRectangleIcon className="h-5 w-5" />
                             </button>
                         </div>
 
@@ -284,42 +286,49 @@ export default function DashboardPage() {
 
                     {/* Mobile Navigation */}
                     {mobileMenuOpen && (
-                        <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-xl z-50">
-                            <div className="px-4 py-6 space-y-4">
-                                <Link
-                                    href="/"
-                                    className="block py-3 px-4 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                >
-                                    Inicio
-                                </Link>
-                                <Link
-                                    href="/explore"
-                                    className="block py-3 px-4 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                >
-                                    Explorar
-                                </Link>
-                                <Link
-                                    href={`/user/${session?.user?.username}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-center font-medium"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                >
-                                    Mi Portfolio
-                                </Link>
-                                <button
-                                    onClick={() => {
-                                        setMobileMenuOpen(false)
-                                        signOut({ callbackUrl: '/' })
-                                    }}
-                                    className="w-full block py-3 px-4 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 text-left"
-                                >
-                                    Cerrar Sesión
-                                </button>
+                        <>
+                            {/* Backdrop */}
+                            <div
+                                className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+                                onClick={() => setMobileMenuOpen(false)}
+                            />
+                            <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-xl z-50">
+                                <div className="px-4 py-6 space-y-4">
+                                    <Link
+                                        href="/"
+                                        className="block py-3 px-4 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                    >
+                                        Inicio
+                                    </Link>
+                                    <Link
+                                        href="/explore"
+                                        className="block py-3 px-4 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                    >
+                                        Explorar
+                                    </Link>
+                                    <Link
+                                        href={`/user/${session?.user?.username}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="block py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-center font-medium"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                    >
+                                        Mi Portfolio
+                                    </Link>
+                                    <button
+                                        onClick={() => {
+                                            setMobileMenuOpen(false)
+                                            signOut({ callbackUrl: '/' })
+                                        }}
+                                        className="w-full block py-3 px-4 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 text-left"
+                                    >
+                                        Cerrar Sesión
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        </>
                     )}
                 </div>
             </nav>
@@ -335,6 +344,16 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
+                    {/* Breadcrumbs */}
+                    <nav className="flex items-center space-x-2 text-sm mb-6">
+                        <Link href="/" className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                            Inicio
+                        </Link>
+                        <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                        <span className="text-gray-900 dark:text-white font-medium">Dashboard</span>
+                    </nav>
                     <div className="text-center mb-8">
                         {/* Status Badge */}
                         <div className="inline-flex items-center space-x-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-full px-6 py-3 mb-6 border border-gray-200 dark:border-slate-600 shadow-lg animate-float">
@@ -563,24 +582,64 @@ export default function DashboardPage() {
                                             </>
                                         ) : (
                                             <div className="text-center py-20">
-                                                <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                                                    <svg className="h-12 w-12 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                                    </svg>
+                                                <div className="max-w-3xl mx-auto">
+                                                    <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                                                        <svg className="h-12 w-12 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                                        </svg>
+                                                    </div>
+                                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                                                        ¡Bienvenido a tu Portfolio! 🎉
+                                                    </h3>
+                                                    <p className="text-gray-600 dark:text-gray-400 mb-8 text-lg max-w-2xl mx-auto leading-relaxed">
+                                                        Empieza a construir tu historia profesional. Aquí tienes algunos pasos para comenzar:
+                                                    </p>
+
+                                                    {/* Onboarding Steps */}
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                                        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 border-2 border-blue-200 dark:border-blue-800">
+                                                            <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                                                <span className="text-white font-bold text-xl">1</span>
+                                                            </div>
+                                                            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Crea Categorías</h4>
+                                                            <p className="text-sm text-gray-600 dark:text-gray-400">Organiza tu contenido en secciones como Proyectos, Experiencia, Habilidades</p>
+                                                        </div>
+                                                        <div className="bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-6 border-2 border-purple-200 dark:border-purple-800">
+                                                            <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                                                <span className="text-white font-bold text-xl">2</span>
+                                                            </div>
+                                                            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Añade Contenido</h4>
+                                                            <p className="text-sm text-gray-600 dark:text-gray-400">Agrega proyectos, experiencias y logros dentro de cada categoría</p>
+                                                        </div>
+                                                        <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl p-6 border-2 border-green-200 dark:border-green-800">
+                                                            <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                                                <span className="text-white font-bold text-xl">3</span>
+                                                            </div>
+                                                            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Comparte</h4>
+                                                            <p className="text-sm text-gray-600 dark:text-gray-400">Publica tu portfolio y compártelo con el mundo</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                                                        <button
+                                                            onClick={handleCreateRootCategory}
+                                                            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105"
+                                                        >
+                                                            <FolderPlusIcon className="h-6 w-6 mr-2" />
+                                                            Crear Primera Categoría
+                                                        </button>
+                                                        <Link
+                                                            href="/explore"
+                                                            className="inline-flex items-center px-8 py-4 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-semibold rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600"
+                                                        >
+                                                            <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                            </svg>
+                                                            Ver Ejemplos
+                                                        </Link>
+                                                    </div>
                                                 </div>
-                                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                                                    ¡Comienza Tu Historia!
-                                                </h3>
-                                                <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg max-w-md mx-auto leading-relaxed">
-                                                    Tu portfolio está listo para brillar. Crea tu primera categoría para empezar a organizar tu contenido.
-                                                </p>
-                                                <button
-                                                    onClick={handleCreateRootCategory}
-                                                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105"
-                                                >
-                                                    <FolderPlusIcon className="h-6 w-6 mr-2" />
-                                                    Crear Primera Categoría
-                                                </button>
                                             </div>
                                         )}
                                     </div>
@@ -728,6 +787,9 @@ export default function DashboardPage() {
                 loading={confirmDialog.loading}
                 type="danger"
             />
+
+            {/* Back to Top */}
+            <BackToTop />
         </div>
     )
 }
