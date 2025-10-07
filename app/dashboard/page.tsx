@@ -370,10 +370,28 @@ export default function DashboardPage() {
                                         Nuevo
                                     </button>
                                     <Link
+                                        href="/dashboard/profile"
+                                        className="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 text-sm sm:text-base font-medium rounded-xl sm:rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500"
+                                    >
+                                        <svg className="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        Perfil
+                                    </Link>
+                                    <Link
+                                        href="/dashboard/blobs"
+                                        className="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 text-sm sm:text-base font-medium rounded-xl sm:rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-purple-300 dark:hover:border-purple-500"
+                                    >
+                                        <svg className="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        Archivos
+                                    </Link>
+                                    <Link
                                         href={`/user/${session?.user?.username}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 text-sm sm:text-base font-medium rounded-xl sm:rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500"
+                                        className="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 text-sm sm:text-base font-medium rounded-xl sm:rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-green-300 dark:hover:border-green-500"
                                     >
                                         <svg className="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M6 18L18 6M8 6h10v10" />
@@ -559,10 +577,28 @@ export default function DashboardPage() {
                                             Nuevo Elemento
                                         </button>
                                         <Link
+                                            href="/dashboard/profile"
+                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500"
+                                        >
+                                            <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                            Editar Perfil
+                                        </Link>
+                                        <Link
+                                            href="/dashboard/blobs"
+                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-purple-300 dark:hover:border-purple-500"
+                                        >
+                                            <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            Archivos
+                                        </Link>
+                                        <Link
                                             href={`/user/${session?.user?.username}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500"
+                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-green-300 dark:hover:border-green-500"
                                         >
                                             <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M6 18L18 6M8 6h10v10" />
@@ -571,7 +607,7 @@ export default function DashboardPage() {
                                         </Link>
                                         <Link
                                             href="/explore"
-                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-purple-300 dark:hover:border-purple-500"
+                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-indigo-300 dark:hover:border-indigo-500"
                                         >
                                             <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
