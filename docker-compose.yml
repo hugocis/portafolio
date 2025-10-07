@@ -24,6 +24,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "${APP_PORT:-3000}:3000"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     environment:
       - NODE_ENV=${NODE_ENV:-development}
       - PORT=3000
