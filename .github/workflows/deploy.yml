@@ -98,65 +98,19 @@ jobs:
               fi
             done
             
-            # Verificar Caddy y certificados SSL
-            echo "🔐 Checking Caddy and SSL..."
-            docker compose -f docker-compose.caddy.yml logs caddy | tail -20
-            
             # Información final
             echo ""
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             echo "🎉 Deployment Completed!"
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             echo ""
-            echo "🌐 Access URLs:"
-            echo "   • HTTPS (Caddy):       https://herokku.duckdns.org"
-            echo "   • HTTP (redirects):    http://herokku.duckdns.org"
-            echo ""
-            echo "🔒 SSL: Let's Encrypt (auto-renewed by Caddy)"
+            echo "🌐 Access URL:"
+            echo "   • HTTP: http://herokku.duckdns.org:3000"
             echo ""
             echo "📊 Container Status:"
-            docker compose -f docker-compose.caddy.yml ps --format "table {{.Name}}\t{{.Status}}"
+            docker compose ps --format "table {{.Name}}\t{{.Status}}"
             echo ""
-            echo "💡 Caddy manages SSL certificates automatically"
 
-      - name: � Verify Cloudflare Tunnel
-        id: verify_tunnel
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_IP || 'herokku.duckdns.org' }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 7122
-          script: |
-            cd portafolios
-            
-            echo "🔍 Verifying Cloudflare Tunnel connection..."
-            sleep 5
-            
-            # Verificar que el contenedor esté corriendo
-            if docker compose ps cloudflared | grep -q "Up"; then
-              echo "✅ Cloudflared container is running"
-              
-              # Verificar conexión en los logs
-              if docker compose logs cloudflared 2>/dev/null | grep -q "Connection.*registered\|Registered tunnel connection\|Tunnel started"; then
-                echo "✅ Tunnel is connected and active"
-                
-                # Intentar extraer detalles del túnel
-                TUNNEL_INFO=$(docker compose logs cloudflared 2>/dev/null | grep -E "connIndex|Registered tunnel" | tail -5)
-                if [ -n "$TUNNEL_INFO" ]; then
-                  echo "📋 Tunnel connection details:"
-                  echo "$TUNNEL_INFO"
-                fi
-              else
-                echo "⚠️ Tunnel may still be initializing"
-                echo "📋 Recent logs:"
-                docker compose logs --tail=10 cloudflared
-              fi
-            else
-              echo "❌ Cloudflared container is not running"
-              docker compose ps cloudflared
-            fi
-            
       - name: 🎉 Deployment Summary
         if: success()
         run: |
