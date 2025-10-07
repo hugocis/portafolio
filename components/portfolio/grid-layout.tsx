@@ -26,17 +26,17 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
     const [viewMode, setViewMode] = useState<'compact' | 'detailed'>('detailed')
 
     const visibleNodes = nodes.filter(node => node.isVisible || isOwner)
-    
+
     // Build hierarchy: group children under categories
     const buildHierarchy = () => {
         const nodeMap = new Map<string, Node & { children: Node[] }>()
         const roots: (Node & { children: Node[] })[] = []
-        
+
         // First pass: create all nodes with empty children array
         visibleNodes.forEach(node => {
             nodeMap.set(node.id, { ...node, children: [] })
         })
-        
+
         // Second pass: build parent-child relationships
         visibleNodes.forEach(node => {
             const nodeWithChildren = nodeMap.get(node.id)!
@@ -47,10 +47,10 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                 roots.push(nodeWithChildren)
             }
         })
-        
+
         return roots
     }
-    
+
     const hierarchicalNodes = buildHierarchy()
     const filteredNodes = filter === 'all'
         ? hierarchicalNodes
@@ -79,7 +79,7 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                     <div className="absolute top-6 right-8 w-32 h-32 bg-gradient-to-br from-orange-200 to-red-200 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-6 left-8 w-24 h-24 bg-gradient-to-br from-red-200 to-pink-200 rounded-full blur-2xl"></div>
                 </div>
-                
+
                 <div className="relative p-8">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                         <div className="space-y-4">
@@ -108,21 +108,19 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                             <div className="flex bg-white/80 backdrop-blur-sm rounded-xl p-1 border border-gray-200/50 shadow-sm">
                                 <button
                                     onClick={() => setViewMode('detailed')}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                        viewMode === 'detailed'
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${viewMode === 'detailed'
                                             ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-md'
                                             : 'text-gray-600 hover:text-gray-900'
-                                    }`}
+                                        }`}
                                 >
                                     Detallado
                                 </button>
                                 <button
                                     onClick={() => setViewMode('compact')}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                        viewMode === 'compact'
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${viewMode === 'compact'
                                             ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-md'
                                             : 'text-gray-600 hover:text-gray-900'
-                                    }`}
+                                        }`}
                                 >
                                     Compacto
                                 </button>
@@ -132,11 +130,10 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                             <div className="flex flex-wrap gap-2">
                                 <button
                                     onClick={() => setFilter('all')}
-                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                                        filter === 'all'
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${filter === 'all'
                                             ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg'
                                             : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
-                                    }`}
+                                        }`}
                                 >
                                     Todos
                                 </button>
@@ -148,11 +145,10 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                                         <button
                                             key={type}
                                             onClick={() => setFilter(type)}
-                                            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                                                filter === type
+                                            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${filter === type
                                                     ? `bg-gradient-to-r ${typeConfig?.gradient} text-white shadow-lg`
                                                     : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
-                                            }`}
+                                                }`}
                                         >
                                             <TypeIcon className="h-4 w-4" />
                                             <span className="hidden sm:inline">{typeConfig?.name}</span>
@@ -184,9 +180,8 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                             }}
                         >
                             {/* Enhanced Card */}
-                            <div className={`relative bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden ${
-                                isFeatured ? 'ring-2 ring-yellow-400/50' : ''
-                            }`}>
+                            <div className={`relative bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden ${isFeatured ? 'ring-2 ring-yellow-400/50' : ''
+                                }`}>
                                 {/* Featured Badge */}
                                 {isFeatured && (
                                     <div className="absolute top-4 right-4 z-10">
@@ -227,9 +222,8 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                                             </div>
                                         </div>
 
-                                        <h3 className={`font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 ${
-                                            viewMode === 'compact' ? 'text-base line-clamp-2' : 'text-lg line-clamp-2'
-                                        }`}>
+                                        <h3 className={`font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 ${viewMode === 'compact' ? 'text-base line-clamp-2' : 'text-lg line-clamp-2'
+                                            }`}>
                                             {node.title}
                                         </h3>
                                     </div>
@@ -265,9 +259,8 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
 
                                     {/* Project Links */}
                                     {node.type === 'PROJECT' && (node.projectUrl || node.githubUrl || node.demoUrl) && (
-                                        <div className={`grid gap-2 ${
-                                            viewMode === 'compact' ? 'grid-cols-3' : 'grid-cols-3'
-                                        }`}>
+                                        <div className={`grid gap-2 ${viewMode === 'compact' ? 'grid-cols-3' : 'grid-cols-3'
+                                            }`}>
                                             {node.projectUrl && (
                                                 <div className="text-center p-2 bg-emerald-50 rounded-lg border border-emerald-200/50 hover:bg-emerald-100 transition-colors">
                                                     <LinkIcon className="h-4 w-4 text-emerald-600 mx-auto mb-1" />
@@ -300,7 +293,7 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                                                 {node.children.slice(0, viewMode === 'compact' ? 2 : 3).map((child) => {
                                                     const childConfig = nodeTypeConfig[child.type as keyof typeof nodeTypeConfig]
                                                     const ChildIcon = childConfig?.icon || DocumentIcon
-                                                    
+
                                                     return (
                                                         <div
                                                             key={child.id}
@@ -340,9 +333,9 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                                     {/* Footer */}
                                     <div className="flex items-center justify-between pt-4 border-t border-gray-100/50">
                                         <span className="text-xs text-gray-500 font-medium">
-                                            {new Date(node.createdAt).toLocaleDateString('es-ES', { 
-                                                year: 'numeric', 
-                                                month: 'short' 
+                                            {new Date(node.createdAt).toLocaleDateString('es-ES', {
+                                                year: 'numeric',
+                                                month: 'short'
                                             })}
                                         </span>
                                         <div className="flex items-center space-x-2">
@@ -363,13 +356,13 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                     <div className="relative max-w-md mx-auto">
                         {/* Animated Background */}
                         <div className="absolute inset-0 bg-gradient-to-br from-orange-100 to-red-100 rounded-3xl opacity-50 animate-pulse"></div>
-                        
+
                         <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-12 border border-gray-200/50 shadow-lg">
                             <div className="relative">
                                 <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
                                 <Squares2X2Icon className="relative h-20 w-20 text-gray-400 mx-auto mb-6" />
                             </div>
-                            
+
                             <h3 className="text-2xl font-bold text-gray-900 mb-3">
                                 {filter === 'all' ? 'Grid Vacío' : `Sin ${nodeTypeConfig[filter as keyof typeof nodeTypeConfig]?.name}`}
                             </h3>

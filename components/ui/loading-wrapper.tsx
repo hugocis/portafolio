@@ -10,13 +10,13 @@ interface LoadingWrapperProps {
   text?: string
 }
 
-export function LoadingWrapper({ 
-  children, 
-  fallback, 
+export function LoadingWrapper({
+  children,
+  fallback,
   type = 'component',
-  text 
+  text
 }: LoadingWrapperProps) {
-  const defaultFallback = type === 'page' 
+  const defaultFallback = type === 'page'
     ? <PageLoading text={text} />
     : <ComponentLoading text={text} />
 
@@ -28,12 +28,12 @@ export function LoadingWrapper({
 }
 
 // Wrapper específico para páginas
-export function PageWrapper({ 
-  children, 
-  text = 'Cargando página...' 
-}: { 
+export function PageWrapper({
+  children,
+  text = 'Cargando página...'
+}: {
   children: ReactNode
-  text?: string 
+  text?: string
 }) {
   return (
     <LoadingWrapper type="page" text={text}>
@@ -43,12 +43,12 @@ export function PageWrapper({
 }
 
 // Wrapper específico para componentes
-export function ComponentWrapper({ 
-  children, 
-  text = 'Cargando...' 
-}: { 
+export function ComponentWrapper({
+  children,
+  text = 'Cargando...'
+}: {
   children: ReactNode
-  text?: string 
+  text?: string
 }) {
   return (
     <LoadingWrapper type="component" text={text}>

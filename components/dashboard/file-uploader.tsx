@@ -140,13 +140,13 @@ export default function FileUploader({
             disabled={disabled}
             className="hidden"
           />
-          
+
           <CloudArrowUpIcon className="mx-auto h-12 w-12 text-gray-400" />
-          
+
           <p className="mt-2 text-sm font-medium text-gray-900">
             Drop your file here or click to browse
           </p>
-          
+
           <p className="mt-1 text-xs text-gray-500">
             Max size: {Math.round(maxSize / 1024 / 1024)}MB
           </p>
@@ -167,7 +167,7 @@ export default function FileUploader({
               <DocumentIcon className="h-16 w-16 text-gray-400" />
             </div>
           )}
-          
+
           <div className="text-sm">
             <p className="font-medium text-gray-900 truncate">
               {selectedFile.name}
@@ -191,7 +191,7 @@ export default function FileUploader({
             >
               {uploading ? 'Uploading...' : 'Upload'}
             </button>
-            
+
             <button
               onClick={handleCancel}
               disabled={uploading || disabled}

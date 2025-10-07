@@ -3,20 +3,18 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import FileUploader from '@/components/dashboard/file-uploader';
-import { 
-  TrashIcon, 
-  PhotoIcon, 
+import {
+  TrashIcon,
+  PhotoIcon,
   DocumentIcon,
   FunnelIcon,
   CloudArrowUpIcon,
-  ArrowDownTrayIcon,
   ArrowLeftIcon,
   Squares2X2Icon,
   ListBulletIcon,
   MagnifyingGlassIcon,
   ArrowDownCircleIcon
 } from '@heroicons/react/24/outline';
-import { SparklesIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
 
 interface Blob {
@@ -68,13 +66,13 @@ export default function BlobsPage() {
         page: page.toString(),
         limit: '20',
       });
-      
+
       if (category && category !== 'all') {
         params.append('category', category);
       }
 
       const response = await fetch(`/api/blobs?${params}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch blobs');
       }
@@ -96,7 +94,7 @@ export default function BlobsPage() {
   const handleUpload = async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
-    
+
     if (selectedCategory !== 'all') {
       formData.append('category', selectedCategory);
     }
@@ -168,7 +166,7 @@ export default function BlobsPage() {
   };
 
   // Filtrar blobs por búsqueda
-  const filteredBlobs = blobs.filter(blob => 
+  const filteredBlobs = blobs.filter(blob =>
     blob.filename.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (blob.category && blob.category.toLowerCase().includes(searchQuery.toLowerCase()))
   );
@@ -334,7 +332,7 @@ export default function BlobsPage() {
               Filtros y Vista
             </h3>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
             {/* Category Filter */}
             <div className="flex-1">
@@ -366,11 +364,10 @@ export default function BlobsPage() {
               <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg sm:rounded-xl p-1.5 border-2 border-gray-200 dark:border-slate-600 shadow-inner">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 ${
-                    viewMode === 'grid'
+                  className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 ${viewMode === 'grid'
                       ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-md'
                       : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                  }`}
+                    }`}
                   title="Vista de cuadrícula"
                 >
                   <Squares2X2Icon className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -378,11 +375,10 @@ export default function BlobsPage() {
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 ${
-                    viewMode === 'list'
+                  className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 ${viewMode === 'list'
                       ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-md'
                       : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                  }`}
+                    }`}
                   title="Vista de lista"
                 >
                   <ListBulletIcon className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -436,166 +432,60 @@ export default function BlobsPage() {
           <>
             {/* Grid View */}
             {viewMode === 'grid' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-              {filteredBlobs.map((blob) => (
-                <div
-                  key={blob.id}
-                  className="group bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-slate-700 hover:scale-105"
-                >
-                  {/* Preview */}
-                  <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center overflow-hidden relative">
-                    {isImage(blob.mimeType) ? (
-                      <Image
-                        src={blob.url}
-                        alt={blob.filename}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="p-6">
-                        <DocumentIcon className="h-12 w-12 text-gray-400 dark:text-gray-500" />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Info */}
-                  <div className="p-4">
-                    <p className="font-medium text-sm text-gray-900 dark:text-white truncate mb-2" title={blob.filename}>
-                      {blob.filename}
-                    </p>
-                    
-                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
-                      <span>{formatFileSize(blob.size)}</span>
-                      <span>{formatDate(blob.createdAt)}</span>
-                    </div>
-
-                    {blob.category && (
-                      <div className="mb-3">
-                        <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-300 border border-blue-200/50 dark:border-blue-700/50">
-                          {blob.category}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Actions */}
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => copyToClipboard(blob.url, blob.id)}
-                        className="p-2 text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-all duration-200 relative"
-                        title="Copiar URL"
-                      >
-                        {copiedId === blob.id ? (
-                          <svg className="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                        ) : (
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                          </svg>
-                        )}
-                      </button>
-                      <a
-                        href={blob.url}
-                        download
-                        className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
-                        title="Descargar"
-                      >
-                        <ArrowDownCircleIcon className="h-4 w-4" />
-                      </a>
-                      <a
-                        href={blob.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 text-center px-3 py-2 text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl transition-all duration-300 shadow-md hover:shadow-lg"
-                      >
-                        Ver
-                      </a>
-                      
-                      <button
-                        onClick={() => handleDelete(blob.id)}
-                        disabled={deleting === blob.id}
-                        className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
-                        title="Eliminar"
-                      >
-                        {deleting === blob.id ? (
-                          <div className="animate-spin h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full"></div>
-                        ) : (
-                          <TrashIcon className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            )}
-
-            {/* List View */}
-            {viewMode === 'list' && (
-            <div className="space-y-3">
-              {filteredBlobs.map((blob) => (
-                <div
-                  key={blob.id}
-                  className="group bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-slate-700 hover:scale-[1.02]"
-                >
-                  <div className="flex flex-col sm:flex-row items-stretch">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+                {filteredBlobs.map((blob) => (
+                  <div
+                    key={blob.id}
+                    className="group bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-slate-700 hover:scale-105"
+                  >
                     {/* Preview */}
-                    <div className="relative w-full sm:w-32 h-32 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center flex-shrink-0">
+                    <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center overflow-hidden relative">
                       {isImage(blob.mimeType) ? (
                         <Image
                           src={blob.url}
                           alt={blob.filename}
                           fill
-                          className="object-cover"
+                          className="object-cover group-hover:scale-110 transition-transform duration-300"
                         />
                       ) : (
-                        <div className="p-4">
-                          <DocumentIcon className="h-10 w-10 text-gray-400 dark:text-gray-500" />
+                        <div className="p-6">
+                          <DocumentIcon className="h-12 w-12 text-gray-400 dark:text-gray-500" />
                         </div>
                       )}
                     </div>
 
                     {/* Info */}
-                    <div className="flex-1 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-base text-gray-900 dark:text-white truncate mb-1" title={blob.filename}>
-                          {blob.filename}
-                        </h3>
-                        
-                        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
-                          <span className="flex items-center gap-1">
-                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                            </svg>
-                            {formatFileSize(blob.size)}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            {formatDate(blob.createdAt)}
-                          </span>
-                          {blob.category && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-300 border border-blue-200/50 dark:border-blue-700/50">
-                              {blob.category}
-                            </span>
-                          )}
-                        </div>
+                    <div className="p-4">
+                      <p className="font-medium text-sm text-gray-900 dark:text-white truncate mb-2" title={blob.filename}>
+                        {blob.filename}
+                      </p>
+
+                      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
+                        <span>{formatFileSize(blob.size)}</span>
+                        <span>{formatDate(blob.createdAt)}</span>
                       </div>
 
+                      {blob.category && (
+                        <div className="mb-3">
+                          <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-300 border border-blue-200/50 dark:border-blue-700/50">
+                            {blob.category}
+                          </span>
+                        </div>
+                      )}
+
                       {/* Actions */}
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex gap-2">
                         <button
                           onClick={() => copyToClipboard(blob.url, blob.id)}
-                          className="p-2.5 text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-all duration-200 border border-transparent hover:border-green-200 dark:hover:border-green-800"
-                          title={copiedId === blob.id ? "¡Copiado!" : "Copiar URL"}
+                          className="p-2 text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-all duration-200 relative"
+                          title="Copiar URL"
                         >
                           {copiedId === blob.id ? (
-                            <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
                           ) : (
-                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
                             </svg>
                           )}
@@ -603,38 +493,144 @@ export default function BlobsPage() {
                         <a
                           href={blob.url}
                           download
-                          className="p-2.5 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 border border-transparent hover:border-blue-200 dark:hover:border-blue-800"
+                          className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
                           title="Descargar"
                         >
-                          <ArrowDownCircleIcon className="h-5 w-5" />
+                          <ArrowDownCircleIcon className="h-4 w-4" />
                         </a>
                         <a
                           href={blob.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="px-4 py-2.5 text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                          className="flex-1 text-center px-3 py-2 text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl transition-all duration-300 shadow-md hover:shadow-lg"
                         >
                           Ver
                         </a>
-                        
+
                         <button
                           onClick={() => handleDelete(blob.id)}
                           disabled={deleting === blob.id}
-                          className="p-2.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50 border border-transparent hover:border-red-200 dark:hover:border-red-800"
+                          className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
                           title="Eliminar"
                         >
                           {deleting === blob.id ? (
-                            <div className="animate-spin h-5 w-5 border-2 border-red-600 border-t-transparent rounded-full"></div>
+                            <div className="animate-spin h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full"></div>
                           ) : (
-                            <TrashIcon className="h-5 w-5" />
+                            <TrashIcon className="h-4 w-4" />
                           )}
                         </button>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
+
+            {/* List View */}
+            {viewMode === 'list' && (
+              <div className="space-y-3">
+                {filteredBlobs.map((blob) => (
+                  <div
+                    key={blob.id}
+                    className="group bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-slate-700 hover:scale-[1.02]"
+                  >
+                    <div className="flex flex-col sm:flex-row items-stretch">
+                      {/* Preview */}
+                      <div className="relative w-full sm:w-32 h-32 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center flex-shrink-0">
+                        {isImage(blob.mimeType) ? (
+                          <Image
+                            src={blob.url}
+                            alt={blob.filename}
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="p-4">
+                            <DocumentIcon className="h-10 w-10 text-gray-400 dark:text-gray-500" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-1 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-base text-gray-900 dark:text-white truncate mb-1" title={blob.filename}>
+                            {blob.filename}
+                          </h3>
+
+                          <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                            <span className="flex items-center gap-1">
+                              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                              </svg>
+                              {formatFileSize(blob.size)}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              {formatDate(blob.createdAt)}
+                            </span>
+                            {blob.category && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-300 border border-blue-200/50 dark:border-blue-700/50">
+                                {blob.category}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <button
+                            onClick={() => copyToClipboard(blob.url, blob.id)}
+                            className="p-2.5 text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-all duration-200 border border-transparent hover:border-green-200 dark:hover:border-green-800"
+                            title={copiedId === blob.id ? "¡Copiado!" : "Copiar URL"}
+                          >
+                            {copiedId === blob.id ? (
+                              <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                              </svg>
+                            )}
+                          </button>
+                          <a
+                            href={blob.url}
+                            download
+                            className="p-2.5 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 border border-transparent hover:border-blue-200 dark:hover:border-blue-800"
+                            title="Descargar"
+                          >
+                            <ArrowDownCircleIcon className="h-5 w-5" />
+                          </a>
+                          <a
+                            href={blob.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-2.5 text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                          >
+                            Ver
+                          </a>
+
+                          <button
+                            onClick={() => handleDelete(blob.id)}
+                            disabled={deleting === blob.id}
+                            className="p-2.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50 border border-transparent hover:border-red-200 dark:hover:border-red-800"
+                            title="Eliminar"
+                          >
+                            {deleting === blob.id ? (
+                              <div className="animate-spin h-5 w-5 border-2 border-red-600 border-t-transparent rounded-full"></div>
+                            ) : (
+                              <TrashIcon className="h-5 w-5" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
 
             {/* Pagination */}
@@ -651,7 +647,7 @@ export default function BlobsPage() {
                     </svg>
                     <span className="font-semibold">Anterior</span>
                   </button>
-                  
+
                   <div className="flex items-center gap-3">
                     <div className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl shadow-lg">
                       <span className="text-sm sm:text-base">
@@ -667,7 +663,7 @@ export default function BlobsPage() {
                       </div>
                     )}
                   </div>
-                  
+
                   <button
                     onClick={() => setCurrentPage(currentPage + 1)}
                     disabled={currentPage === pagination.pages}

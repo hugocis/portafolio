@@ -206,7 +206,7 @@ export function NodeEditor({
                     <div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full mix-blend-overlay filter blur-xl opacity-70 animate-pulse"></div>
                     <div className="absolute bottom-0 right-0 w-24 h-24 bg-white rounded-full mix-blend-overlay filter blur-xl opacity-50 animate-pulse animation-delay-2000"></div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between relative">
                     <div className="flex items-center space-x-4">
                       {selectedType && (
@@ -318,7 +318,7 @@ export function NodeEditor({
                                     </li>
                                     <li className="flex items-start gap-2">
                                       <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
-                                      <span>Ejemplos: "Mis Proyectos", "Experiencia Laboral", "Habilidades Técnicas"</span>
+                                      <span>Ejemplos: &ldquo;Mis Proyectos&rdquo;, &ldquo;Experiencia Laboral&rdquo;, &ldquo;Habilidades Técnicas&rdquo;</span>
                                     </li>
                                     <li className="flex items-start gap-2">
                                       <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
@@ -387,7 +387,7 @@ export function NodeEditor({
                               const isRecommended = !parentId && type.id === 'CATEGORY'
                               const isProjectType = parentId && (type.id === 'PROJECT' || type.id === 'EXPERIENCE' || type.id === 'EDUCATION')
                               const isLocked = forceRootCategory && type.id !== 'CATEGORY'
-                              
+
                               return (
                                 <button
                                   key={type.id}
@@ -474,7 +474,7 @@ export function NodeEditor({
                                   Galería de Imágenes del Proyecto
                                 </h4>
                                 <p className="text-sm text-purple-800 dark:text-purple-200 leading-relaxed">
-                                  Añade capturas de pantalla, mockups o imágenes que muestren tu proyecto. 
+                                  Añade capturas de pantalla, mockups o imágenes que muestren tu proyecto.
                                   Puedes reordenarlas arrastrándolas.
                                 </p>
                               </div>

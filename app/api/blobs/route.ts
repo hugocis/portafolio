@@ -11,7 +11,7 @@ import { existsSync } from 'fs';
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -131,20 +131,20 @@ export async function POST(request: NextRequest) {
       // Use local storage (for development)
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      
+
       // Save to public folder
       const uploadsDir = join(process.cwd(), 'public', 'uploads');
-      
+
       if (!existsSync(uploadsDir)) {
         await mkdir(uploadsDir, { recursive: true });
       }
-      
+
       const timestamp = Date.now();
       const filename = `${timestamp}-${file.name}`;
       const filepath = join(uploadsDir, filename);
-      
+
       await writeFile(filepath, buffer);
-      
+
       blobUrl = `/uploads/${filename}`;
       blobKey = filename;
     }

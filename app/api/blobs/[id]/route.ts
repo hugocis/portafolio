@@ -14,7 +14,7 @@ export async function DELETE(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -28,7 +28,7 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    
+
     // Find the blob
     const blob = await prisma.blob.findUnique({
       where: { id },
@@ -52,7 +52,7 @@ export async function DELETE(
     } else {
       // Delete from local storage
       const filepath = join(process.cwd(), 'public', blob.url);
-      
+
       if (existsSync(filepath)) {
         await unlink(filepath);
       }
@@ -80,7 +80,7 @@ export async function GET(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -94,7 +94,7 @@ export async function GET(
     }
 
     const { id } = await params;
-    
+
     const blob = await prisma.blob.findUnique({
       where: { id },
     });

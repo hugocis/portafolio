@@ -6,7 +6,7 @@ export async function GET() {
     // Verificar conexión a base de datos
     const { prisma } = await import('@/lib/prisma')
     await prisma.$queryRaw`SELECT 1`
-    
+
     return NextResponse.json({
       status: 'ok',
       timestamp: new Date().toISOString(),

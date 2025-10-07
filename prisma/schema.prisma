@@ -125,11 +125,11 @@ model Blob {
   id        String   @id @default(cuid())
   userId    String
   key       String   @unique // Unique key for blob storage
-  url       String   // Public URL
-  filename  String   // Original filename
-  size      Int      // File size in bytes
-  mimeType  String   // MIME type (image/png, application/pdf, etc.)
-  category  String?  // avatar, document, project-image, etc.
+  url       String // Public URL
+  filename  String // Original filename
+  size      Int // File size in bytes
+  mimeType  String // MIME type (image/png, application/pdf, etc.)
+  category  String? // avatar, document, project-image, etc.
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

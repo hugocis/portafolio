@@ -8,7 +8,7 @@ import { NodeType } from '@prisma/client'
 export async function GET(request: NextRequest) {
     try {
         const session = await getServerSession(authOptions)
-        
+
         if (!session?.user?.id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
@@ -27,8 +27,8 @@ export async function GET(request: NextRequest) {
         })
 
         if (!user) {
-            return NextResponse.json({ 
-                error: 'User not found. Please sign out and sign in again.' 
+            return NextResponse.json({
+                error: 'User not found. Please sign out and sign in again.'
             }, { status: 404 })
         }
 

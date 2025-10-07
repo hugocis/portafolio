@@ -82,9 +82,8 @@ export function LayoutSelector({ currentLayout, onLayoutChange, className = '' }
                     {layouts.find(l => l.id === currentLayout)?.name}
                 </span>
                 <svg
-                    className={`h-4 w-4 text-gray-400 dark:text-gray-500 transition-all duration-300 group-hover:text-gray-600 dark:group-hover:text-gray-300 ${
-                        isExpanded ? 'rotate-180' : ''
-                    }`}
+                    className={`h-4 w-4 text-gray-400 dark:text-gray-500 transition-all duration-300 group-hover:text-gray-600 dark:group-hover:text-gray-300 ${isExpanded ? 'rotate-180' : ''
+                        }`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -97,14 +96,14 @@ export function LayoutSelector({ currentLayout, onLayoutChange, className = '' }
             {isExpanded && mounted && buttonRect && createPortal(
                 <>
                     {/* Overlay to close dropdown when clicking outside */}
-                    <div 
-                        className="fixed inset-0" 
+                    <div
+                        className="fixed inset-0"
                         style={{ zIndex: 99998 }}
                         onClick={() => setIsExpanded(false)}
                     />
-                    
+
                     {/* Dropdown content */}
-                    <div 
+                    <div
                         className="fixed bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl shadow-2xl overflow-hidden w-[calc(100vw-2rem)] sm:w-72 max-w-sm"
                         style={{
                             zIndex: 99999,
@@ -133,24 +132,21 @@ export function LayoutSelector({ currentLayout, onLayoutChange, className = '' }
                                                 onLayoutChange(layout.id)
                                                 setIsExpanded(false)
                                             }}
-                                            className={`w-full flex items-center space-x-3 px-3 py-2.5 sm:py-3 rounded-lg transition-all duration-200 group ${
-                                                isActive
+                                            className={`w-full flex items-center space-x-3 px-3 py-2.5 sm:py-3 rounded-lg transition-all duration-200 group ${isActive
                                                     ? `bg-gradient-to-r ${layout.gradient} text-white shadow-md`
                                                     : 'hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-200 hover:shadow-sm'
-                                            }`}
+                                                }`}
                                         >
-                                            <div className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 ${
-                                                isActive
+                                            <div className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 ${isActive
                                                     ? 'bg-white/20'
                                                     : `bg-gradient-to-r ${layout.gradient} group-hover:scale-110`
-                                            }`}>
+                                                }`}>
                                                 <IconComponent className="h-4 w-4 text-white" />
                                             </div>
                                             <div className="flex-1 text-left min-w-0">
                                                 <div className="font-medium text-sm sm:text-base truncate">{layout.name}</div>
-                                                <div className={`text-xs ${
-                                                    isActive ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
-                                                } hidden sm:block`}>
+                                                <div className={`text-xs ${isActive ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
+                                                    } hidden sm:block`}>
                                                     {layout.description}
                                                 </div>
                                             </div>

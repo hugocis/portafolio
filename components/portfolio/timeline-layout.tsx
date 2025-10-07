@@ -30,11 +30,11 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
         const visibleNodes = nodes.filter(node => node.isVisible || isOwner)
         const nodeMap = new Map<string, Node & { children: Node[] }>()
         const roots: (Node & { children: Node[] })[] = []
-        
+
         visibleNodes.forEach(node => {
             nodeMap.set(node.id, { ...node, children: [] })
         })
-        
+
         visibleNodes.forEach(node => {
             const nodeWithChildren = nodeMap.get(node.id)!
             if (node.parentId && nodeMap.has(node.parentId)) {
@@ -44,12 +44,12 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                 roots.push(nodeWithChildren)
             }
         })
-        
+
         return roots
     }
-    
+
     const hierarchicalNodes = buildHierarchy()
-    
+
     // Organizar nodos por fecha (solo nodos raíz)
     const filteredNodes = hierarchicalNodes
         .filter(node => filterType === 'all' || node.type === filterType || (node.children && node.children.some(c => c.type === filterType)))
@@ -88,7 +88,7 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                     <div className="absolute top-6 right-8 w-32 h-32 bg-gradient-to-br from-blue-200 to-cyan-200 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-6 left-8 w-24 h-24 bg-gradient-to-br from-cyan-200 to-indigo-200 rounded-full blur-2xl"></div>
                 </div>
-                
+
                 <div className="relative p-8">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                         <div className="space-y-4">
@@ -117,22 +117,20 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                             <div className="flex bg-white/80 backdrop-blur-sm rounded-xl p-1 border border-gray-200/50 shadow-sm w-full sm:w-auto">
                                 <button
                                     onClick={() => setSortOrder('desc')}
-                                    className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
-                                        sortOrder === 'desc'
+                                    className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${sortOrder === 'desc'
                                             ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-md'
                                             : 'text-gray-600 hover:text-gray-900'
-                                    }`}
+                                        }`}
                                 >
                                     <span className="hidden sm:inline">Más Reciente</span>
                                     <span className="sm:hidden">Reciente</span>
                                 </button>
                                 <button
                                     onClick={() => setSortOrder('asc')}
-                                    className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
-                                        sortOrder === 'asc'
+                                    className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${sortOrder === 'asc'
                                             ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-md'
                                             : 'text-gray-600 hover:text-gray-900'
-                                    }`}
+                                        }`}
                                 >
                                     <span className="hidden sm:inline">Más Antiguo</span>
                                     <span className="sm:hidden">Antiguo</span>
@@ -143,11 +141,10 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                             <div className="flex flex-wrap gap-2">
                                 <button
                                     onClick={() => setFilterType('all')}
-                                    className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
-                                        filterType === 'all'
+                                    className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${filterType === 'all'
                                             ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg'
                                             : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
-                                    }`}
+                                        }`}
                                 >
                                     Todos
                                 </button>
@@ -159,11 +156,10 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                         <button
                                             key={type}
                                             onClick={() => setFilterType(type)}
-                                            className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
-                                                filterType === type
+                                            className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${filterType === type
                                                     ? `bg-gradient-to-r ${typeConfig?.gradient} text-white shadow-lg`
                                                     : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
-                                            }`}
+                                                }`}
                                         >
                                             <TypeIcon className="h-3 w-3 sm:h-4 sm:w-4" />
                                             <span className="hidden sm:inline">{typeConfig?.name}</span>
@@ -184,8 +180,8 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                     {Object.entries(nodesByYear)
                         .sort(([a], [b]) => sortOrder === 'desc' ? parseInt(b) - parseInt(a) : parseInt(a) - parseInt(b))
                         .map(([year, yearNodes], yearIndex) => (
-                            <div 
-                                key={year} 
+                            <div
+                                key={year}
                                 className="relative animate-fade-in-scale"
                                 style={{
                                     animationDelay: `${yearIndex * 200}ms`,
@@ -221,8 +217,8 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                         const hasChildren = 'children' in node && Array.isArray(node.children) && node.children.length > 0
 
                                         return (
-                                            <div 
-                                                key={node.id} 
+                                            <div
+                                                key={node.id}
                                                 className="relative group animate-fade-in-scale"
                                                 style={{
                                                     animationDelay: `${(yearIndex * 200) + (nodeIndex * 150)}ms`,
@@ -240,9 +236,8 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                                 {/* Enhanced Node Card */}
                                                 <div
                                                     onClick={() => handleNodeClick(node)}
-                                                    className={`relative bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-200/50 p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer group-hover:-translate-y-2 group-hover:scale-105 overflow-hidden ${
-                                                        isFeatured ? 'ring-2 ring-yellow-400/50' : ''
-                                                    }`}
+                                                    className={`relative bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-200/50 p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer group-hover:-translate-y-2 group-hover:scale-105 overflow-hidden ${isFeatured ? 'ring-2 ring-yellow-400/50' : ''
+                                                        }`}
                                                 >
                                                     {/* Featured Badge */}
                                                     {isFeatured && (
@@ -410,13 +405,13 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                         <div className="relative">
                             {/* Animated Background */}
                             <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-3xl opacity-50 animate-pulse"></div>
-                            
+
                             <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-12 border border-gray-200/50 shadow-lg">
                                 <div className="relative mb-6">
                                     <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
                                     <CalendarDaysIcon className="relative h-20 w-20 text-gray-400 mx-auto" />
                                 </div>
-                                
+
                                 <h3 className="text-2xl font-bold text-gray-900 mb-3">
                                     {filterType === 'all' ? 'Timeline Vacío' : `Sin ${nodeTypeConfig[filterType as keyof typeof nodeTypeConfig]?.name}`}
                                 </h3>

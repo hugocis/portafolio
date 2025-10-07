@@ -13,7 +13,7 @@ import { TimelineLayout } from '@/components/portfolio/timeline-layout'
 import { KanbanLayout } from '@/components/portfolio/kanban-layout'
 import { GridLayout } from '@/components/portfolio/grid-layout'
 import { PageLoading } from '@/components/ui/loading'
-import { PlusIcon, ArrowRightOnRectangleIcon, Bars3Icon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import { ArrowRightOnRectangleIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Squares2X2Icon as Squares2X2IconSolid, SparklesIcon as SparklesIconSolid, FolderPlusIcon } from '@heroicons/react/24/solid'
 
 export default function DashboardPage() {
@@ -29,7 +29,6 @@ export default function DashboardPage() {
     const [currentLayout, setCurrentLayout] = useState<LayoutType>('tree')
     const [scrollY, setScrollY] = useState(0)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-    const [showAddMenu, setShowAddMenu] = useState(false)
     const [forceRootCategory, setForceRootCategory] = useState(false)
     const [confirmDialog, setConfirmDialog] = useState<{
         isOpen: boolean
@@ -61,7 +60,7 @@ export default function DashboardPage() {
     const fetchNodes = async () => {
         try {
             const response = await fetch('/api/nodes')
-            
+
             if (response.ok) {
                 const data = await response.json()
                 setNodes(data.nodes)
@@ -78,19 +77,11 @@ export default function DashboardPage() {
         setParentNodeId(parentId || null)
         setForceRootCategory(isRootCategory)
         setIsEditorOpen(true)
-        setShowAddMenu(false)
     }
 
     const handleCreateRootCategory = () => {
         handleNodeAdd(undefined, true)
     }
-
-    const handleAddToCategory = () => {
-        // This will be handled by clicking on category nodes
-        setShowAddMenu(false)
-    }
-
-    const rootNodes = nodes.filter(n => !n.parentId)
 
     const handleNodeEdit = (node: Node) => {
         setSelectedNode(node)
@@ -197,8 +188,8 @@ export default function DashboardPage() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900">
             {/* Navigation */}
             <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrollY > 50
-                    ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-lg'
-                    : 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700'
+                ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-lg'
+                : 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700'
                 }`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center py-4">
@@ -218,15 +209,15 @@ export default function DashboardPage() {
                                 {/* Animated gradient background layers */}
                                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-5 group-hover:opacity-15 transition-opacity duration-500"></div>
                                 <div className="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 opacity-0 group-hover:opacity-10 blur-xl transition-all duration-700 animate-gradient-shift"></div>
-                                
+
                                 {/* Shine effect */}
                                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
                                 </div>
-                                
+
                                 {/* Subtle border glow */}
                                 <div className="absolute inset-0 rounded-2xl ring-1 ring-gray-200/50 dark:ring-gray-700/50 group-hover:ring-purple-500/30 group-hover:ring-2 transition-all duration-300"></div>
-                                
+
                                 {/* Content */}
                                 <h1 className="relative text-lg font-bold flex items-center gap-2 whitespace-nowrap">
                                     <span className="relative">
@@ -473,234 +464,234 @@ export default function DashboardPage() {
                         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8">
                             {/* Portfolio Content */}
                             <div className="lg:col-span-3">
-                            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
-                                <div className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 dark:from-blue-900/30 dark:via-purple-900/30 dark:to-indigo-900/30 px-6 py-6 border-b border-gray-200 dark:border-slate-700">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <div className="flex items-center space-x-3 mb-1">
+                                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
+                                    <div className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 dark:from-blue-900/30 dark:via-purple-900/30 dark:to-indigo-900/30 px-6 py-6 border-b border-gray-200 dark:border-slate-700">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <div className="flex items-center space-x-3 mb-1">
+                                                    {currentLayout === 'tree' && (
+                                                        <div className="p-1.5 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                                                            <svg className="h-5 w-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h3m0 0h9a2 2 0 002-2V9a2 2 0 00-2-2h-9m0 0V5a2 2 0 012-2h7a2 2 0 012 2v2m-9 4h2.5A1.5 1.5 0 0114 10v1.5a1.5 1.5 0 01-1.5 1.5H12" />
+                                                            </svg>
+                                                        </div>
+                                                    )}
+                                                    {currentLayout === 'timeline' && (
+                                                        <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                                            <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                            </svg>
+                                                        </div>
+                                                    )}
+                                                    {currentLayout === 'kanban' && (
+                                                        <div className="p-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                                                            <svg className="h-5 w-5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                                                            </svg>
+                                                        </div>
+                                                    )}
+                                                    {currentLayout === 'grid' && (
+                                                        <div className="p-1.5 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                                                            <svg className="h-5 w-5 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                                            </svg>
+                                                        </div>
+                                                    )}
+                                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                                                        {currentLayout === 'tree' && 'Árbol de Portfolio'}
+                                                        {currentLayout === 'timeline' && 'Vista Timeline'}
+                                                        {currentLayout === 'kanban' && 'Vista Kanban'}
+                                                        {currentLayout === 'grid' && 'Vista Grid'}
+                                                    </h3>
+                                                </div>
+                                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                    {currentLayout === 'tree' && 'Organización jerárquica de tu contenido'}
+                                                    {currentLayout === 'timeline' && 'Cronología de tu trayectoria profesional'}
+                                                    {currentLayout === 'kanban' && 'Gestión visual por categorías'}
+                                                    {currentLayout === 'grid' && 'Vista compacta en cuadrícula'}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center space-x-4 text-sm">
+                                                <div className="flex items-center space-x-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full px-3 py-1.5 border border-gray-200 dark:border-slate-600">
+                                                    <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
+                                                    <span className="text-gray-700 dark:text-gray-300 font-medium">{nodes.filter(n => n.isVisible).length} Públicos</span>
+                                                </div>
+                                                <div className="flex items-center space-x-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full px-3 py-1.5 border border-gray-200 dark:border-slate-600">
+                                                    <div className="w-2.5 h-2.5 bg-gray-400 rounded-full"></div>
+                                                    <span className="text-gray-700 dark:text-gray-300 font-medium">{nodes.filter(n => !n.isVisible).length} Privados</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-6">
+                                        {nodes.length > 0 ? (
+                                            <>
                                                 {currentLayout === 'tree' && (
-                                                    <div className="p-1.5 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                                                        <svg className="h-5 w-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h3m0 0h9a2 2 0 002-2V9a2 2 0 00-2-2h-9m0 0V5a2 2 0 012-2h7a2 2 0 012 2v2m-9 4h2.5A1.5 1.5 0 0114 10v1.5a1.5 1.5 0 01-1.5 1.5H12" />
-                                                        </svg>
-                                                    </div>
+                                                    <InteractiveTree
+                                                        nodes={nodes}
+                                                        username={session?.user?.username || ''}
+                                                        isOwner={isOwner}
+                                                        onNodeClick={handleNodeClick}
+                                                        onNodeEdit={handleNodeEdit}
+                                                        onNodeDelete={handleNodeDelete}
+                                                        onNodeAdd={handleNodeAdd}
+                                                        selectedNodeId={selectedNodeId}
+                                                    />
                                                 )}
                                                 {currentLayout === 'timeline' && (
-                                                    <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                                                        <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                        </svg>
-                                                    </div>
+                                                    <TimelineLayout
+                                                        nodes={nodes}
+                                                        onNodeClick={handleNodeClick}
+                                                        isOwner={isOwner}
+                                                    />
                                                 )}
                                                 {currentLayout === 'kanban' && (
-                                                    <div className="p-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                                                        <svg className="h-5 w-5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
-                                                        </svg>
-                                                    </div>
+                                                    <KanbanLayout
+                                                        nodes={nodes}
+                                                        onNodeClick={handleNodeClick}
+                                                        isOwner={isOwner}
+                                                    />
                                                 )}
                                                 {currentLayout === 'grid' && (
-                                                    <div className="p-1.5 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-                                                        <svg className="h-5 w-5 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                                                        </svg>
-                                                    </div>
+                                                    <GridLayout
+                                                        nodes={nodes}
+                                                        onNodeClick={handleNodeClick}
+                                                        isOwner={isOwner}
+                                                    />
                                                 )}
-                                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                                                    {currentLayout === 'tree' && 'Árbol de Portfolio'}
-                                                    {currentLayout === 'timeline' && 'Vista Timeline'}
-                                                    {currentLayout === 'kanban' && 'Vista Kanban'}
-                                                    {currentLayout === 'grid' && 'Vista Grid'}
+                                            </>
+                                        ) : (
+                                            <div className="text-center py-20">
+                                                <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                                                    <svg className="h-12 w-12 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                                    </svg>
+                                                </div>
+                                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                                                    ¡Comienza Tu Historia!
                                                 </h3>
+                                                <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg max-w-md mx-auto leading-relaxed">
+                                                    Tu portfolio está listo para brillar. Crea tu primera categoría para empezar a organizar tu contenido.
+                                                </p>
+                                                <button
+                                                    onClick={handleCreateRootCategory}
+                                                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105"
+                                                >
+                                                    <FolderPlusIcon className="h-6 w-6 mr-2" />
+                                                    Crear Primera Categoría
+                                                </button>
                                             </div>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                {currentLayout === 'tree' && 'Organización jerárquica de tu contenido'}
-                                                {currentLayout === 'timeline' && 'Cronología de tu trayectoria profesional'}
-                                                {currentLayout === 'kanban' && 'Gestión visual por categorías'}
-                                                {currentLayout === 'grid' && 'Vista compacta en cuadrícula'}
-                                            </p>
-                                        </div>
-                                        <div className="flex items-center space-x-4 text-sm">
-                                            <div className="flex items-center space-x-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full px-3 py-1.5 border border-gray-200 dark:border-slate-600">
-                                                <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
-                                                <span className="text-gray-700 dark:text-gray-300 font-medium">{nodes.filter(n => n.isVisible).length} Públicos</span>
-                                            </div>
-                                            <div className="flex items-center space-x-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full px-3 py-1.5 border border-gray-200 dark:border-slate-600">
-                                                <div className="w-2.5 h-2.5 bg-gray-400 rounded-full"></div>
-                                                <span className="text-gray-700 dark:text-gray-300 font-medium">{nodes.filter(n => !n.isVisible).length} Privados</span>
-                                            </div>
-                                        </div>
+                                        )}
                                     </div>
                                 </div>
+                            </div>
 
-                                <div className="p-6">
-                                    {nodes.length > 0 ? (
-                                        <>
-                                            {currentLayout === 'tree' && (
-                                                <InteractiveTree
-                                                    nodes={nodes}
-                                                    username={session?.user?.username || ''}
-                                                    isOwner={isOwner}
-                                                    onNodeClick={handleNodeClick}
-                                                    onNodeEdit={handleNodeEdit}
-                                                    onNodeDelete={handleNodeDelete}
-                                                    onNodeAdd={handleNodeAdd}
-                                                    selectedNodeId={selectedNodeId}
-                                                />
-                                            )}
-                                            {currentLayout === 'timeline' && (
-                                                <TimelineLayout
-                                                    nodes={nodes}
-                                                    onNodeClick={handleNodeClick}
-                                                    isOwner={isOwner}
-                                                />
-                                            )}
-                                            {currentLayout === 'kanban' && (
-                                                <KanbanLayout
-                                                    nodes={nodes}
-                                                    onNodeClick={handleNodeClick}
-                                                    isOwner={isOwner}
-                                                />
-                                            )}
-                                            {currentLayout === 'grid' && (
-                                                <GridLayout
-                                                    nodes={nodes}
-                                                    onNodeClick={handleNodeClick}
-                                                    isOwner={isOwner}
-                                                />
-                                            )}
-                                        </>
-                                    ) : (
-                                        <div className="text-center py-20">
-                                            <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                                                <svg className="h-12 w-12 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            {/* Sidebar - Hidden on mobile, shown on lg+ */}
+                            <div className="hidden lg:block lg:col-span-1">
+                                <div className="space-y-6">
+                                    {/* Acciones */}
+                                    <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-gray-200 dark:border-slate-700 p-6">
+                                        <div className="flex items-center mb-6">
+                                            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl mr-3 shadow-lg">
+                                                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                                 </svg>
                                             </div>
-                                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                                                ¡Comienza Tu Historia!
+                                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                                                Acciones Rápidas
                                             </h3>
-                                            <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg max-w-md mx-auto leading-relaxed">
-                                                Tu portfolio está listo para brillar. Crea tu primera categoría para empezar a organizar tu contenido.
-                                            </p>
+                                        </div>
+                                        <div className="space-y-3">
                                             <button
                                                 onClick={handleCreateRootCategory}
-                                                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105"
+                                                className="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
                                             >
-                                                <FolderPlusIcon className="h-6 w-6 mr-2" />
-                                                Crear Primera Categoría
+                                                <FolderPlusIcon className="h-5 w-5 mr-2" />
+                                                Nueva Categoría Raíz
                                             </button>
+                                            <Link
+                                                href="/dashboard/profile"
+                                                className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500"
+                                            >
+                                                <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                </svg>
+                                                Editar Perfil
+                                            </Link>
+                                            <Link
+                                                href="/dashboard/blobs"
+                                                className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-purple-300 dark:hover:border-purple-500"
+                                            >
+                                                <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                                Archivos
+                                            </Link>
+                                            <Link
+                                                href={`/user/${session?.user?.username}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-green-300 dark:hover:border-green-500"
+                                            >
+                                                <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M6 18L18 6M8 6h10v10" />
+                                                </svg>
+                                                Ver Portfolio
+                                            </Link>
+                                            <Link
+                                                href="/explore"
+                                                className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-indigo-300 dark:hover:border-indigo-500"
+                                            >
+                                                <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                </svg>
+                                                Explorar
+                                            </Link>
                                         </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
+                                    </div>
 
-                        {/* Sidebar - Hidden on mobile, shown on lg+ */}
-                        <div className="hidden lg:block lg:col-span-1">
-                            <div className="space-y-6">
-                                {/* Acciones */}
-                                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-gray-200 dark:border-slate-700 p-6">
-                                    <div className="flex items-center mb-6">
-                                        <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl mr-3 shadow-lg">
-                                            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                            </svg>
-                                        </div>
-                                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                                            Acciones Rápidas
-                                        </h3>
-                                    </div>
-                                    <div className="space-y-3">
-                                        <button
-                                            onClick={handleCreateRootCategory}
-                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
-                                        >
-                                            <FolderPlusIcon className="h-5 w-5 mr-2" />
-                                            Nueva Categoría Raíz
-                                        </button>
-                                        <Link
-                                            href="/dashboard/profile"
-                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500"
-                                        >
-                                            <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                            </svg>
-                                            Editar Perfil
-                                        </Link>
-                                        <Link
-                                            href="/dashboard/blobs"
-                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-purple-300 dark:hover:border-purple-500"
-                                        >
-                                            <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                            </svg>
-                                            Archivos
-                                        </Link>
-                                        <Link
-                                            href={`/user/${session?.user?.username}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-green-300 dark:hover:border-green-500"
-                                        >
-                                            <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M6 18L18 6M8 6h10v10" />
-                                            </svg>
-                                            Ver Portfolio
-                                        </Link>
-                                        <Link
-                                            href="/explore"
-                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-medium rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-indigo-300 dark:hover:border-indigo-500"
-                                        >
-                                            <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                            </svg>
-                                            Explorar
-                                        </Link>
-                                    </div>
-                                </div>
-
-                                {/* Estadísticas */}
-                                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-gray-200 dark:border-slate-700 p-6">
-                                    <div className="flex items-center mb-6">
-                                        <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl mr-3 shadow-lg">
-                                            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                            </svg>
-                                        </div>
-                                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                                            Tu Portfolio
-                                        </h3>
-                                    </div>
-                                    <div className="space-y-4">
-                                        <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl border border-blue-200/50 dark:border-blue-700/50">
-                                            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">{nodes.length}</div>
-                                            <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Total Elementos</div>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <div className="text-center p-3 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/30 dark:to-emerald-800/30 rounded-xl border border-green-200/50 dark:border-green-700/50">
-                                                <div className="text-xl font-bold text-green-600 dark:text-green-400 mb-1">{nodes.filter(n => n.isVisible).length}</div>
-                                                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Públicos</div>
+                                    {/* Estadísticas */}
+                                    <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-gray-200 dark:border-slate-700 p-6">
+                                        <div className="flex items-center mb-6">
+                                            <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl mr-3 shadow-lg">
+                                                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                                </svg>
                                             </div>
-                                            <div className="text-center p-3 bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-900/30 dark:to-violet-800/30 rounded-xl border border-purple-200/50 dark:border-purple-700/50">
-                                                <div className="text-xl font-bold text-purple-600 dark:text-purple-400 mb-1">{nodes.filter(n => n.type === 'PROJECT').length}</div>
-                                                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Proyectos</div>
-                                            </div>
+                                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                                                Tu Portfolio
+                                            </h3>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <div className="text-center p-3 bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-yellow-900/30 dark:to-orange-800/30 rounded-xl border border-yellow-200/50 dark:border-yellow-700/50">
-                                                <div className="text-xl font-bold text-yellow-600 dark:text-yellow-400 mb-1">{nodes.filter(n => n.type === 'SKILL').length}</div>
-                                                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Habilidades</div>
+                                        <div className="space-y-4">
+                                            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl border border-blue-200/50 dark:border-blue-700/50">
+                                                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">{nodes.length}</div>
+                                                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Total Elementos</div>
                                             </div>
-                                            <div className="text-center p-3 bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-900/30 dark:to-rose-800/30 rounded-xl border border-pink-200/50 dark:border-pink-700/50">
-                                                <div className="text-xl font-bold text-pink-600 dark:text-pink-400 mb-1">{nodes.filter(n => n.type === 'EXPERIENCE').length}</div>
-                                                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Experiencia</div>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div className="text-center p-3 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/30 dark:to-emerald-800/30 rounded-xl border border-green-200/50 dark:border-green-700/50">
+                                                    <div className="text-xl font-bold text-green-600 dark:text-green-400 mb-1">{nodes.filter(n => n.isVisible).length}</div>
+                                                    <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Públicos</div>
+                                                </div>
+                                                <div className="text-center p-3 bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-900/30 dark:to-violet-800/30 rounded-xl border border-purple-200/50 dark:border-purple-700/50">
+                                                    <div className="text-xl font-bold text-purple-600 dark:text-purple-400 mb-1">{nodes.filter(n => n.type === 'PROJECT').length}</div>
+                                                    <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Proyectos</div>
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div className="text-center p-3 bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-yellow-900/30 dark:to-orange-800/30 rounded-xl border border-yellow-200/50 dark:border-yellow-700/50">
+                                                    <div className="text-xl font-bold text-yellow-600 dark:text-yellow-400 mb-1">{nodes.filter(n => n.type === 'SKILL').length}</div>
+                                                    <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Habilidades</div>
+                                                </div>
+                                                <div className="text-center p-3 bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-900/30 dark:to-rose-800/30 rounded-xl border border-pink-200/50 dark:border-pink-700/50">
+                                                    <div className="text-xl font-bold text-pink-600 dark:text-pink-400 mb-1">{nodes.filter(n => n.type === 'EXPERIENCE').length}</div>
+                                                    <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Experiencia</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                 </div>

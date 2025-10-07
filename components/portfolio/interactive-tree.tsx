@@ -158,8 +158,8 @@ function TreeNode({
                 {/* Styled Node content */}
                 <div
                     className={`flex-1 flex items-center p-2.5 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl transition-all duration-300 cursor-pointer group relative overflow-hidden ${isSelected
-                            ? `bg-gradient-to-r ${typeConfig.lightBg} border ${typeConfig.borderColor} shadow-md`
-                            : 'hover:bg-gray-50/80 hover:shadow-sm'
+                        ? `bg-gradient-to-r ${typeConfig.lightBg} border ${typeConfig.borderColor} shadow-md`
+                        : 'hover:bg-gray-50/80 hover:shadow-sm'
                         } ${isFeatured ? 'ring-1 ring-yellow-300/50' : ''}`}
                     onClick={() => {
                         if (hasChildren) {

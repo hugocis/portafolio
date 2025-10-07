@@ -10,10 +10,10 @@ interface LoadingProps {
   className?: string
 }
 
-export function Loading({ 
-  size = 'md', 
-  variant = 'gradient', 
-  text = 'Cargando...', 
+export function Loading({
+  size = 'md',
+  variant = 'gradient',
+  text = 'Cargando...',
   fullScreen = false,
   className = ''
 }: LoadingProps) {
@@ -40,7 +40,7 @@ export function Loading({
     xl: 'text-xl'
   }
 
-  const containerClasses = fullScreen 
+  const containerClasses = fullScreen
     ? 'fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50'
     : 'flex items-center justify-center p-8'
 
@@ -112,14 +112,14 @@ export function Loading({
           <div className={`${sizeClasses[size]} rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-spin`}>
             <div className="absolute inset-1 bg-white rounded-full" />
           </div>
-          
+
           {/* Pulsing rings */}
           <div className="absolute inset-0 -m-2">
             <div className={`w-full h-full border-2 border-blue-300 rounded-full animate-ping opacity-20`} />
           </div>
           <div className="absolute inset-0 -m-4">
-            <div className={`w-full h-full border-2 border-purple-300 rounded-full animate-ping opacity-10`} 
-                 style={{ animationDelay: '0.5s' }} />
+            <div className={`w-full h-full border-2 border-purple-300 rounded-full animate-ping opacity-10`}
+              style={{ animationDelay: '0.5s' }} />
           </div>
         </div>
 
@@ -140,8 +140,8 @@ export function Loading({
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-200 rounded-full blur-3xl opacity-20 animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-purple-200 rounded-full blur-3xl opacity-20 animate-pulse" 
-               style={{ animationDelay: '1s' }} />
+          <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-purple-200 rounded-full blur-3xl opacity-20 animate-pulse"
+            style={{ animationDelay: '1s' }} />
         </div>
       </div>
     </div>
@@ -166,14 +166,14 @@ export function DotsLoading({ text }: { text?: string }) {
 }
 
 // Loading skeleton for content
-export function LoadingSkeleton({ 
-  lines = 3, 
+export function LoadingSkeleton({
+  lines = 3,
   className = '',
-  animated = true 
-}: { 
+  animated = true
+}: {
   lines?: number
   className?: string
-  animated?: boolean 
+  animated?: boolean
 }) {
   return (
     <div className={`space-y-3 ${className}`}>

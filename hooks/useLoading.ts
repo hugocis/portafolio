@@ -67,7 +67,7 @@ export function usePageLoading() {
 
     // Listen to route changes
     window.addEventListener('beforeunload', handleStart)
-    
+
     return () => {
       window.removeEventListener('beforeunload', handleStart)
     }
@@ -93,7 +93,7 @@ export function useAsyncLoading<T>(
         startLoading()
         setError(null)
         const result = await asyncFunction()
-        
+
         if (!cancelled) {
           setData(result)
         }
@@ -118,7 +118,7 @@ export function useAsyncLoading<T>(
   const refetch = () => {
     startLoading()
     setError(null)
-    
+
     asyncFunction()
       .then(result => setData(result))
       .catch(err => setError(err instanceof Error ? err : new Error('Unknown error')))

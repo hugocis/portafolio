@@ -31,11 +31,11 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
     const buildHierarchy = () => {
         const nodeMap = new Map<string, Node & { children: Node[] }>()
         const roots: (Node & { children: Node[] })[] = []
-        
+
         visibleNodes.forEach(node => {
             nodeMap.set(node.id, { ...node, children: [] })
         })
-        
+
         visibleNodes.forEach(node => {
             const nodeWithChildren = nodeMap.get(node.id)!
             if (node.parentId && nodeMap.has(node.parentId)) {
@@ -45,10 +45,10 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                 roots.push(nodeWithChildren)
             }
         })
-        
+
         return roots
     }
-    
+
     const hierarchicalNodes = buildHierarchy()
 
     // Agrupar nodos jerárquicos por tipo (solo nodos raíz)
@@ -121,8 +121,8 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                 <button
                                     onClick={() => setIsCompact(false)}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${!isCompact
-                                            ? 'bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-md'
-                                            : 'text-gray-600 hover:text-gray-900'
+                                        ? 'bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-md'
+                                        : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
                                     Detallado
@@ -130,8 +130,8 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                 <button
                                     onClick={() => setIsCompact(true)}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isCompact
-                                            ? 'bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-md'
-                                            : 'text-gray-600 hover:text-gray-900'
+                                        ? 'bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-md'
+                                        : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
                                     Compacto

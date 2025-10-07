@@ -5,13 +5,11 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import FileUploader from '@/components/dashboard/file-uploader';
 import Image from 'next/image';
-import { 
-  UserCircleIcon, 
-  PhotoIcon,
+import {
+  UserCircleIcon,
   CheckIcon,
   XMarkIcon,
   ArrowLeftIcon,
-  SparklesIcon,
   GlobeAltIcon,
   MapPinIcon,
   EnvelopeIcon,
@@ -57,7 +55,7 @@ export default function ProfilePage() {
     try {
       setLoading(true);
       const response = await fetch('/api/profile');
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch profile');
       }
@@ -90,11 +88,11 @@ export default function ProfilePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       setSaving(true);
       setError(null);
-      
+
       const response = await fetch('/api/profile', {
         method: 'PATCH',
         headers: {
@@ -111,7 +109,7 @@ export default function ProfilePage() {
       const updatedProfile = await response.json();
       setProfile(updatedProfile);
       setSuccess(true);
-      
+
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -268,9 +266,9 @@ export default function ProfilePage() {
                   {profile.website && (
                     <div className="flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400">
                       <GlobeAltIcon className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                      <a 
-                        href={profile.website} 
-                        target="_blank" 
+                      <a
+                        href={profile.website}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate"
                       >
@@ -488,7 +486,7 @@ export default function ProfilePage() {
                   >
                     Cancelar
                   </button>
-                  
+
                   <button
                     type="submit"
                     disabled={saving}
