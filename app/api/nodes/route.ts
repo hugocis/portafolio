@@ -75,7 +75,8 @@ export async function POST(request: NextRequest) {
             projectUrl,
             githubUrl,
             demoUrl,
-            tags
+            tags,
+            images
         } = body
 
         // Ensure user has a portfolio
@@ -121,6 +122,7 @@ export async function POST(request: NextRequest) {
                 githubUrl,
                 demoUrl,
                 tags: tags || [],
+                images: images || [],
                 order
             }
         })

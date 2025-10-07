@@ -41,7 +41,8 @@ export async function PUT(
             projectUrl,
             githubUrl,
             demoUrl,
-            tags
+            tags,
+            images
         } = body
 
         const updatedNode = await prisma.node.update({
@@ -56,7 +57,8 @@ export async function PUT(
                 projectUrl,
                 githubUrl,
                 demoUrl,
-                tags: tags || []
+                tags: tags || [],
+                images: images || []
             }
         })
 

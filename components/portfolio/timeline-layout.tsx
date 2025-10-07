@@ -418,7 +418,7 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                 </div>
                                 
                                 <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                                    {filterType === 'all' ? '⏰ Timeline Vacío' : `📅 Sin ${nodeTypeConfig[filterType as keyof typeof nodeTypeConfig]?.name}`}
+                                    {filterType === 'all' ? 'Timeline Vacío' : `Sin ${nodeTypeConfig[filterType as keyof typeof nodeTypeConfig]?.name}`}
                                 </h3>
                                 <p className="text-gray-600 mb-8 leading-relaxed">
                                     {isOwner

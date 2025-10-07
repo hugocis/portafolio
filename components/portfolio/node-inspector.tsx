@@ -1,10 +1,11 @@
 'use client'
 
 import { Dialog, Transition } from '@headlessui/react'
-import { XMarkIcon, LinkIcon, CodeBracketIcon, GlobeAltIcon } from '@heroicons/react/24/outline'
+import { XMarkIcon, LinkIcon, CodeBracketIcon, GlobeAltIcon, PhotoIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 import { FolderIcon, DocumentIcon, AcademicCapIcon, BriefcaseIcon, BookOpenIcon, Cog6ToothIcon } from '@heroicons/react/24/solid'
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import { Node, NodeType } from '@prisma/client'
+import Image from 'next/image'
 
 interface NodeInspectorProps {
   node: Node | null
@@ -23,6 +24,8 @@ const nodeTypeConfig = {
 }
 
 export function NodeInspector({ node, isOpen, onClose }: NodeInspectorProps) {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  
   if (!node) return null
 
   const typeConfig = nodeTypeConfig[node.type as NodeType]
@@ -49,7 +52,7 @@ export function NodeInspector({ node, isOpen, onClose }: NodeInspectorProps) {
       .replace(/`(.+?)`/g, '<code class="bg-blue-100 text-blue-800 px-2 py-1 rounded font-mono text-sm border">$1</code>')
 
       // Links
-      .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline font-medium transition-colors">$1 🔗</a>')
+      .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline font-medium transition-colors inline-flex items-center gap-1">$1 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>')
 
       // Lists
       .replace(/^[\*\-] (.+)$/gm, '<li class="flex items-start mb-2"><span class="text-blue-600 mr-2 mt-1">•</span><span>$1</span></li>')
@@ -76,7 +79,8 @@ export function NodeInspector({ node, isOpen, onClose }: NodeInspectorProps) {
   }
 
   return (
-    <Transition appear show={isOpen} as={Fragment}>
+    <>
+      <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
         <Transition.Child
           as={Fragment}
@@ -224,6 +228,44 @@ export function NodeInspector({ node, isOpen, onClose }: NodeInspectorProps) {
                     </div>
                   )}
 
+                  {/* Image Gallery */}
+                  {node.type === 'PROJECT' && node.images && Array.isArray(node.images) && node.images.length > 0 && (
+                    <div>
+                      <h4 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center">
+                        <PhotoIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-pink-600 dark:text-pink-400 flex-shrink-0" />
+                        Galería de Imágenes ({node.images.length})
+                      </h4>
+                      <div className="bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 rounded-2xl p-4 sm:p-5 border-2 border-pink-200 dark:border-pink-700">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                          {node.images.map((imageUrl, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setSelectedImage(imageUrl)}
+                              className="group relative aspect-square rounded-xl overflow-hidden border-2 border-gray-200 dark:border-slate-600 hover:border-pink-400 dark:hover:border-pink-500 transition-all duration-300 hover:scale-105 hover:shadow-xl bg-white dark:bg-slate-700"
+                            >
+                              <Image
+                                src={imageUrl}
+                                alt={`${node.title} - Imagen ${index + 1}`}
+                                fill
+                                className="object-cover"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+                                  <span className="text-white text-xs font-bold bg-black/30 backdrop-blur-sm px-2 py-1 rounded">
+                                    #{index + 1}
+                                  </span>
+                                  <span className="text-white text-xs font-medium bg-black/30 backdrop-blur-sm px-2 py-1 rounded">
+                                    Ver
+                                  </span>
+                                </div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Tags */}
                   {node.tags && node.tags.length > 0 && (
                     <div>
@@ -280,5 +322,91 @@ export function NodeInspector({ node, isOpen, onClose }: NodeInspectorProps) {
         </div>
       </Dialog>
     </Transition>
+
+    {/* Image Lightbox Modal */}
+    <Transition appear show={selectedImage !== null} as={Fragment}>
+      <Dialog as="div" className="relative z-[60]" onClose={() => setSelectedImage(null)}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black/90 backdrop-blur-sm" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 overflow-hidden">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="relative max-w-5xl w-full">
+                {/* Close Button */}
+                <button
+                  onClick={() => setSelectedImage(null)}
+                  className="absolute -top-12 right-0 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-200 hover:scale-110"
+                >
+                  <XMarkIcon className="h-6 w-6" />
+                </button>
+
+                {/* Image */}
+                {selectedImage && (
+                  <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl">
+                    <Image
+                      src={selectedImage}
+                      alt="Vista ampliada"
+                      fill
+                      className="object-contain"
+                      priority
+                    />
+                  </div>
+                )}
+
+                {/* Navigation */}
+                {node?.images && node.images.length > 1 && (
+                  <div className="flex items-center justify-center gap-4 mt-6">
+                    <button
+                      onClick={() => {
+                        const currentIndex = node.images!.indexOf(selectedImage!);
+                        const prevIndex = currentIndex > 0 ? currentIndex - 1 : node.images!.length - 1;
+                        setSelectedImage(node.images![prevIndex]);
+                      }}
+                      className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-200 hover:scale-110"
+                    >
+                      <ChevronLeftIcon className="h-6 w-6" />
+                    </button>
+                    
+                    <span className="text-white font-medium px-4 py-2 rounded-full bg-white/10">
+                      {node.images!.indexOf(selectedImage!) + 1} / {node.images!.length}
+                    </span>
+
+                    <button
+                      onClick={() => {
+                        const currentIndex = node.images!.indexOf(selectedImage!);
+                        const nextIndex = currentIndex < node.images!.length - 1 ? currentIndex + 1 : 0;
+                        setSelectedImage(node.images![nextIndex]);
+                      }}
+                      className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-200 hover:scale-110"
+                    >
+                      <ChevronRightIcon className="h-6 w-6" />
+                    </button>
+                  </div>
+                )}
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>
+    </>
   )
 }

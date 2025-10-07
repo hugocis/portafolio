@@ -13,8 +13,8 @@ import { TimelineLayout } from '@/components/portfolio/timeline-layout'
 import { KanbanLayout } from '@/components/portfolio/kanban-layout'
 import { GridLayout } from '@/components/portfolio/grid-layout'
 import { PageLoading } from '@/components/ui/loading'
-import { PlusIcon, ArrowRightOnRectangleIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import { Squares2X2Icon as Squares2X2IconSolid, SparklesIcon as SparklesIconSolid } from '@heroicons/react/24/solid'
+import { PlusIcon, ArrowRightOnRectangleIcon, Bars3Icon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import { Squares2X2Icon as Squares2X2IconSolid, SparklesIcon as SparklesIconSolid, FolderPlusIcon } from '@heroicons/react/24/solid'
 
 export default function DashboardPage() {
     const { data: session, status } = useSession()
@@ -29,6 +29,8 @@ export default function DashboardPage() {
     const [currentLayout, setCurrentLayout] = useState<LayoutType>('tree')
     const [scrollY, setScrollY] = useState(0)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const [showAddMenu, setShowAddMenu] = useState(false)
+    const [forceRootCategory, setForceRootCategory] = useState(false)
     const [confirmDialog, setConfirmDialog] = useState<{
         isOpen: boolean
         title: string
@@ -71,11 +73,24 @@ export default function DashboardPage() {
         }
     }
 
-    const handleNodeAdd = (parentId?: string) => {
+    const handleNodeAdd = (parentId?: string, isRootCategory = false) => {
         setSelectedNode(null)
         setParentNodeId(parentId || null)
+        setForceRootCategory(isRootCategory)
         setIsEditorOpen(true)
+        setShowAddMenu(false)
     }
+
+    const handleCreateRootCategory = () => {
+        handleNodeAdd(undefined, true)
+    }
+
+    const handleAddToCategory = () => {
+        // This will be handled by clicking on category nodes
+        setShowAddMenu(false)
+    }
+
+    const rootNodes = nodes.filter(n => !n.parentId)
 
     const handleNodeEdit = (node: Node) => {
         setSelectedNode(node)
@@ -198,10 +213,35 @@ export default function DashboardPage() {
                         </Link>
 
                         {/* Center Title - Hidden on mobile */}
-                        <div className="hidden md:block">
-                            <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                Dashboard - {session?.user?.name || session?.user?.username}
-                            </h1>
+                        <div className="hidden md:flex flex-1 justify-center absolute left-1/2 transform -translate-x-1/2">
+                            <div className="relative px-6 py-2.5 rounded-2xl overflow-hidden group cursor-default">
+                                {/* Animated gradient background layers */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-5 group-hover:opacity-15 transition-opacity duration-500"></div>
+                                <div className="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 opacity-0 group-hover:opacity-10 blur-xl transition-all duration-700 animate-gradient-shift"></div>
+                                
+                                {/* Shine effect */}
+                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+                                </div>
+                                
+                                {/* Subtle border glow */}
+                                <div className="absolute inset-0 rounded-2xl ring-1 ring-gray-200/50 dark:ring-gray-700/50 group-hover:ring-purple-500/30 group-hover:ring-2 transition-all duration-300"></div>
+                                
+                                {/* Content */}
+                                <h1 className="relative text-lg font-bold flex items-center gap-2 whitespace-nowrap">
+                                    <span className="relative">
+                                        <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-shift bg-[length:200%_auto] font-extrabold">
+                                            Dashboard
+                                        </span>
+                                        {/* Sparkle effect on hover */}
+                                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-br from-yellow-400 to-pink-500 rounded-full opacity-0 group-hover:opacity-100 group-hover:scale-100 scale-0 transition-all duration-300 blur-[1px] animate-pulse"></span>
+                                    </span>
+                                    <span className="text-gray-400 dark:text-gray-500 group-hover:text-purple-400 dark:group-hover:text-purple-500 transition-colors duration-300">•</span>
+                                    <span className="text-gray-900 dark:text-white font-semibold group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
+                                        {session?.user?.name || session?.user?.username}
+                                    </span>
+                                </h1>
+                            </div>
                         </div>
 
                         {/* Desktop Navigation */}
@@ -362,13 +402,16 @@ export default function DashboardPage() {
                                     </h3>
                                 </div>
                                 <div className="space-y-2 sm:space-y-3">
-                                    <button
-                                        onClick={() => handleNodeAdd()}
-                                        className="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm sm:text-base font-semibold rounded-xl sm:rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
-                                    >
-                                        <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                                        Nuevo
-                                    </button>
+                                    {/* Dropdown Button for Add */}
+                                    <div className="relative">
+                                        <button
+                                            onClick={handleCreateRootCategory}
+                                            className="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm sm:text-base font-semibold rounded-xl sm:rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                                        >
+                                            <FolderPlusIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                                            Nueva Categoría
+                                        </button>
+                                    </div>
                                     <Link
                                         href="/dashboard/profile"
                                         className="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 text-sm sm:text-base font-medium rounded-xl sm:rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 border-2 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500"
@@ -538,14 +581,14 @@ export default function DashboardPage() {
                                                 ¡Comienza Tu Historia!
                                             </h3>
                                             <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg max-w-md mx-auto leading-relaxed">
-                                                Tu portfolio está listo para brillar. Agrega tu primer elemento y comienza a construir tu presencia profesional.
+                                                Tu portfolio está listo para brillar. Crea tu primera categoría para empezar a organizar tu contenido.
                                             </p>
                                             <button
-                                                onClick={() => handleNodeAdd()}
+                                                onClick={handleCreateRootCategory}
                                                 className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105"
                                             >
-                                                <PlusIcon className="h-6 w-6 mr-2" />
-                                                Crear Primer Elemento
+                                                <FolderPlusIcon className="h-6 w-6 mr-2" />
+                                                Crear Primera Categoría
                                             </button>
                                         </div>
                                     )}
@@ -570,11 +613,11 @@ export default function DashboardPage() {
                                     </div>
                                     <div className="space-y-3">
                                         <button
-                                            onClick={() => handleNodeAdd()}
+                                            onClick={handleCreateRootCategory}
                                             className="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
                                         >
-                                            <PlusIcon className="h-5 w-5 mr-2" />
-                                            Nuevo Elemento
+                                            <FolderPlusIcon className="h-5 w-5 mr-2" />
+                                            Nueva Categoría Raíz
                                         </button>
                                         <Link
                                             href="/dashboard/profile"
@@ -676,8 +719,12 @@ export default function DashboardPage() {
                 parentId={parentNodeId || undefined}
                 portfolioId="portfolio-id"
                 isOpen={isEditorOpen}
-                onClose={() => setIsEditorOpen(false)}
+                onClose={() => {
+                    setIsEditorOpen(false)
+                    setForceRootCategory(false)
+                }}
                 onSave={handleNodeSave}
+                forceRootCategory={forceRootCategory}
             />
 
             {/* Confirmation Dialog */}

@@ -371,7 +371,7 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                             </div>
                             
                             <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                                {filter === 'all' ? '🎨 Grid Vacío' : `🔍 Sin ${nodeTypeConfig[filter as keyof typeof nodeTypeConfig]?.name}`}
+                                {filter === 'all' ? 'Grid Vacío' : `Sin ${nodeTypeConfig[filter as keyof typeof nodeTypeConfig]?.name}`}
                             </h3>
                             <p className="text-gray-600 mb-8 leading-relaxed">
                                 {isOwner

@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react'
 import { Node, NodeType } from '@prisma/client'
 import { Dialog, Transition, Tab } from '@headlessui/react'
-import { XMarkIcon, PlusIcon, EyeIcon, EyeSlashIcon, GlobeAltIcon, HashtagIcon } from '@heroicons/react/24/outline'
-import { FolderIcon, DocumentIcon, CodeBracketIcon, AcademicCapIcon, BriefcaseIcon, BookOpenIcon, Cog6ToothIcon } from '@heroicons/react/24/solid'
+import { XMarkIcon, PlusIcon, EyeIcon, EyeSlashIcon, GlobeAltIcon, HashtagIcon, InformationCircleIcon, LockClosedIcon } from '@heroicons/react/24/outline'
+import { FolderIcon, DocumentIcon, CodeBracketIcon, AcademicCapIcon, BriefcaseIcon, BookOpenIcon, Cog6ToothIcon, ArrowRightIcon } from '@heroicons/react/24/solid'
 import { Fragment } from 'react'
+import { ImageGallery } from './image-gallery'
 
 interface NodeEditorProps {
   node?: Node
@@ -14,6 +15,7 @@ interface NodeEditorProps {
   isOpen: boolean
   onClose: () => void
   onSave: (nodeData: Partial<Node>) => Promise<void>
+  forceRootCategory?: boolean
 }
 
 const nodeTypes = [
@@ -32,18 +34,20 @@ export function NodeEditor({
   portfolioId,
   isOpen,
   onClose,
-  onSave
+  onSave,
+  forceRootCategory = false
 }: NodeEditorProps) {
   const [formData, setFormData] = useState<Partial<Node>>({
     title: '',
     description: '',
     content: '',
-    type: 'PROJECT',
+    type: forceRootCategory ? 'CATEGORY' : 'PROJECT',
     isVisible: true,
     projectUrl: '',
     githubUrl: '',
     demoUrl: '',
     tags: [],
+    images: [],
     portfolioId,
     parentId: parentId || null,
   })
@@ -65,6 +69,7 @@ export function NodeEditor({
         githubUrl: node.githubUrl || '',
         demoUrl: node.demoUrl || '',
         tags: node.tags || [],
+        images: node.images || [],
         portfolioId,
         parentId: parentId || node.parentId || null,
       })
@@ -73,19 +78,20 @@ export function NodeEditor({
         title: '',
         description: '',
         content: '',
-        type: 'PROJECT',
+        type: forceRootCategory ? 'CATEGORY' : 'PROJECT',
         isVisible: true,
         projectUrl: '',
         githubUrl: '',
         demoUrl: '',
         tags: [],
+        images: [],
         portfolioId,
         parentId: parentId || null,
       })
     }
     setErrors({})
     setSelectedTab(0)
-  }, [node, parentId, portfolioId, isOpen])
+  }, [node, parentId, portfolioId, isOpen, forceRootCategory])
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -134,6 +140,7 @@ export function NodeEditor({
       onClose()
     } catch (error) {
       console.error('Error saving node:', error)
+      alert('Error al guardar el nodo. Por favor, intenta de nuevo.')
     } finally {
       setLoading(false)
     }
@@ -245,7 +252,18 @@ export function NodeEditor({
                             : 'text-purple-600 dark:text-purple-400 hover:bg-white/50 dark:hover:bg-slate-700/50 hover:text-purple-700 dark:hover:text-purple-300'
                           }`
                         }>
-                          Enlaces del Proyecto
+                          Galería
+                        </Tab>
+                      )}
+                      {formData.type === 'PROJECT' && (
+                        <Tab className={({ selected }) =>
+                          `flex-1 rounded-xl py-3 px-4 text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none
+                           ${selected
+                            ? 'bg-white dark:bg-slate-700 text-pink-700 dark:text-pink-300 shadow-lg border border-pink-200 dark:border-pink-600'
+                            : 'text-pink-600 dark:text-pink-400 hover:bg-white/50 dark:hover:bg-slate-700/50 hover:text-pink-700 dark:hover:text-pink-300'
+                          }`
+                        }>
+                          Enlaces
                         </Tab>
                       )}
                       <Tab className={({ selected }) =>
@@ -271,25 +289,128 @@ export function NodeEditor({
                     <Tab.Panels>
                       {/* Basic Information Tab */}
                       <Tab.Panel className="space-y-6">
+                        {/* Context Info Banner */}
+                        {!parentId ? (
+                          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-2xl p-5">
+                            <div className="flex items-start gap-4">
+                              <div className="p-2.5 bg-blue-600 rounded-xl flex-shrink-0">
+                                <FolderIcon className="h-6 w-6 text-white" />
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="font-bold text-blue-900 dark:text-blue-100 mb-2 flex items-center gap-2">
+                                  <span>Creando Nodo Raíz</span>
+                                  <InformationCircleIcon className="h-5 w-5" />
+                                </h4>
+                                <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed mb-3">
+                                  Los <strong>nodos raíz</strong> son contenedores principales que organizan tu portfolio. Funcionan como categorías de primer nivel.
+                                </p>
+                                <div className="bg-blue-100/50 dark:bg-blue-900/30 rounded-xl p-3 space-y-2">
+                                  <p className="text-xs font-semibold text-blue-900 dark:text-blue-100 mb-2 flex items-center gap-1">
+                                    <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                      <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
+                                    </svg>
+                                    Recomendaciones:
+                                  </p>
+                                  <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1.5">
+                                    <li className="flex items-start gap-2">
+                                      <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
+                                      <span>Usa el tipo <strong>Categoría</strong> para agrupar contenido relacionado</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                      <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
+                                      <span>Ejemplos: "Mis Proyectos", "Experiencia Laboral", "Habilidades Técnicas"</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                      <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
+                                      <span>Luego podrás añadir nodos hijos dentro de esta categoría</span>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-2 border-purple-200 dark:border-purple-800 rounded-2xl p-5">
+                            <div className="flex items-start gap-4">
+                              <div className="p-2.5 bg-purple-600 rounded-xl flex-shrink-0">
+                                <DocumentIcon className="h-6 w-6 text-white" />
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="font-bold text-purple-900 dark:text-purple-100 mb-2 flex items-center gap-2">
+                                  <span>Creando Nodo Hijo</span>
+                                  <ArrowRightIcon className="h-4 w-4" />
+                                </h4>
+                                <p className="text-sm text-purple-800 dark:text-purple-200 leading-relaxed mb-3">
+                                  Este nodo se creará <strong>dentro de un contenedor existente</strong>. Los nodos hijos son elementos específicos de tu portfolio.
+                                </p>
+                                <div className="bg-purple-100/50 dark:bg-purple-900/30 rounded-xl p-3 space-y-2">
+                                  <p className="text-xs font-semibold text-purple-900 dark:text-purple-100 mb-2 flex items-center gap-1">
+                                    <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                      <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
+                                    </svg>
+                                    Tipos recomendados:
+                                  </p>
+                                  <ul className="text-xs text-purple-800 dark:text-purple-200 space-y-1.5">
+                                    <li className="flex items-start gap-2">
+                                      <span className="text-purple-600 dark:text-purple-400 mt-0.5">•</span>
+                                      <span><strong>Proyecto</strong>: Para proyectos específicos con detalles, enlaces y demos</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                      <span className="text-purple-600 dark:text-purple-400 mt-0.5">•</span>
+                                      <span><strong>Experiencia/Educación</strong>: Para trabajos, estudios o certificaciones</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                      <span className="text-purple-600 dark:text-purple-400 mt-0.5">•</span>
+                                      <span><strong>Habilidad/Lenguaje</strong>: Para tecnologías y competencias específicas</span>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
                         {/* Type Selection */}
                         <div>
                           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
                             Tipo de Nodo
+                            {!parentId && forceRootCategory && (
+                              <span className="ml-2 inline-flex items-center gap-1 text-xs font-normal text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 rounded-full">
+                                <LockClosedIcon className="h-3 w-3" />
+                                Categoría seleccionada
+                              </span>
+                            )}
                           </label>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {nodeTypes.map((type) => {
                               const Icon = type.icon
+                              const isRecommended = !parentId && type.id === 'CATEGORY'
+                              const isProjectType = parentId && (type.id === 'PROJECT' || type.id === 'EXPERIENCE' || type.id === 'EDUCATION')
+                              const isLocked = forceRootCategory && type.id !== 'CATEGORY'
+                              
                               return (
                                 <button
                                   key={type.id}
                                   type="button"
-                                  onClick={() => setFormData(prev => ({ ...prev, type: type.id as NodeType }))}
-                                  className={`group p-5 rounded-2xl border-2 transition-all duration-300 text-left hover:scale-105 hover:shadow-lg
+                                  onClick={() => !isLocked && setFormData(prev => ({ ...prev, type: type.id as NodeType }))}
+                                  disabled={isLocked}
+                                  className={`group relative p-5 rounded-2xl border-2 transition-all duration-300 text-left hover:scale-105 hover:shadow-lg
                                     ${formData.type === type.id
-                                      ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 shadow-lg'
+                                      ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 shadow-lg ring-2 ring-blue-500/20'
                                       : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700'
-                                    }`}
+                                    }
+                                    ${(isRecommended || isProjectType) && !isLocked ? 'ring-2 ring-green-500/20' : ''}
+                                    ${isLocked ? 'opacity-40 cursor-not-allowed hover:scale-100' : ''}
+                                  `}
                                 >
+                                  {(isRecommended || isProjectType) && !isLocked && (
+                                    <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg flex items-center gap-1">
+                                      <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                      </svg>
+                                      Top
+                                    </div>
+                                  )}
                                   <div className={`inline-flex p-3 rounded-xl ${type.bgColor} mb-3 group-hover:scale-110 transition-transform duration-300`}>
                                     <Icon className={`h-6 w-6 ${type.color}`} />
                                   </div>
@@ -338,12 +459,59 @@ export function NodeEditor({
                         </div>
                       </Tab.Panel>
 
+                      {/* Gallery Tab (Projects only) */}
+                      {formData.type === 'PROJECT' && (
+                        <Tab.Panel className="space-y-6">
+                          <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-2 border-purple-200 dark:border-purple-800 rounded-2xl p-5 mb-6">
+                            <div className="flex items-start gap-3">
+                              <div className="p-2 bg-purple-600 rounded-xl flex-shrink-0">
+                                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="font-bold text-purple-900 dark:text-purple-100 mb-1">
+                                  Galería de Imágenes del Proyecto
+                                </h4>
+                                <p className="text-sm text-purple-800 dark:text-purple-200 leading-relaxed">
+                                  Añade capturas de pantalla, mockups o imágenes que muestren tu proyecto. 
+                                  Puedes reordenarlas arrastrándolas.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <ImageGallery
+                            images={formData.images || []}
+                            onChange={(images) => setFormData(prev => ({ ...prev, images }))}
+                          />
+                        </Tab.Panel>
+                      )}
+
                       {/* Project Links Tab */}
                       {formData.type === 'PROJECT' && (
                         <Tab.Panel className="space-y-6">
+                          <div className="bg-gradient-to-r from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20 border-2 border-pink-200 dark:border-pink-800 rounded-2xl p-5 mb-6">
+                            <div className="flex items-start gap-3">
+                              <div className="p-2 bg-pink-600 rounded-xl flex-shrink-0">
+                                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                </svg>
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="font-bold text-pink-900 dark:text-pink-100 mb-1">
+                                  Enlaces del Proyecto
+                                </h4>
+                                <p className="text-sm text-pink-800 dark:text-pink-200 leading-relaxed">
+                                  Añade enlaces a tu proyecto en producción, repositorio de código y demo en vivo.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
                           <div className="grid grid-cols-1 gap-6">
                             <div>
-                              <label htmlFor="projectUrl" className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+                              <label htmlFor="projectUrl" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
                                 <GlobeAltIcon className="h-4 w-4 text-blue-500" />
                                 URL del Proyecto
                               </label>
@@ -352,16 +520,19 @@ export function NodeEditor({
                                 id="projectUrl"
                                 value={formData.projectUrl || ''}
                                 onChange={(e) => setFormData(prev => ({ ...prev, projectUrl: e.target.value }))}
-                                className={`block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500
-                                  ${errors.projectUrl ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
+                                className={`block w-full rounded-xl border-2 border-gray-200 dark:border-slate-600 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:bg-slate-700 dark:text-white py-2.5 px-4 transition-all duration-300
+                                  ${errors.projectUrl ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : ''}`}
                                 placeholder="https://mi-proyecto.com"
                               />
-                              {errors.projectUrl && <p className="mt-1 text-sm text-red-600">{errors.projectUrl}</p>}
+                              {errors.projectUrl && <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
+                                <XMarkIcon className="h-4 w-4" />
+                                {errors.projectUrl}
+                              </p>}
                             </div>
 
                             <div>
-                              <label htmlFor="githubUrl" className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-                                <svg className="h-4 w-4 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+                              <label htmlFor="githubUrl" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                                <svg className="h-4 w-4 text-gray-700 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                                   <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
                                 </svg>
                                 URL de GitHub
@@ -371,15 +542,18 @@ export function NodeEditor({
                                 id="githubUrl"
                                 value={formData.githubUrl || ''}
                                 onChange={(e) => setFormData(prev => ({ ...prev, githubUrl: e.target.value }))}
-                                className={`block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500
-                                  ${errors.githubUrl ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
+                                className={`block w-full rounded-xl border-2 border-gray-200 dark:border-slate-600 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:bg-slate-700 dark:text-white py-2.5 px-4 transition-all duration-300
+                                  ${errors.githubUrl ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : ''}`}
                                 placeholder="https://github.com/usuario/proyecto"
                               />
-                              {errors.githubUrl && <p className="mt-1 text-sm text-red-600">{errors.githubUrl}</p>}
+                              {errors.githubUrl && <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
+                                <XMarkIcon className="h-4 w-4" />
+                                {errors.githubUrl}
+                              </p>}
                             </div>
 
                             <div>
-                              <label htmlFor="demoUrl" className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+                              <label htmlFor="demoUrl" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
                                 <svg className="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                 </svg>
@@ -390,11 +564,14 @@ export function NodeEditor({
                                 id="demoUrl"
                                 value={formData.demoUrl || ''}
                                 onChange={(e) => setFormData(prev => ({ ...prev, demoUrl: e.target.value }))}
-                                className={`block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500
-                                  ${errors.demoUrl ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
+                                className={`block w-full rounded-xl border-2 border-gray-200 dark:border-slate-600 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:bg-slate-700 dark:text-white py-2.5 px-4 transition-all duration-300
+                                  ${errors.demoUrl ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : ''}`}
                                 placeholder="https://demo.mi-proyecto.com"
                               />
-                              {errors.demoUrl && <p className="mt-1 text-sm text-red-600">{errors.demoUrl}</p>}
+                              {errors.demoUrl && <p className="mt-2 text-sm text-red-600 flex items-center gap-2">
+                                <XMarkIcon className="h-4 w-4" />
+                                {errors.demoUrl}
+                              </p>}
                             </div>
                           </div>
                         </Tab.Panel>

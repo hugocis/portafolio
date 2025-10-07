@@ -397,7 +397,7 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                 </div>
 
                                 <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                                    🏗️ Tablero en Construcción
+                                    Tablero en Construcción
                                 </h3>
                                 <p className="text-gray-600 leading-relaxed">
                                     {isOwner
