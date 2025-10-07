@@ -6,10 +6,11 @@ import { existsSync } from 'fs'
 // GET /uploads/[...path] - Serve uploaded files
 export async function GET(
     request: NextRequest,
-    { params }: { params: { path: string[] } }
+    { params }: { params: Promise<{ path: string[] }> }
 ) {
     try {
-        const filePath = params.path.join('/')
+        const { path } = await params
+        const filePath = path.join('/')
         const fullPath = join(process.cwd(), 'public', 'uploads', filePath)
 
         // Check if file exists

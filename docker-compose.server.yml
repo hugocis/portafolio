@@ -37,4 +37,5 @@ services:
 
 volumes:
   uploads_data:
+    name: portafolios_uploads_data
     driver: local

@@ -13,17 +13,56 @@ GET http://herokku.duckdns.org:8130/_next/image?url=%2Fuploads%2F... 400 (Bad Re
 - Configurado headers de cache para `/uploads/*`
 - Las imágenes locales ahora se sirven sin optimización de Next.js
 
-### 2. ✅ `docker-compose.server.yml`
-- Agregado volumen persistente: `uploads_data:/app/public/uploads`
-- Los archivos subidos ahora persisten entre reinicios del contenedor
+### 2. ✅ `app/uploads/[...path]/route.ts` ⭐ NUEVO
+- Creada ruta API para servir archivos desde `/uploads/*`
+- Maneja correctamente tipos MIME y cache headers
+- Soluciona el error 404 al acceder a imágenes subidas
 
-### 3. ✅ `Dockerfile`
+### 3. ✅ `docker-compose.yml` y `docker-compose.server.yml`
+- Agregado volumen persistente: `uploads_data:/app/public/uploads`
+- El volumen tiene nombre explícito: `portafolios_uploads_data`
+- Los archivos subidos ahora persisten entre reinicios del contenedor
+- Configurado tanto en desarrollo como producción
+
+### 4. ✅ `Dockerfile`
 - Creada carpeta `/app/public/uploads` con permisos correctos
 - Asegura que el directorio existe antes del runtime
 
+### 5. ✅ Scripts de configuración
+- `scripts/setup-uploads-volume.sh` (Linux/Mac)
+- `scripts/setup-uploads-volume.ps1` (Windows)
+- Permiten verificar y configurar el volumen antes del deploy
+
 ## Despliegue
 
-### Pasos en el servidor:
+### Opción 1: Configuración Manual del Volumen (Recomendado para primera vez)
+
+**Desde Windows (tu máquina local):**
+```powershell
+# 1. Configurar el volumen antes del deploy
+.\scripts\setup-uploads-volume.ps1
+
+# 2. Ejecutar el deploy
+.\deploy.ps1
+```
+
+**Desde el Servidor (SSH):**
+```bash
+# 1. Configurar el volumen
+cd ~/portafolios
+chmod +x scripts/setup-uploads-volume.sh
+./scripts/setup-uploads-volume.sh
+
+# 2. Ejecutar el deploy
+git pull origin main
+docker compose -f docker-compose.yml -f docker-compose.server.yml down
+docker compose -f docker-compose.yml -f docker-compose.server.yml build --no-cache
+docker compose -f docker-compose.yml -f docker-compose.server.yml up -d
+```
+
+### Opción 2: Deploy Directo
+
+**Pasos en el servidor:**
 
 1. **Detener contenedores actuales:**
    ```bash

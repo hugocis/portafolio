@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -45,7 +45,11 @@ services:
       - .:/app
       - /app/node_modules
       - /app/.next
+      # Volumen para uploads persistentes (opcional en desarrollo)
+      - uploads_data:/app/public/uploads
     restart: unless-stopped
 
 volumes:
   postgres_data:
+  uploads_data:
+    driver: local
