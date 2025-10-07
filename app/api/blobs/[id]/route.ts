@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { del } from '@vercel/blob';
+import { unlink } from 'fs/promises';
+import { join } from 'path';
+import { existsSync } from 'fs';
 
 // DELETE /api/blobs/[id] - Delete a blob
 export async function DELETE(
@@ -48,12 +51,10 @@ export async function DELETE(
       });
     } else {
       // Delete from local storage
-      const fs = require('fs');
-      const path = require('path');
-      const filepath = path.join(process.cwd(), 'public', blob.url);
+      const filepath = join(process.cwd(), 'public', blob.url);
       
-      if (fs.existsSync(filepath)) {
-        fs.unlinkSync(filepath);
+      if (existsSync(filepath)) {
+        await unlink(filepath);
       }
     }
 

@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import FileUploader from '@/components/dashboard/file-uploader';
+import Image from 'next/image';
 import { 
   UserCircleIcon, 
   PhotoIcon,
@@ -23,7 +23,6 @@ interface Profile {
 }
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -104,8 +103,8 @@ export default function ProfilePage() {
       setSuccess(true);
       
       setTimeout(() => setSuccess(false), 3000);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setSaving(false);
     }
@@ -183,12 +182,13 @@ export default function ProfilePage() {
             </label>
             
             <div className="flex items-center gap-6">
-              <div className="relative">
+              <div className="relative h-24 w-24">
                 {profile.image ? (
-                  <img
+                  <Image
                     src={profile.image}
                     alt={profile.name || 'Profile'}
-                    className="h-24 w-24 rounded-full object-cover"
+                    fill
+                    className="rounded-full object-cover"
                   />
                 ) : (
                   <UserCircleIcon className="h-24 w-24 text-gray-400" />

@@ -1,15 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import FileUploader from '@/components/dashboard/file-uploader';
 import { 
   TrashIcon, 
   PhotoIcon, 
   DocumentIcon,
-  FunnelIcon,
-  MagnifyingGlassIcon 
+  FunnelIcon
 } from '@heroicons/react/24/outline';
+import Image from 'next/image';
 
 interface Blob {
   id: string;
@@ -29,7 +28,6 @@ interface PaginationInfo {
 }
 
 export default function BlobsPage() {
-  const router = useRouter();
   const [blobs, setBlobs] = useState<Blob[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -203,12 +201,13 @@ export default function BlobsPage() {
                 className="bg-white rounded-lg shadow hover:shadow-md transition-shadow overflow-hidden"
               >
                 {/* Preview */}
-                <div className="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
+                <div className="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden relative">
                   {isImage(blob.mimeType) ? (
-                    <img
+                    <Image
                       src={blob.url}
                       alt={blob.filename}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   ) : (
                     <DocumentIcon className="h-16 w-16 text-gray-400" />

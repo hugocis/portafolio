@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef, DragEvent, ChangeEvent } from 'react';
-import { CloudArrowUpIcon, XMarkIcon, DocumentIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { CloudArrowUpIcon, XMarkIcon, DocumentIcon } from '@heroicons/react/24/outline';
+import Image from 'next/image';
 
 interface FileUploaderProps {
   onUpload: (file: File) => Promise<void>;
@@ -15,7 +16,6 @@ export default function FileUploader({
   onUpload,
   accept = 'image/*,application/pdf',
   maxSize = 10 * 1024 * 1024, // 10MB
-  category,
   disabled = false,
 }: FileUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
@@ -95,8 +95,8 @@ export default function FileUploader({
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to upload file');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to upload file');
     } finally {
       setUploading(false);
     }
@@ -154,11 +154,12 @@ export default function FileUploader({
       ) : (
         <div className="border rounded-lg p-4">
           {preview ? (
-            <div className="mb-4">
-              <img
+            <div className="mb-4 relative h-48 w-full">
+              <Image
                 src={preview}
                 alt="Preview"
-                className="max-h-48 mx-auto rounded"
+                fill
+                className="object-contain rounded"
               />
             </div>
           ) : (

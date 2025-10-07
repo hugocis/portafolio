@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { put } from '@vercel/blob';
+import { writeFile, mkdir } from 'fs/promises';
+import { join } from 'path';
+import { existsSync } from 'fs';
 
 // GET /api/blobs - List user's blobs
 export async function GET(request: NextRequest) {
@@ -130,19 +133,17 @@ export async function POST(request: NextRequest) {
       const buffer = Buffer.from(bytes);
       
       // Save to public folder
-      const fs = require('fs');
-      const path = require('path');
-      const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+      const uploadsDir = join(process.cwd(), 'public', 'uploads');
       
-      if (!fs.existsSync(uploadsDir)) {
-        fs.mkdirSync(uploadsDir, { recursive: true });
+      if (!existsSync(uploadsDir)) {
+        await mkdir(uploadsDir, { recursive: true });
       }
       
       const timestamp = Date.now();
       const filename = `${timestamp}-${file.name}`;
-      const filepath = path.join(uploadsDir, filename);
+      const filepath = join(uploadsDir, filename);
       
-      fs.writeFileSync(filepath, buffer);
+      await writeFile(filepath, buffer);
       
       blobUrl = `/uploads/${filename}`;
       blobKey = filename;

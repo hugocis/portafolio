@@ -2,7 +2,7 @@
 
 import { Node } from '@prisma/client'
 import { CalendarDaysIcon, ClockIcon, EyeIcon, EyeSlashIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
-import { FolderIcon, DocumentIcon, AcademicCapIcon, BriefcaseIcon, BookOpenIcon, Cog6ToothIcon, CodeBracketIcon, StarIcon, MapPinIcon } from '@heroicons/react/24/solid'
+import { FolderIcon, DocumentIcon, AcademicCapIcon, BriefcaseIcon, BookOpenIcon, Cog6ToothIcon, CodeBracketIcon, StarIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react'
 
 interface TimelineLayoutProps {
