@@ -118,8 +118,8 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                 <button
                                     onClick={() => setSortOrder('desc')}
                                     className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${sortOrder === 'desc'
-                                            ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-md'
-                                            : 'text-gray-600 hover:text-gray-900'
+                                        ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-md'
+                                        : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
                                     <span className="hidden sm:inline">Más Reciente</span>
@@ -128,8 +128,8 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                 <button
                                     onClick={() => setSortOrder('asc')}
                                     className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${sortOrder === 'asc'
-                                            ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-md'
-                                            : 'text-gray-600 hover:text-gray-900'
+                                        ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-md'
+                                        : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
                                     <span className="hidden sm:inline">Más Antiguo</span>
@@ -142,8 +142,8 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                 <button
                                     onClick={() => setFilterType('all')}
                                     className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${filterType === 'all'
-                                            ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg'
-                                            : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
+                                        ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg'
+                                        : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
                                         }`}
                                 >
                                     Todos
@@ -157,8 +157,8 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                             key={type}
                                             onClick={() => setFilterType(type)}
                                             className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${filterType === type
-                                                    ? `bg-gradient-to-r ${typeConfig?.gradient} text-white shadow-lg`
-                                                    : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
+                                                ? `bg-gradient-to-r ${typeConfig?.gradient} text-white shadow-lg`
+                                                : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
                                                 }`}
                                         >
                                             <TypeIcon className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -174,7 +174,7 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
             {/* Enhanced Timeline */}
             <div className="relative">
                 {/* Enhanced Timeline Line */}
-                <div className="absolute left-4 sm:left-8 top-0 bottom-0 w-0.5 sm:w-1 bg-gradient-to-b from-blue-300 via-cyan-300 to-indigo-300 rounded-full shadow-lg"></div>
+                <div className="absolute left-6 sm:left-8 lg:left-10 top-0 bottom-0 w-0.5 sm:w-1 bg-gradient-to-b from-blue-300 via-cyan-300 to-indigo-300 rounded-full shadow-lg"></div>
 
                 <div className="space-y-8 sm:space-y-12">
                     {Object.entries(nodesByYear)
@@ -209,7 +209,7 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                 </div>
 
                                 {/* Enhanced Nodes for this year */}
-                                <div className="ml-12 sm:ml-24 space-y-6 sm:space-y-8">
+                                <div className="ml-14 sm:ml-20 lg:ml-24 space-y-6 sm:space-y-8">
                                     {yearNodes.map((node, nodeIndex) => {
                                         const typeConfig = nodeTypeConfig[node.type as keyof typeof nodeTypeConfig]
                                         const TypeIcon = typeConfig?.icon || DocumentIcon
@@ -226,10 +226,10 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                                 }}
                                             >
                                                 {/* Enhanced Connection Line */}
-                                                <div className="absolute -left-8 sm:-left-16 top-6 sm:top-8 w-6 sm:w-12 h-0.5 bg-gradient-to-r from-gray-300 to-blue-400 group-hover:from-blue-400 group-hover:to-cyan-400 transition-all duration-500 shadow-sm"></div>
+                                                <div className="absolute -left-10 sm:-left-12 lg:-left-16 top-6 sm:top-8 w-6 sm:w-8 lg:w-12 h-0.5 bg-gradient-to-r from-gray-300 to-blue-400 group-hover:from-blue-400 group-hover:to-cyan-400 transition-all duration-500 shadow-sm"></div>
 
                                                 {/* Enhanced Timeline Dot */}
-                                                <div className={`absolute -left-10 sm:-left-20 top-4 sm:top-6 w-5 h-5 sm:w-6 sm:h-6 rounded-lg sm:rounded-xl border-2 sm:border-4 border-white shadow-lg transition-all duration-300 group-hover:scale-150 group-hover:rotate-45 ${typeConfig?.bgColor || 'bg-gray-100'} z-10`}>
+                                                <div className={`absolute -left-12 sm:-left-16 lg:-left-20 top-4 sm:top-6 w-5 h-5 sm:w-6 sm:h-6 rounded-lg sm:rounded-xl border-2 sm:border-4 border-white shadow-lg transition-all duration-300 group-hover:scale-150 group-hover:rotate-45 ${typeConfig?.bgColor || 'bg-gray-100'} z-10`}>
                                                     <div className={`w-full h-full rounded-md sm:rounded-lg bg-gradient-to-br ${typeConfig?.gradient || 'from-gray-400 to-gray-500'}`}></div>
                                                 </div>
 

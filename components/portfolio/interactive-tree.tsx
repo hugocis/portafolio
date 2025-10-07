@@ -248,42 +248,95 @@ function TreeNode({
                                     )}
                                 </div>
 
-                                {/* Styled Action buttons */}
+                                {/* Styled Action buttons - Responsive */}
                                 {isOwner && (showActions || isSelected) && (
-                                    <div className="hidden sm:flex items-center space-x-2 ml-4 flex-shrink-0">
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                if (onNodeAdd) onNodeAdd(node.id)
-                                            }}
-                                            className="p-2 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:shadow-sm transition-all duration-200"
-                                            title="Añadir elemento hijo"
-                                        >
-                                            <PlusIcon className="h-4 w-4" />
-                                        </button>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                if (onNodeEdit) onNodeEdit(node)
-                                            }}
-                                            className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:shadow-sm transition-all duration-200"
-                                            title="Editar"
-                                        >
-                                            <PencilIcon className="h-4 w-4" />
-                                        </button>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                if (onNodeDelete && confirm('¿Eliminar este elemento y todos sus hijos?')) {
-                                                    onNodeDelete(node.id)
-                                                }
-                                            }}
-                                            className="p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 hover:shadow-sm transition-all duration-200"
-                                            title="Eliminar"
-                                        >
-                                            <TrashIcon className="h-4 w-4" />
-                                        </button>
-                                    </div>
+                                    <>
+                                        {/* Mobile: Single menu button */}
+                                        <div className="sm:hidden flex items-center ml-2 flex-shrink-0">
+                                            <div className="relative group/menu">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                    }}
+                                                    className="p-2 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 transition-all"
+                                                >
+                                                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                                    </svg>
+                                                </button>
+                                                {/* Mobile dropdown */}
+                                                <div className="hidden group-hover/menu:block absolute right-0 top-full mt-1 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-600 py-1 z-50 min-w-[140px]">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            if (onNodeAdd) onNodeAdd(node.id)
+                                                        }}
+                                                        className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-600"
+                                                    >
+                                                        <PlusIcon className="h-4 w-4" />
+                                                        Añadir hijo
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            if (onNodeEdit) onNodeEdit(node)
+                                                        }}
+                                                        className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600"
+                                                    >
+                                                        <PencilIcon className="h-4 w-4" />
+                                                        Editar
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            if (onNodeDelete && confirm('¿Eliminar este elemento y todos sus hijos?')) {
+                                                                onNodeDelete(node.id)
+                                                            }
+                                                        }}
+                                                        className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-rose-600"
+                                                    >
+                                                        <TrashIcon className="h-4 w-4" />
+                                                        Eliminar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {/* Desktop: Full buttons */}
+                                        <div className="hidden sm:flex items-center space-x-2 ml-4 flex-shrink-0">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    if (onNodeAdd) onNodeAdd(node.id)
+                                                }}
+                                                className="p-2 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:shadow-sm transition-all duration-200"
+                                                title="Añadir elemento hijo"
+                                            >
+                                                <PlusIcon className="h-4 w-4" />
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    if (onNodeEdit) onNodeEdit(node)
+                                                }}
+                                                className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:shadow-sm transition-all duration-200"
+                                                title="Editar"
+                                            >
+                                                <PencilIcon className="h-4 w-4" />
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    if (onNodeDelete && confirm('¿Eliminar este elemento y todos sus hijos?')) {
+                                                        onNodeDelete(node.id)
+                                                    }
+                                                }}
+                                                className="p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 hover:shadow-sm transition-all duration-200"
+                                                title="Eliminar"
+                                            >
+                                                <TrashIcon className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    </>
                                 )}
 
                                 {/* Styled View button for non-owners */}

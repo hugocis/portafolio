@@ -319,3 +319,16 @@ html {
   background-color: rgba(17, 24, 39, 0.75);
   border: 1px solid rgba(75, 85, 99, 0.3);
 }
+
+/* Hide scrollbar for horizontal tabs */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari and Opera */
+}

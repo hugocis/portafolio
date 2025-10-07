@@ -188,7 +188,7 @@ export function NodeEditor({
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
+          <div className="flex min-h-full items-end sm:items-center justify-center sm:p-4 text-center">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -198,27 +198,27 @@ export function NodeEditor({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-5xl transform overflow-hidden rounded-3xl bg-white dark:bg-slate-800 text-left align-middle shadow-2xl transition-all border border-gray-200 dark:border-slate-700">
+              <Dialog.Panel className="w-full max-w-5xl h-[95vh] sm:h-auto sm:max-h-[90vh] transform overflow-hidden rounded-t-2xl sm:rounded-3xl bg-white dark:bg-slate-800 text-left align-middle shadow-2xl transition-all border-t sm:border border-gray-200 dark:border-slate-700 flex flex-col">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 px-8 py-6 relative overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6 relative overflow-hidden flex-shrink-0">
                   {/* Animated background elements */}
                   <div className="absolute inset-0 opacity-20">
                     <div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full mix-blend-overlay filter blur-xl opacity-70 animate-pulse"></div>
                     <div className="absolute bottom-0 right-0 w-24 h-24 bg-white rounded-full mix-blend-overlay filter blur-xl opacity-50 animate-pulse animation-delay-2000"></div>
                   </div>
 
-                  <div className="flex items-center justify-between relative">
-                    <div className="flex items-center space-x-4">
+                  <div className="flex items-center justify-between relative gap-2">
+                    <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 flex-1 min-w-0">
                       {selectedType && (
-                        <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg border border-white/30">
-                          <selectedType.icon className="h-8 w-8 text-white" />
+                        <div className="p-2 sm:p-2.5 lg:p-3 rounded-xl sm:rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg border border-white/30 flex-shrink-0">
+                          <selectedType.icon className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-white" />
                         </div>
                       )}
-                      <div>
-                        <Dialog.Title as="h3" className="text-2xl font-bold text-white">
+                      <div className="flex-1 min-w-0">
+                        <Dialog.Title as="h3" className="text-base sm:text-lg lg:text-2xl font-bold text-white truncate">
                           {node ? 'Editar Nodo' : 'Crear Nuevo Nodo'}
                         </Dialog.Title>
-                        <p className="text-blue-100 text-base mt-1">
+                        <p className="text-blue-100 text-xs sm:text-sm lg:text-base mt-0.5 sm:mt-1 line-clamp-1">
                           {selectedType?.description || 'Configura tu contenido profesional'}
                         </p>
                       </div>
@@ -232,21 +232,22 @@ export function NodeEditor({
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-8">
+                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
                   <Tab.Group selectedIndex={selectedTab} onChange={setSelectedTab}>
-                    <Tab.List className="flex space-x-2 rounded-2xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-2 mb-8 border border-blue-200 dark:border-blue-800">
+                    <Tab.List className="flex overflow-x-auto space-x-1.5 sm:space-x-2 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-1.5 sm:p-2 mb-4 sm:mb-6 lg:mb-8 border border-blue-200 dark:border-blue-800 scrollbar-hide">
                       <Tab className={({ selected }) =>
-                        `flex-1 rounded-xl py-3 px-4 text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none
+                        `flex-shrink-0 rounded-lg sm:rounded-xl py-2 sm:py-2.5 lg:py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none whitespace-nowrap
                          ${selected
                           ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 shadow-lg border border-blue-200 dark:border-blue-600'
                           : 'text-blue-600 dark:text-blue-400 hover:bg-white/50 dark:hover:bg-slate-700/50 hover:text-blue-700 dark:hover:text-blue-300'
                         }`
                       }>
-                        Información Básica
+                        <span className="hidden sm:inline">Información Básica</span>
+                        <span className="sm:hidden">Info</span>
                       </Tab>
                       {formData.type === 'PROJECT' && (
                         <Tab className={({ selected }) =>
-                          `flex-1 rounded-xl py-3 px-4 text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none
+                          `flex-shrink-0 rounded-lg sm:rounded-xl py-2 sm:py-2.5 lg:py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none whitespace-nowrap
                            ${selected
                             ? 'bg-white dark:bg-slate-700 text-purple-700 dark:text-purple-300 shadow-lg border border-purple-200 dark:border-purple-600'
                             : 'text-purple-600 dark:text-purple-400 hover:bg-white/50 dark:hover:bg-slate-700/50 hover:text-purple-700 dark:hover:text-purple-300'
@@ -257,7 +258,7 @@ export function NodeEditor({
                       )}
                       {formData.type === 'PROJECT' && (
                         <Tab className={({ selected }) =>
-                          `flex-1 rounded-xl py-3 px-4 text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none
+                          `flex-shrink-0 rounded-lg sm:rounded-xl py-2 sm:py-2.5 lg:py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none whitespace-nowrap
                            ${selected
                             ? 'bg-white dark:bg-slate-700 text-pink-700 dark:text-pink-300 shadow-lg border border-pink-200 dark:border-pink-600'
                             : 'text-pink-600 dark:text-pink-400 hover:bg-white/50 dark:hover:bg-slate-700/50 hover:text-pink-700 dark:hover:text-pink-300'
@@ -267,7 +268,7 @@ export function NodeEditor({
                         </Tab>
                       )}
                       <Tab className={({ selected }) =>
-                        `flex-1 rounded-xl py-3 px-4 text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none
+                        `flex-shrink-0 rounded-lg sm:rounded-xl py-2 sm:py-2.5 lg:py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none whitespace-nowrap
                          ${selected
                           ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-lg border border-indigo-200 dark:border-indigo-600'
                           : 'text-indigo-600 dark:text-indigo-400 hover:bg-white/50 dark:hover:bg-slate-700/50 hover:text-indigo-700 dark:hover:text-indigo-300'
@@ -276,19 +277,20 @@ export function NodeEditor({
                         Contenido
                       </Tab>
                       <Tab className={({ selected }) =>
-                        `flex-1 rounded-xl py-3 px-4 text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none
+                        `flex-shrink-0 rounded-lg sm:rounded-xl py-2 sm:py-2.5 lg:py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold leading-5 transition-all duration-300 focus:outline-none whitespace-nowrap
                          ${selected
                           ? 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 shadow-lg border border-gray-200 dark:border-gray-600'
                           : 'text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-slate-700/50 hover:text-gray-700 dark:hover:text-gray-300'
                         }`
                       }>
-                        Configuración
+                        <span className="hidden sm:inline">Configuración</span>
+                        <span className="sm:hidden">Config</span>
                       </Tab>
                     </Tab.List>
 
                     <Tab.Panels>
                       {/* Basic Information Tab */}
-                      <Tab.Panel className="space-y-6">
+                      <Tab.Panel className="space-y-4 sm:space-y-5 lg:space-y-6">
                         {/* Context Info Banner */}
                         {!parentId ? (
                           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-2xl p-5">
@@ -381,7 +383,7 @@ export function NodeEditor({
                               </span>
                             )}
                           </label>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
                             {nodeTypes.map((type) => {
                               const Icon = type.icon
                               const isRecommended = !parentId && type.id === 'CATEGORY'
@@ -695,18 +697,18 @@ export function NodeEditor({
                   </Tab.Group>
 
                   {/* Footer */}
-                  <div className="flex justify-between items-center pt-6 border-t border-gray-200 mt-8">
+                  <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-2 sm:gap-0 pt-4 sm:pt-6 border-t border-gray-200 mt-4 sm:mt-6 lg:mt-8 flex-shrink-0">
                     <button
                       type="button"
                       onClick={onClose}
-                      className="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      className="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
                       disabled={loading}
-                      className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      className="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {loading ? (
                         <>

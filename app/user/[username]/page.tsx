@@ -235,8 +235,8 @@ export default function UserPage({ params }: UserPageProps) {
           {nodes.length > 0 ? (
             <div className="space-y-4 sm:space-y-6 lg:space-y-8">
               {currentLayout === 'tree' && (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-                  <div className="lg:col-span-2 order-2 lg:order-1">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="md:col-span-2 order-2 md:order-1">
                     <div className="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl shadow-xl border border-white/30 overflow-hidden">
                       <InteractiveTree
                         nodes={nodes}
@@ -250,8 +250,8 @@ export default function UserPage({ params }: UserPageProps) {
                       />
                     </div>
                   </div>
-                  <div className="lg:col-span-1 order-1 lg:order-2">
-                    <div className="space-y-4 sm:space-y-6 lg:sticky lg:top-24">
+                  <div className="md:col-span-1 order-1 md:order-2">
+                    <div className="space-y-4 sm:space-y-6 md:sticky md:top-24">
                       {/* Featured Projects */}
                       {nodes.filter(node => node.type === 'PROJECT' && node.tags?.includes('featured')).length > 0 && (
                         <div className="bg-white/80 backdrop-blur-lg rounded-xl sm:rounded-2xl shadow-xl border border-white/30 p-4 sm:p-6">

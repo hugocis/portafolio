@@ -15,14 +15,16 @@ services:
       - ENCRYPTION_IV=${ENCRYPTION_IV}
       - CRON_SECRET_TOKEN=${CRON_SECRET_TOKEN}
       - BLOB_READ_WRITE_TOKEN=${BLOB_READ_WRITE_TOKEN:-}
-    volumes: []
+    volumes:
+      # Persistir uploads en producción
+      - uploads_data:/app/public/uploads
     deploy:
       resources:
         limits:
           memory: 1G
         reservations:
           memory: 512M
-  
+
   db:
     ports: []
     deploy:
@@ -31,3 +33,7 @@ services:
           memory: 512M
         reservations:
           memory: 256M
+
+volumes:
+  uploads_data:
+    driver: local

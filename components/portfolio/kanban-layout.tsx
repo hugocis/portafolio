@@ -80,61 +80,63 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                     <div className="absolute bottom-6 left-8 w-24 h-24 bg-gradient-to-br from-violet-200 to-indigo-200 rounded-full blur-2xl"></div>
                 </div>
 
-                <div className="relative p-8">
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                        <div className="space-y-4">
-                            <div className="flex items-center space-x-4">
-                                <div className="relative">
-                                    <div className="p-4 bg-gradient-to-br from-purple-600 to-violet-600 rounded-2xl shadow-lg">
-                                        <ViewColumnsIcon className="h-8 w-8 text-white" />
+                <div className="relative p-4 sm:p-6 lg:p-8">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
+                        <div className="space-y-3 sm:space-y-4 flex-1">
+                            <div className="flex items-center space-x-3 sm:space-x-4">
+                                <div className="relative flex-shrink-0">
+                                    <div className="p-2.5 sm:p-3 lg:p-4 bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl sm:rounded-2xl shadow-lg">
+                                        <ViewColumnsIcon className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-white" />
                                     </div>
-                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full animate-pulse"></div>
+                                    <div className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full animate-pulse"></div>
                                 </div>
-                                <div>
-                                    <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                                <div className="flex-1 min-w-0">
+                                    <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent truncate">
                                         Vista Kanban
                                     </h2>
-                                    <p className="text-lg text-gray-600 dark:text-gray-400">
+                                    <p className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-gray-400 truncate">
                                         {orderedColumns.length} columna{orderedColumns.length !== 1 ? 's' : ''} • {visibleNodes.length} elemento{visibleNodes.length !== 1 ? 's' : ''} total
                                     </p>
                                 </div>
                             </div>
 
                             {/* Stats */}
-                            <div className="flex items-center space-x-4">
-                                <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm rounded-xl px-4 py-2 border border-gray-200/50">
-                                    <EyeIcon className="h-4 w-4 text-green-600" />
-                                    <span className="text-sm font-medium text-gray-700">{getTotalVisible()} Públicos</span>
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 lg:gap-4">
+                                <div className="flex items-center space-x-1.5 sm:space-x-2 bg-white/80 backdrop-blur-sm rounded-lg sm:rounded-xl px-2.5 sm:px-3 lg:px-4 py-1.5 sm:py-2 border border-gray-200/50">
+                                    <EyeIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
+                                    <span className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">{getTotalVisible()} <span className="hidden sm:inline">Públicos</span></span>
                                 </div>
                                 {isOwner && getTotalPrivate() > 0 && (
-                                    <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm rounded-xl px-4 py-2 border border-gray-200/50">
-                                        <EyeSlashIcon className="h-4 w-4 text-amber-600" />
-                                        <span className="text-sm font-medium text-gray-700">{getTotalPrivate()} Privados</span>
+                                    <div className="flex items-center space-x-1.5 sm:space-x-2 bg-white/80 backdrop-blur-sm rounded-lg sm:rounded-xl px-2.5 sm:px-3 lg:px-4 py-1.5 sm:py-2 border border-gray-200/50">
+                                        <EyeSlashIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-600 flex-shrink-0" />
+                                        <span className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">{getTotalPrivate()} <span className="hidden sm:inline">Privados</span></span>
                                     </div>
                                 )}
                             </div>
                         </div>
 
                         {/* Controls */}
-                        <div className="flex items-center space-x-4">
-                            <div className="flex bg-white/80 backdrop-blur-sm rounded-xl p-1 border border-gray-200/50 shadow-sm">
+                        <div className="flex items-center justify-end sm:justify-start gap-3 sm:gap-4">
+                            <div className="flex bg-white/80 backdrop-blur-sm rounded-lg sm:rounded-xl p-1 border border-gray-200/50 shadow-sm">
                                 <button
                                     onClick={() => setIsCompact(false)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${!isCompact
+                                    className={`px-2.5 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap ${!isCompact
                                         ? 'bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-md'
                                         : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
-                                    Detallado
+                                    <span className="hidden sm:inline">Detallado</span>
+                                    <span className="sm:hidden">Det.</span>
                                 </button>
                                 <button
                                     onClick={() => setIsCompact(true)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isCompact
+                                    className={`px-2.5 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap ${isCompact
                                         ? 'bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-md'
                                         : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
-                                    Compacto
+                                    <span className="hidden sm:inline">Compacto</span>
+                                    <span className="sm:hidden">Comp.</span>
                                 </button>
                             </div>
                         </div>
@@ -143,8 +145,8 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
             </div>
 
             {/* Enhanced Kanban Board */}
-            <div className="overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
-                <div className="flex space-x-4 sm:space-x-6 min-w-max sm:min-w-full">
+            <div className="overflow-x-auto pb-4 sm:pb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
+                <div className="flex space-x-3 sm:space-x-4 lg:space-x-6 min-w-max sm:min-w-full">
                     {orderedColumns.map((type, columnIndex) => {
                         const typeConfig = nodeTypeConfig[type as keyof typeof nodeTypeConfig]
                         const TypeIcon = typeConfig?.icon || DocumentIcon
@@ -154,7 +156,7 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                         return (
                             <div
                                 key={type}
-                                className="flex-shrink-0 w-80 sm:w-80 md:flex-1 md:min-w-0 animate-fade-in-scale"
+                                className="flex-shrink-0 w-72 sm:w-80 md:flex-1 md:min-w-[280px] lg:min-w-[320px] animate-fade-in-scale"
                                 style={{
                                     animationDelay: `${columnIndex * 150}ms`,
                                     animationFillMode: 'both'

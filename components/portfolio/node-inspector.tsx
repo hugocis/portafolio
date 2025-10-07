@@ -95,7 +95,7 @@ export function NodeInspector({ node, isOpen, onClose }: NodeInspectorProps) {
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-end sm:items-center justify-center p-0 sm:p-4 text-center">
+            <div className="flex min-h-full items-end sm:items-center justify-center sm:p-4 text-center">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -105,7 +105,7 @@ export function NodeInspector({ node, isOpen, onClose }: NodeInspectorProps) {
                 leaveFrom="opacity-100 scale-100 translate-y-0"
                 leaveTo="opacity-0 scale-95 translate-y-4"
               >
-                <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-t-2xl sm:rounded-2xl bg-white dark:bg-slate-800 text-left align-middle shadow-2xl transition-all border-t sm:border border-gray-200 dark:border-slate-700 max-h-[90vh] sm:max-h-[85vh] flex flex-col">
+                <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-t-2xl sm:rounded-2xl bg-white dark:bg-slate-800 text-left align-middle shadow-2xl transition-all border-t sm:border border-gray-200 dark:border-slate-700 h-[95vh] sm:h-auto sm:max-h-[85vh] flex flex-col">
                   {/* Header */}
                   <div className={`px-4 sm:px-6 py-4 sm:py-5 bg-gradient-to-br ${typeConfig?.bgColor || 'from-gray-100 to-gray-200'} dark:from-slate-700 dark:to-slate-800 relative overflow-hidden flex-shrink-0`}>
                     {/* Animated background elements */}
@@ -235,8 +235,8 @@ export function NodeInspector({ node, isOpen, onClose }: NodeInspectorProps) {
                           <PhotoIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-pink-600 dark:text-pink-400 flex-shrink-0" />
                           Galería de Imágenes ({node.images.length})
                         </h4>
-                        <div className="bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 rounded-2xl p-4 sm:p-5 border-2 border-pink-200 dark:border-pink-700">
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                        <div className="bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 rounded-xl sm:rounded-2xl p-3 sm:p-5 border-2 border-pink-200 dark:border-pink-700">
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
                             {node.images.map((imageUrl, index) => (
                               <button
                                 key={index}
