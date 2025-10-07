@@ -1,11 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { del } from '@vercel/blob';
-import { unlink } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
+import { unlink } from 'fs/promises'
+import { join } from 'path'
+import { existsSync } from 'fs'
 
 // DELETE /api/blobs/[id] - Delete a blob
 export async function DELETE(
@@ -43,27 +42,19 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Delete from storage
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
-      // Delete from Vercel Blob
-      await del(blob.url, {
-        token: process.env.BLOB_READ_WRITE_TOKEN,
-      });
-    } else {
-      // Delete from local storage
-      // blob.url is already like "/uploads/filename.jpg"
-      const filepath = join(process.cwd(), 'public', blob.url);
+    // Eliminar del file system local (Docker)
+    // blob.url is like "/uploads/filename.jpg"
+    const filepath = join(process.cwd(), 'public', blob.url);
 
-      try {
-        if (existsSync(filepath)) {
-          await unlink(filepath);
-        } else {
-          console.warn(`File not found for deletion: ${filepath}`);
-        }
-      } catch (fsError) {
-        console.error('Error deleting file from disk:', fsError);
-        // Continue anyway to remove from database
+    try {
+      if (existsSync(filepath)) {
+        await unlink(filepath);
+      } else {
+        console.warn(`File not found for deletion: ${filepath}`);
       }
+    } catch (fsError) {
+      console.error('Error deleting file from disk:', fsError);
+      // Continuar de todos modos para eliminar de la base de datos
     }
 
     // Delete from database

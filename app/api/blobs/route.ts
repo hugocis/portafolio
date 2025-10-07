@@ -1,11 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { put } from '@vercel/blob';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
+import { writeFile, mkdir } from 'fs/promises'
+import { join } from 'path'
+import { existsSync } from 'fs'
 
 // GET /api/blobs - List user's blobs
 export async function GET(request: NextRequest) {
@@ -115,43 +114,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Upload to Vercel Blob or use local storage
+    // Guardar en file system local (Docker)
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const uploadsDir = join(process.cwd(), 'public', 'uploads');
+
     let blobUrl: string;
     let blobKey: string;
 
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
-      // Use Vercel Blob
-      const blob = await put(file.name, file, {
-        access: 'public',
-        token: process.env.BLOB_READ_WRITE_TOKEN,
-      });
-      blobUrl = blob.url;
-      blobKey = blob.pathname;
-    } else {
-      // Use local storage (for development and self-hosted)
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      // Save to public folder
-      const uploadsDir = join(process.cwd(), 'public', 'uploads');
-
-      try {
-        if (!existsSync(uploadsDir)) {
-          await mkdir(uploadsDir, { recursive: true, mode: 0o755 });
-        }
-
-        const timestamp = Date.now();
-        const filename = `${timestamp}-${file.name}`;
-        const filepath = join(uploadsDir, filename);
-
-        await writeFile(filepath, buffer, { mode: 0o644 });
-
-        blobUrl = `/uploads/${filename}`;
-        blobKey = filename;
-      } catch (fsError) {
-        console.error('File system error:', fsError);
-        throw new Error('Failed to save file to disk');
+    try {
+      if (!existsSync(uploadsDir)) {
+        await mkdir(uploadsDir, { recursive: true, mode: 0o755 });
       }
+
+      const timestamp = Date.now();
+      const filename = `${timestamp}-${file.name}`;
+      const filepath = join(uploadsDir, filename);
+
+      await writeFile(filepath, buffer, { mode: 0o644 });
+
+      blobUrl = `/uploads/${filename}`;
+      blobKey = filename;
+    } catch (fsError) {
+      console.error('File system error:', fsError);
+      throw new Error('Failed to save file to disk');
     }
 
     // Save blob metadata to database

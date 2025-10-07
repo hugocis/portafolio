@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
-import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Node } from '@prisma/client'
 import { NodeEditor } from '@/components/dashboard/node-editor'

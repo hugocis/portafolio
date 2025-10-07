@@ -45,8 +45,7 @@ jobs:
 
             # Configurar ambiente
             echo "📝 Configuring environment..."
-
-            BLOB_TOKEN="${{ secrets.BLOB_READ_WRITE_TOKEN }}"
+            echo "📁 Using local file storage in Docker"
 
             cat > .env << EOF
             NODE_ENV=production
@@ -64,7 +63,6 @@ jobs:
             ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
             ENCRYPTION_IV=${{ secrets.ENCRYPTION_IV }}
             CRON_SECRET_TOKEN=${{ secrets.CRON_SECRET_TOKEN }}
-            BLOB_READ_WRITE_TOKEN=${BLOB_TOKEN}={{ secrets.BLOB_READ_WRITE_TOKEN }}
             EOF
 
             # Detener servicios y limpiar
