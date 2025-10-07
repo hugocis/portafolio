@@ -1,0 +1,39 @@
+# Caddyfile para herokku.duckdns.org
+# Caddy maneja automáticamente los certificados Let's Encrypt
+
+herokku.duckdns.org {
+    # Reverse proxy a la aplicación Next.js
+    reverse_proxy app:3000 {
+        # Headers para mantener información del cliente original
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-Host {host}
+    }
+
+    # Logs para debugging
+    log {
+        output file /data/access.log
+        format json
+    }
+
+    # Configuración de encoding
+    encode gzip zstd
+
+    # Headers de seguridad
+    header {
+        # Prevenir clickjacking
+        X-Frame-Options "SAMEORIGIN"
+        # Prevenir MIME sniffing
+        X-Content-Type-Options "nosniff"
+        # XSS Protection
+        X-XSS-Protection "1; mode=block"
+        # Referrer policy
+        Referrer-Policy "strict-origin-when-cross-origin"
+        # Eliminar header de servidor
+        -Server
+    }
+}
+
+# Redirección automática de HTTP a HTTPS (Caddy lo maneja por defecto)
+# Puerto 80 redirige automáticamente a 443

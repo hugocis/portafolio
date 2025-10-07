@@ -42,15 +42,5 @@ services:
       - /app/.next
     restart: unless-stopped
 
-  # Cloudflare Tunnel (solo activo en producción con token)
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
-    restart: unless-stopped
-    depends_on:
-      - app
-    profiles:
-      - production  # Solo se inicia si se especifica --profile production
-
 volumes:
   postgres_data:

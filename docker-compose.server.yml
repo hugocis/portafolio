@@ -11,8 +11,6 @@ services:
       - OAUTH_GITHUB_SECRET=${OAUTH_GITHUB_SECRET}
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - ENCRYPTION_KEY=${ENCRYPTION_KEY}
-      - ENCRYPTION_IV=${ENCRYPTION_IV}
-      - CRON_SECRET_TOKEN=${CRON_SECRET_TOKEN}
     volumes: []
     deploy:
       resources:
@@ -29,6 +27,3 @@ services:
           memory: 512M
         reservations:
           memory: 256M
-
-  cloudflared:
-    profiles: []  # Remover el profile para que se active siempre en producción
