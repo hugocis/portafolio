@@ -2,7 +2,7 @@
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -10,16 +10,16 @@ jobs:
     name: 🌐 Deploy Application
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    
+
     steps:
       - name: 📂 Checkout repository
         uses: actions/checkout@v4
-          
+
       - name: 🔐 Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          
+
       - name: 🚀 Deploy to Server
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -31,20 +31,23 @@ jobs:
           command_timeout: 1800s
           script: |
             set -e
-            
+
             echo "🏠 $(whoami)@$(hostname)"
-            
+
             # Crear o actualizar directorio del proyecto
             PROJECT_DIR="portafolios"
             [ ! -d "$PROJECT_DIR" ] && mkdir -p "$PROJECT_DIR" && cd "$PROJECT_DIR" && git clone https://github.com/${{ github.repository }}.git . || cd "$PROJECT_DIR"
-            
+
             # Actualizar código
             echo "🔄 Updating code..."
             git config --global --add safe.directory $(pwd)
             git fetch origin && git reset --hard origin/main && git clean -fd || echo "⚠️ Git update had issues"
-            
+
             # Configurar ambiente
             echo "📝 Configuring environment..."
+
+            BLOB_TOKEN="${{ secrets.BLOB_READ_WRITE_TOKEN }}"
+
             cat > .env << EOF
             NODE_ENV=production
             PORT=3000
@@ -61,18 +64,18 @@ jobs:
             ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
             ENCRYPTION_IV=${{ secrets.ENCRYPTION_IV }}
             CRON_SECRET_TOKEN=${{ secrets.CRON_SECRET_TOKEN }}
-            BLOB_READ_WRITE_TOKEN=${{ secrets.BLOB_READ_WRITE_TOKEN }}
+            BLOB_READ_WRITE_TOKEN=${BLOB_TOKEN}={{ secrets.BLOB_READ_WRITE_TOKEN }}
             EOF
-            
+
             # Detener servicios y limpiar
             echo "🛑 Stopping existing services..."
             docker compose down 2>/dev/null || true
             docker image prune -f 2>/dev/null || true
-            
+
             # Desplegar aplicación
             echo "🚀 Deploying application..."
             export DOCKER_BUILDKIT=1
-            
+
             if docker compose up -d --build 2>&1 | tee /tmp/deploy.log; then
               echo "✅ Build successful"
             elif [ -f "Dockerfile.stable" ]; then
@@ -84,11 +87,11 @@ jobs:
               docker compose logs --tail=20
               exit 1
             fi
-            
+
             # Esperar inicialización
             echo "⏳ Waiting for services (60s)..."
             sleep 60
-            
+
             # Verificar salud
             echo "🔍 Testing application..."
             for i in {1..6}; do
@@ -99,7 +102,12 @@ jobs:
                 [ $i -lt 6 ] && echo "⏳ Waiting... ($i/6)" && sleep 10
               fi
             done
-            
+
+            # Verificar configuración de uploads
+            echo ""
+            echo "🔍 Verificando almacenamiento..."
+            docker compose exec -T app sh /app/scripts/verify-uploads.sh || echo "⚠️ Script de verificación no disponible"
+
             # Información final
             echo ""
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

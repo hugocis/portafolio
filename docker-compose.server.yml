@@ -17,6 +17,7 @@ services:
       - BLOB_READ_WRITE_TOKEN=${BLOB_READ_WRITE_TOKEN:-}
     volumes:
       # Persistir uploads en producción
+      # IMPORTANTE: Este volumen solo se usa si NO hay BLOB_READ_WRITE_TOKEN
       - uploads_data:/app/public/uploads
     deploy:
       resources:
