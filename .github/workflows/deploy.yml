@@ -23,7 +23,7 @@ jobs:
       - name: 🚀 Deploy to Server
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SERVER_IP || 'herokku.duckdns.org' }}
+          host: ${{ 'herokku.duckdns.org' }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 7122
