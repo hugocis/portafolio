@@ -82,7 +82,7 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
     return (
         <div className="space-y-8">
             {/* Modern Header */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-cyan-50 to-indigo-50 dark:from-blue-900/20 dark:via-cyan-900/20 dark:to-indigo-900/20 rounded-3xl border border-blue-200/50 dark:border-blue-700/50">
+            <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-cyan-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 rounded-3xl border border-blue-200/50 dark:border-slate-700">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-30">
                     <div className="absolute top-6 right-8 w-32 h-32 bg-gradient-to-br from-blue-200 to-cyan-200 rounded-full blur-3xl"></div>
@@ -236,7 +236,7 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                                 {/* Enhanced Node Card */}
                                                 <div
                                                     onClick={() => handleNodeClick(node)}
-                                                    className={`relative bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-200/50 p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer group-hover:-translate-y-2 group-hover:scale-105 overflow-hidden ${isFeatured ? 'ring-2 ring-yellow-400/50' : ''
+                                                    className={`relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-200/50 dark:border-slate-700/50 p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer group-hover:-translate-y-2 group-hover:scale-105 overflow-hidden ${isFeatured ? 'ring-2 ring-yellow-400/50' : ''
                                                         }`}
                                                 >
                                                     {/* Featured Badge */}
@@ -260,11 +260,11 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                                                     <TypeIcon className={`h-6 w-6 sm:h-8 sm:w-8 ${typeConfig?.color || 'text-gray-600'}`} />
                                                                 </div>
                                                                 <div className="flex-1 min-w-0">
-                                                                    <h3 className="text-lg sm:text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 break-words">
+                                                                    <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 break-words">
                                                                         {node.title}
                                                                     </h3>
                                                                     <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2">
-                                                                        <p className="text-xs sm:text-sm font-medium text-gray-600">
+                                                                        <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">
                                                                             {typeConfig?.name || node.type} • {getMonthFromDate(node.createdAt)} {getYearFromDate(node.createdAt)}
                                                                         </p>
                                                                         <div className="flex items-center space-x-2">
@@ -293,7 +293,7 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                                         {/* Enhanced Description */}
                                                         {node.description && (
                                                             <div className="mb-6">
-                                                                <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
+                                                                <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base sm:text-lg">
                                                                     {node.description}
                                                                 </p>
                                                             </div>
@@ -301,7 +301,7 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
 
                                                         {/* Children if any */}
                                                         {hasChildren && (
-                                                            <div className="mb-6 p-4 sm:p-6 bg-gray-50 rounded-xl border border-gray-200">
+                                                            <div className="mb-6 p-4 sm:p-6 bg-gray-50 dark:bg-slate-700/50 rounded-xl border border-gray-200 dark:border-slate-600">
                                                                 <h4 className="text-sm sm:text-base font-bold text-gray-700 mb-4 flex items-center">
                                                                     <div className={`w-1 h-4 bg-gradient-to-b ${typeConfig?.gradient} rounded-full mr-2`}></div>
                                                                     Contenido ({(node as Node & { children: Node[] }).children.length})
@@ -317,17 +317,17 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                                                                     e.stopPropagation()
                                                                                     handleNodeClick(child)
                                                                                 }}
-                                                                                className="flex items-start space-x-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer group"
+                                                                                className="flex items-start space-x-3 p-3 bg-white dark:bg-slate-600 rounded-lg border border-gray-200 dark:border-slate-500 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-md transition-all cursor-pointer group"
                                                                             >
-                                                                                <div className={`p-2 rounded-lg ${childConfig?.bgColor} flex-shrink-0`}>
-                                                                                    <ChildIcon className={`h-4 w-4 ${childConfig?.color}`} />
+                                                                                <div className={`p-2 rounded-lg ${childConfig?.bgColor} dark:bg-slate-700 flex-shrink-0`}>
+                                                                                    <ChildIcon className={`h-4 w-4 ${childConfig?.color} dark:text-gray-300`} />
                                                                                 </div>
                                                                                 <div className="flex-1 min-w-0">
-                                                                                    <h5 className="font-semibold text-sm text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                                                                                    <h5 className="font-semibold text-sm text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
                                                                                         {child.title}
                                                                                     </h5>
                                                                                     {child.description && (
-                                                                                        <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                                                                                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
                                                                                             {child.description}
                                                                                         </p>
                                                                                     )}
@@ -345,13 +345,13 @@ export function TimelineLayout({ nodes, onNodeClick, isOwner }: TimelineLayoutPr
                                                                 {node.tags.slice(0, 6).map((tag, tagIndex) => (
                                                                     <span
                                                                         key={tagIndex}
-                                                                        className="inline-flex items-center bg-gray-100/80 backdrop-blur-sm text-gray-700 text-sm px-4 py-2 rounded-full font-medium border border-gray-200/50 hover:bg-gray-200/80 transition-colors"
+                                                                        className="inline-flex items-center bg-gray-100/80 dark:bg-slate-700/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 text-sm px-4 py-2 rounded-full font-medium border border-gray-200/50 dark:border-slate-600/50 hover:bg-gray-200/80 dark:hover:bg-slate-600/80 transition-colors"
                                                                     >
                                                                         {tag}
                                                                     </span>
                                                                 ))}
                                                                 {node.tags.length > 6 && (
-                                                                    <span className="inline-flex items-center text-gray-500 text-sm px-4 py-2 font-medium">
+                                                                    <span className="inline-flex items-center text-gray-500 dark:text-gray-400 text-sm px-4 py-2 font-medium">
                                                                         +{node.tags.length - 6} más
                                                                     </span>
                                                                 )}

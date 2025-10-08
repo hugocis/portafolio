@@ -73,7 +73,7 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
     return (
         <div className="space-y-6">
             {/* Modern Header */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-violet-50 to-indigo-50 dark:from-purple-900/20 dark:via-violet-900/20 dark:to-indigo-900/20 rounded-3xl border border-purple-200/50 dark:border-purple-700/50">
+            <div className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-violet-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 rounded-3xl border border-purple-200/50 dark:border-slate-700">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-30">
                     <div className="absolute top-6 right-8 w-32 h-32 bg-gradient-to-br from-purple-200 to-violet-200 rounded-full blur-3xl"></div>
@@ -163,7 +163,7 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                 }}
                             >
                                 {/* Enhanced Column Header */}
-                                <div className={`rounded-t-2xl border-2 ${typeConfig?.borderColor || 'border-gray-200'} bg-gradient-to-br ${typeConfig?.lightBg || 'from-gray-50 to-gray-100'} p-6 shadow-sm relative overflow-hidden`}>
+                                <div className={`rounded-t-2xl border-2 ${typeConfig?.borderColor || 'border-gray-200'} dark:border-slate-600 bg-gradient-to-br ${typeConfig?.lightBg || 'from-gray-50 to-gray-100'} dark:from-slate-800 dark:to-slate-700 p-6 shadow-sm relative overflow-hidden`}>
                                     {/* Header Background Pattern */}
                                     <div className="absolute inset-0 opacity-20">
                                         <div className={`absolute top-4 right-4 w-16 h-16 bg-gradient-to-r ${typeConfig?.gradient} rounded-full blur-xl animate-pulse`}></div>
@@ -177,10 +177,10 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                                     <TypeIcon className="h-6 w-6 text-white" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-bold text-gray-900 text-lg">
+                                                    <h3 className="font-bold text-gray-900 dark:text-white text-lg">
                                                         {typeConfig?.name || type}
                                                     </h3>
-                                                    <p className="text-sm text-gray-600">
+                                                    <p className="text-sm text-gray-600 dark:text-gray-400">
                                                         {columnNodes.length} elemento{columnNodes.length !== 1 ? 's' : ''}
                                                     </p>
                                                 </div>
@@ -210,7 +210,7 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                 </div>
 
                                 {/* Enhanced Column Body */}
-                                <div className={`border-2 border-t-0 ${typeConfig?.borderColor || 'border-gray-200'} rounded-b-2xl bg-gradient-to-b from-gray-50/50 to-white shadow-lg ${isCompact ? 'min-h-80 max-h-80' : 'min-h-96 max-h-96'
+                                <div className={`border-2 border-t-0 ${typeConfig?.borderColor || 'border-gray-200'} dark:border-slate-600 rounded-b-2xl bg-gradient-to-b from-gray-50/50 to-white dark:from-slate-900/50 dark:to-slate-900 shadow-lg ${isCompact ? 'min-h-80 max-h-80' : 'min-h-96 max-h-96'
                                     } overflow-y-auto`}>
                                     <div className="p-4 space-y-3">
                                         {columnNodes.map((node, nodeIndex) => {
@@ -227,7 +227,7 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                                     }}
                                                 >
                                                     {/* Enhanced Card */}
-                                                    <div className={`relative bg-white/90 backdrop-blur-sm rounded-xl border border-gray-200/50 p-4 shadow-sm hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-105 ${isFeatured ? 'ring-2 ring-yellow-400/50' : ''
+                                                    <div className={`relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl border border-gray-200/50 dark:border-slate-700/50 p-4 shadow-sm hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-105 ${isFeatured ? 'ring-2 ring-yellow-400/50' : ''
                                                         }`}>
                                                         {/* Featured Badge */}
                                                         {isFeatured && (
@@ -240,7 +240,7 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
 
                                                         {/* Card Header */}
                                                         <div className="flex items-start justify-between mb-3">
-                                                            <h4 className={`font-bold text-gray-900 group-hover:text-blue-600 transition-colors ${isCompact ? 'text-sm line-clamp-1' : 'text-base line-clamp-2'
+                                                            <h4 className={`font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors ${isCompact ? 'text-sm line-clamp-1' : 'text-base line-clamp-2'
                                                                 }`}>
                                                                 {node.title}
                                                             </h4>
@@ -260,7 +260,7 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
 
                                                         {/* Description */}
                                                         {node.description && !isCompact && (
-                                                            <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
+                                                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2 leading-relaxed">
                                                                 {node.description}
                                                             </p>
                                                         )}
@@ -271,13 +271,13 @@ export function KanbanLayout({ nodes, onNodeClick, isOwner }: KanbanLayoutProps)
                                                                 {node.tags.slice(0, isCompact ? 2 : 3).map((tag, tagIndex) => (
                                                                     <span
                                                                         key={tagIndex}
-                                                                        className="inline-block bg-gray-100/80 backdrop-blur-sm text-gray-700 text-xs px-2 py-1 rounded-full font-medium border border-gray-200/50"
+                                                                        className="inline-block bg-gray-100/80 dark:bg-slate-700/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 text-xs px-2 py-1 rounded-full font-medium border border-gray-200/50 dark:border-slate-600/50"
                                                                     >
                                                                         {tag}
                                                                     </span>
                                                                 ))}
                                                                 {node.tags.length > (isCompact ? 2 : 3) && (
-                                                                    <span className="inline-block text-gray-500 text-xs px-2 py-1 font-medium">
+                                                                    <span className="inline-block text-gray-500 dark:text-gray-400 text-xs px-2 py-1 font-medium">
                                                                         +{node.tags.length - (isCompact ? 2 : 3)}
                                                                     </span>
                                                                 )}

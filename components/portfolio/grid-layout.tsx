@@ -73,7 +73,7 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
     return (
         <div className="space-y-6">
             {/* Modern Header */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 dark:from-orange-900/20 dark:via-red-900/20 dark:to-pink-900/20 rounded-3xl border border-orange-200/50 dark:border-orange-700/50">
+            <div className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 rounded-3xl border border-orange-200/50 dark:border-slate-700">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-30">
                     <div className="absolute top-6 right-8 w-32 h-32 bg-gradient-to-br from-orange-200 to-red-200 rounded-full blur-3xl"></div>
@@ -109,8 +109,8 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                                 <button
                                     onClick={() => setViewMode('detailed')}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${viewMode === 'detailed'
-                                            ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-md'
-                                            : 'text-gray-600 hover:text-gray-900'
+                                        ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-md'
+                                        : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
                                     Detallado
@@ -118,8 +118,8 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                                 <button
                                     onClick={() => setViewMode('compact')}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${viewMode === 'compact'
-                                            ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-md'
-                                            : 'text-gray-600 hover:text-gray-900'
+                                        ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-md'
+                                        : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
                                     Compacto
@@ -131,8 +131,8 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                                 <button
                                     onClick={() => setFilter('all')}
                                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${filter === 'all'
-                                            ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg'
-                                            : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
+                                        ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg'
+                                        : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
                                         }`}
                                 >
                                     Todos
@@ -146,8 +146,8 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                                             key={type}
                                             onClick={() => setFilter(type)}
                                             className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${filter === type
-                                                    ? `bg-gradient-to-r ${typeConfig?.gradient} text-white shadow-lg`
-                                                    : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
+                                                ? `bg-gradient-to-r ${typeConfig?.gradient} text-white shadow-lg`
+                                                : 'bg-white/80 backdrop-blur-sm text-gray-600 border border-gray-200/50 hover:bg-white hover:shadow-md'
                                                 }`}
                                         >
                                             <TypeIcon className="h-4 w-4" />
@@ -180,7 +180,7 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                             }}
                         >
                             {/* Enhanced Card */}
-                            <div className={`relative bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden ${isFeatured ? 'ring-2 ring-yellow-400/50' : ''
+                            <div className={`relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 dark:border-slate-700/50 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden ${isFeatured ? 'ring-2 ring-yellow-400/50' : ''
                                 }`}>
                                 {/* Featured Badge */}
                                 {isFeatured && (
@@ -222,7 +222,7 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                                             </div>
                                         </div>
 
-                                        <h3 className={`font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 ${viewMode === 'compact' ? 'text-base line-clamp-2' : 'text-lg line-clamp-2'
+                                        <h3 className={`font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 ${viewMode === 'compact' ? 'text-base line-clamp-2' : 'text-lg line-clamp-2'
                                             }`}>
                                             {node.title}
                                         </h3>
@@ -233,7 +233,7 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                                 <div className={`p-6 ${viewMode === 'compact' ? 'space-y-3' : 'space-y-4'}`}>
                                     {/* Description */}
                                     {node.description && viewMode === 'detailed' && (
-                                        <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed">
+                                        <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 leading-relaxed">
                                             {node.description}
                                         </p>
                                     )}
@@ -244,13 +244,13 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                                             {node.tags.slice(0, viewMode === 'compact' ? 2 : 4).map((tag, tagIndex) => (
                                                 <span
                                                     key={tagIndex}
-                                                    className="inline-block bg-gray-100/80 backdrop-blur-sm text-gray-700 text-xs px-3 py-1 rounded-full font-medium border border-gray-200/50 hover:bg-gray-200/80 transition-colors"
+                                                    className="inline-block bg-gray-100/80 dark:bg-slate-700/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 text-xs px-3 py-1 rounded-full font-medium border border-gray-200/50 dark:border-slate-600/50 hover:bg-gray-200/80 dark:hover:bg-slate-600/80 transition-colors"
                                                 >
                                                     {tag}
                                                 </span>
                                             ))}
                                             {node.tags.length > (viewMode === 'compact' ? 2 : 4) && (
-                                                <span className="inline-block text-gray-500 text-xs px-3 py-1 font-medium">
+                                                <span className="inline-block text-gray-500 dark:text-gray-400 text-xs px-3 py-1 font-medium">
                                                     +{node.tags.length - (viewMode === 'compact' ? 2 : 4)}
                                                 </span>
                                             )}
@@ -301,18 +301,18 @@ export function GridLayout({ nodes, onNodeClick, isOwner }: GridLayoutProps) {
                                                                 e.stopPropagation()
                                                                 handleNodeClick(child)
                                                             }}
-                                                            className="p-3 bg-gray-50/80 rounded-xl border border-gray-200/50 hover:bg-white hover:shadow-md transition-all duration-200 cursor-pointer group/child"
+                                                            className="p-3 bg-gray-50/80 dark:bg-slate-700/50 rounded-xl border border-gray-200/50 dark:border-slate-600/50 hover:bg-white dark:hover:bg-slate-600 hover:shadow-md transition-all duration-200 cursor-pointer group/child"
                                                         >
                                                             <div className="flex items-start space-x-3">
-                                                                <div className={`p-2 rounded-lg ${childConfig?.bgColor} flex-shrink-0`}>
-                                                                    <ChildIcon className={`h-4 w-4 ${childConfig?.color}`} />
+                                                                <div className={`p-2 rounded-lg ${childConfig?.bgColor} dark:bg-slate-600 flex-shrink-0`}>
+                                                                    <ChildIcon className={`h-4 w-4 ${childConfig?.color} dark:text-gray-300`} />
                                                                 </div>
                                                                 <div className="flex-1 min-w-0">
-                                                                    <h5 className="font-semibold text-sm text-gray-900 truncate group-hover/child:text-blue-600">
+                                                                    <h5 className="font-semibold text-sm text-gray-900 dark:text-white truncate group-hover/child:text-blue-600 dark:group-hover/child:text-blue-400">
                                                                         {child.title}
                                                                     </h5>
                                                                     {child.description && viewMode === 'detailed' && (
-                                                                        <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                                                                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
                                                                             {child.description}
                                                                         </p>
                                                                     )}

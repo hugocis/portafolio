@@ -158,8 +158,8 @@ function TreeNode({
                 {/* Styled Node content */}
                 <div
                     className={`flex-1 flex items-center p-2.5 sm:p-3 lg:p-4 rounded-lg sm:rounded-xl transition-all duration-300 cursor-pointer group relative overflow-hidden ${isSelected
-                        ? `bg-gradient-to-r ${typeConfig.lightBg} border ${typeConfig.borderColor} shadow-md`
-                        : 'hover:bg-gray-50/80 hover:shadow-sm'
+                        ? `bg-gradient-to-r ${typeConfig.lightBg} dark:from-slate-800 dark:to-slate-700 border ${typeConfig.borderColor} dark:border-slate-600 shadow-md`
+                        : 'hover:bg-gray-50/80 dark:hover:bg-slate-800/50 hover:shadow-sm'
                         } ${isFeatured ? 'ring-1 ring-yellow-300/50' : ''}`}
                     onClick={() => {
                         if (hasChildren) {
@@ -214,11 +214,11 @@ function TreeNode({
                             <div className="flex items-center justify-between gap-2">
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center flex-wrap gap-1.5 sm:gap-2 mb-1">
-                                        <span className={`font-semibold text-sm sm:text-base lg:text-lg truncate ${isSelected ? 'text-gray-900' : 'text-gray-800 group-hover:text-gray-900'
+                                        <span className={`font-semibold text-sm sm:text-base lg:text-lg truncate ${isSelected ? 'text-gray-900 dark:text-white' : 'text-gray-800 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white'
                                             } transition-colors`}>
                                             {node.title}
                                         </span>
-                                        <span className={`text-[10px] sm:text-xs font-medium px-1.5 sm:px-2 lg:px-2.5 py-0.5 sm:py-1 rounded-full ${typeConfig.bgColor} ${typeConfig.color} flex-shrink-0`}>
+                                        <span className={`text-[10px] sm:text-xs font-medium px-1.5 sm:px-2 lg:px-2.5 py-0.5 sm:py-1 rounded-full ${typeConfig.bgColor} dark:bg-slate-700 ${typeConfig.color} dark:text-gray-200 flex-shrink-0`}>
                                             {typeConfig.name}
                                         </span>
                                         <div className="flex items-center gap-1 flex-shrink-0">
@@ -237,12 +237,12 @@ function TreeNode({
                                         </div>
                                     </div>
                                     {node.description && (
-                                        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed mb-1 sm:mb-2 line-clamp-1 sm:line-clamp-2">
+                                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-1 sm:mb-2 line-clamp-1 sm:line-clamp-2">
                                             {node.description}
                                         </p>
                                     )}
                                     {hasChildren && (
-                                        <p className="text-[10px] sm:text-xs text-gray-500 font-medium">
+                                        <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium">
                                             {node.children!.filter(child => child.isVisible || isOwner).length} items
                                         </p>
                                     )}
@@ -360,13 +360,13 @@ function TreeNode({
                                     {node.tags.slice(0, 2).map((tag, index) => (
                                         <span
                                             key={index}
-                                            className="inline-block bg-gray-100/80 text-gray-700 text-[10px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-medium hover:bg-gray-200/80 transition-colors"
+                                            className="inline-block bg-gray-100/80 dark:bg-slate-700/80 text-gray-700 dark:text-gray-300 text-[10px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-medium hover:bg-gray-200/80 dark:hover:bg-slate-600/80 transition-colors"
                                         >
                                             {tag}
                                         </span>
                                     ))}
                                     {node.tags.length > 2 && (
-                                        <span className="text-gray-500 text-[10px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 font-medium">
+                                        <span className="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 font-medium">
                                             +{node.tags.length - 2}
                                         </span>
                                     )}
@@ -462,7 +462,7 @@ export function InteractiveTree({
     return (
         <div className="space-y-6">
             {/* Professional Header - Mobile Optimized */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 dark:from-emerald-900/20 dark:via-green-900/20 dark:to-teal-900/20 rounded-xl sm:rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50">
+            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 rounded-xl sm:rounded-2xl border border-emerald-200/50 dark:border-slate-700">
                 {/* Subtle Background Pattern */}
                 <div className="absolute inset-0 opacity-20">
                     <div className="absolute top-6 right-8 w-24 h-24 bg-gradient-to-br from-emerald-200 to-green-200 rounded-full blur-2xl"></div>
@@ -531,7 +531,7 @@ export function InteractiveTree({
             </div>
 
             {/* Tree Content */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-200/50 shadow-sm overflow-hidden">
+            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-200/50 dark:border-slate-700/50 shadow-sm overflow-hidden">
                 <div className="p-3 sm:p-4 lg:p-6 space-y-2 sm:space-y-3">
                     {treeNodes.length === 0 ? (
                         <div className="text-center py-16">
