@@ -50,8 +50,8 @@ jobs:
             cat > .env << EOF
             NODE_ENV=production
             PORT=3000
-            APP_PORT=8130
-            NEXTAUTH_URL=http://herokku.duckdns.org:8130
+            APP_PORT=18130
+            NEXTAUTH_URL=http://herokku.duckdns.org:18130
             DATABASE_URL=postgresql://postgres:${{ secrets.POSTGRES_PASSWORD }}@db:5432/portafolios
             NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
             POSTGRES_USER=postgres
@@ -93,7 +93,7 @@ jobs:
             # Verificar salud
             echo "🔍 Testing application..."
             for i in {1..6}; do
-              if curl -f -m 10 http://localhost:8130/api/health 2>/dev/null; then
+              if curl -f -m 10 http://localhost:18130/api/health 2>/dev/null; then
                 echo "✅ Application is healthy"
                 break
               else
@@ -113,7 +113,7 @@ jobs:
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             echo ""
             echo "🌐 Access URL:"
-            echo "   • HTTP: http://herokku.duckdns.org:8130"
+            echo "   • HTTP: http://herokku.duckdns.org:18130"
             echo ""
             echo "📊 Container Status:"
             docker compose ps --format "table {{.Name}}\t{{.Status}}"
@@ -127,8 +127,8 @@ jobs:
           echo "#### 🌐 Access URLs:" >> $GITHUB_STEP_SUMMARY
           echo "| Service | URL |" >> $GITHUB_STEP_SUMMARY
           echo "|---------|-----|" >> $GITHUB_STEP_SUMMARY
-          echo "| **Application** | http://herokku.duckdns.org:8130 |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Health Check** | http://herokku.duckdns.org:8130/api/health |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Application** | http://herokku.duckdns.org:18130 |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Health Check** | http://herokku.duckdns.org:18130/api/health |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "#### 📦 Deployed:" >> $GITHUB_STEP_SUMMARY
           echo "- Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
