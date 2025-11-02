@@ -18,511 +18,792 @@
 
 
 
-## Características Principales## Características Principales
+## 🚀 Características Principales
 
+## Características Principales
 
+**Organización Visual**
 
-**Organización Visual****Organización Visual**
+- Estructura de árbol jerárquica interactiva**Organización Visual**
 
-- Estructura de árbol jerárquica interactiva- Estructura de árbol jerárquica interactiva
+- Múltiples layouts: tree, grid, kanban, timeline- Estructura de árbol jerárquica interactiva
 
-- Múltiples layouts: tree, grid, kanban, timeline- Múltiples layouts: tree, grid, kanban, timeline
+- Navegación intuitiva y responsive- Múltiples layouts: tree, grid, kanban, timeline
 
-- Navegación intuitiva y responsive- Navegación intuitiva y responsive
+- Navegación intuitiva y responsive
 
+**Sistema Completo de Autenticación**
 
+- Login social: GitHub, Google**Sistema Completo de Autenticación**
 
-**Sistema Completo de Autenticación****Sistema Completo de Autenticación**
+- Registro manual con email/contraseña- Login social: GitHub, Google, Facebook
 
-- Login social: GitHub, Google, Facebook- Login social: GitHub, Google, Facebook
+- Sesiones seguras con NextAuth.js- Registro manual con email/contraseña
 
-- Registro manual con email/contraseña- Registro manual con email/contraseña
+- URLs únicas personalizadas- Sesiones seguras con NextAuth.js
 
-- Sesiones seguras con NextAuth.js- Sesiones seguras con NextAuth.js
+- URLs únicas personalizadas
 
-- URLs únicas personalizadas- URLs únicas personalizadas
+**Dashboard de Gestión**
 
+- Editor visual para crear contenido**Dashboard de Gestión**
 
+- Gestión de archivos e imágenes- Editor visual para crear contenido
 
-**Dashboard de Gestión****Dashboard de Gestión**
+- Vista previa en tiempo real- Gestión de archivos e imágenes
 
-- Editor visual para crear contenido- Editor visual para crear contenido
+- Control de visibilidad pública/privada- Vista previa en tiempo real
 
-- Gestión de archivos e imágenes- Gestión de archivos e imágenes
+- Control de visibilidad pública/privada
 
-- Vista previa en tiempo real- Vista previa en tiempo real
+**Tipos de Contenido**
 
-- Control de visibilidad pública/privada- Control de visibilidad pública/privada
+- `CATEGORY` - Organiza en categorías**Tipos de Contenido**
 
+- `PROJECT` - Proyectos con imágenes y enlaces- `CATEGORY` - Organiza en categorías
 
+- `LANGUAGE` - Tecnologías y lenguajes- `PROJECT` - Proyectos con imágenes y enlaces
 
-**Tipos de Contenido****Tipos de Contenido**
+- `SKILL` - Habilidades técnicas- `LANGUAGE` - Tecnologías y lenguajes
 
-- `CATEGORY` - Organiza en categorías- `CATEGORY` - Organiza en categorías
+- `EXPERIENCE` - Experiencia laboral- `SKILL` - Habilidades técnicas
 
-- `PROJECT` - Proyectos con imágenes y enlaces- `PROJECT` - Proyectos con imágenes y enlaces
+- `EDUCATION` - Formación académica- `EXPERIENCE` - Experiencia laboral
 
-- `LANGUAGE` - Tecnologías y lenguajes- `LANGUAGE` - Tecnologías y lenguajes
+- `DOCUMENTATION` - Recursos y guías- `EDUCATION` - Formación académica
 
-- `SKILL` - Habilidades técnicas- `SKILL` - Habilidades técnicas
+- `DOCUMENTATION` - Recursos y guías
 
-- `EXPERIENCE` - Experiencia laboral- `EXPERIENCE` - Experiencia laboral
+## 🛠️ Stack Tecnológico
 
-- `EDUCATION` - Formación académica- `EDUCATION` - Formación académica
 
-- `DOCUMENTATION` - Recursos y guías- `DOCUMENTATION` - Recursos y guías
 
+### Frontend## Stack Tecnológico
 
+- Next.js 15 (App Router)
 
-## Stack Tecnológico## Stack Tecnológico
+- React 19### Frontend
 
+- TypeScript- Next.js 15 (App Router)
 
+- TailwindCSS 4- React 19
 
-### Frontend### Frontend
+- Headless UI- TypeScript
 
-- Next.js 15 (App Router)- Next.js 15 (App Router)
+- Heroicons- TailwindCSS 4
 
-- React 19- React 19
+- Headless UI
 
-- TypeScript- TypeScript
+### Backend- Heroicons
 
-- TailwindCSS 4- TailwindCSS 4
+- Next.js API Routes
 
-- Headless UI- Headless UI
+- Prisma ORM### Backend
 
-- Heroicons- Heroicons
+- NextAuth.js- Next.js API Routes
 
+- Vercel Blob Storage- Prisma ORM
 
+- bcryptjs- NextAuth.js
 
-### Backend### Backend
+- Vercel Blob Storage
 
-- Next.js API Routes- Next.js API Routes
+### Base de Datos- bcryptjs
 
-- Prisma ORM- Prisma ORM
+- PostgreSQL 15
 
-- NextAuth.js- NextAuth.js
+- Migraciones Prisma### Base de Datos
 
-- Vercel Blob Storage- Vercel Blob Storage
+- PostgreSQL 15
 
-- bcryptjs- bcryptjs
+## ⚡ Inicio Rápido- Migraciones Prisma
 
 
 
-### Base de Datos### Base de Datos
+### Opción 1: Docker (Recomendado)
 
-- PostgreSQL 15- PostgreSQL 15
+## Inicio Rápido
 
-- Migraciones Prisma- Migraciones Prisma
+```powershell
 
+# Clonar repositorio### Opción 1: Docker (Recomendado)
 
+git clone https://github.com/hugocis/portafolio.git
 
-## Inicio Rápido## Inicio Rápido
+cd portafolio```powershell
 
+# Clonar repositorio
 
+# Iniciar en modo desarrollogit clone https://github.com/hugocis/portafolio.git
 
-### Opción 1: Docker (Recomendado)### Opción 1: Docker (Recomendado)
+.\deploy.ps1 -Devcd portafolio
 
 
 
-```powershell```powershell
+# O en modo producción# Iniciar en modo desarrollo
 
-# Clonar repositorio# Clonar repositorio
+.\deploy.ps1 -Prod.\deploy.ps1 -Dev
 
-git clone https://github.com/tu-usuario/portfolio-tree.gitgit clone https://github.com/tu-usuario/portfolio-tree.git
+```
 
-cd portfolio-treecd portfolio-tree
+# O en modo producción
 
+**¡Listo!** Tu aplicación estará en http://localhost:3000.\deploy.ps1 -Prod
 
+```
 
-# Iniciar en modo desarrollo# Iniciar en modo desarrollo
+Ver [documentación completa de Docker](./docs/DOCKER.md) para más opciones.
 
-.\deploy.ps1 -Dev.\deploy.ps1 -Dev
+**Listo!** Tu aplicación estará en http://localhost:3000
 
+### Opción 2: Instalación Manual
 
+Ver [documentación completa de Docker](./docs/DOCKER.md) para más opciones.
 
-# O en modo producción# O en modo producción
+```bash
 
-.\deploy.ps1 -Prod.\deploy.ps1 -Prod
+# Instalar dependencias### Opción 2: Instalación Manual
+
+npm install
+
+```bash
+
+# Configurar base de datos# Instalar dependencias
+
+createdb portfolio_treenpm install
+
+
+
+# Copiar variables de entorno# Configurar base de datos
+
+cp .env.example .env.localcreatedb portfolio_tree
+
+# Editar .env.local con tu configuración
+
+# Copiar variables de entorno
+
+# Ejecutar migracionescp .env.example .env.local
+
+npx prisma migrate dev# Editar .env.local con tu configuración
+
+
+
+# Iniciar servidor# Ejecutar migraciones
+
+npm run devnpx prisma migrate dev
+
+```
+
+# Iniciar servidor
+
+## ⚙️ Configuraciónnpm run dev
+
+```
+
+### Variables de Entorno Requeridas
+
+
+
+```env## Configuración
+
+# Base de Datos
+
+DATABASE_URL="postgresql://usuario:password@localhost:5432/portfolio_tree"### Variables de Entorno Requeridas
+
+
+
+# NextAuth```env
+
+NEXTAUTH_URL="http://localhost:3000"# Base de Datos
+
+NEXTAUTH_SECRET="tu-secreto-generado"DATABASE_URL="postgresql://usuario:password@localhost:5432/portfolio_tree"
+
+
+
+# GitHub OAuth (opcional)# NextAuth
+
+OAUTH_GITHUB_ID="tu-client-id"NEXTAUTH_URL="http://localhost:3000"
+
+OAUTH_GITHUB_SECRET="tu-client-secret"NEXTAUTH_SECRET="tu-secreto-generado"
+
+
+
+# Google OAuth (opcional)# GitHub OAuth (opcional)
+
+GOOGLE_CLIENT_ID="tu-client-id"GITHUB_CLIENT_ID="tu-client-id"
+
+GOOGLE_CLIENT_SECRET="tu-client-secret"GITHUB_CLIENT_SECRET="tu-client-secret"
+
+
+
+# Vercel Blob (opcional, para producción)# Vercel Blob (opcional, para producción)
+
+BLOB_READ_WRITE_TOKEN="tu-token"BLOB_READ_WRITE_TOKEN="tu-token"
 
 ``````
 
 
 
-**Listo!** Tu aplicación estará en http://localhost:3000**Listo!** Tu aplicación estará en http://localhost:3000
-
-
-
-Ver [documentación completa de Docker](./docs/DOCKER.md) para más opciones.Ver [documentación completa de Docker](./docs/DOCKER.md) para más opciones.
-
-
-
-### Opción 2: Instalación Manual### Opción 2: Instalación Manual
+### Generar Secretos### Generar Secretos
 
 
 
 ```bash```bash
 
-# Instalar dependencias# Instalar dependencias
+# NEXTAUTH_SECRET# NEXTAUTH_SECRET
 
-npm installnpm install
-
-
-
-# Configurar base de datos# Configurar base de datos
-
-createdb portfolio_treecreatedb portfolio_tree
-
-
-
-# Copiar variables de entorno# Copiar variables de entorno
-
-cp .env.example .env.localcp .env.example .env.local
-
-# Editar .env.local con tu configuración# Editar .env.local con tu configuración
-
-
-
-# Ejecutar migraciones# Ejecutar migraciones
-
-npx prisma migrate devnpx prisma migrate dev
-
-
-
-# Iniciar servidor# Iniciar servidor
-
-npm run devnpm run dev
+openssl rand -base64 32openssl rand -base64 32
 
 ``````
 
 
 
-## Configuración## 📖 Guía de Uso Completa
+Ver [Configuración de GitHub OAuth](./docs/GITHUB_SETUP.md) para detalles de OAuth.Ver [Configuración de GitHub OAuth](./docs/GITHUB_SETUP.md) para detalles de OAuth.
 
 
 
-### Variables de Entorno Requeridas### 🏠 **1. Página Principal**
+## 📖 Guía de Uso#### **Vista Principal**
 
-- **Landing Page** atractiva con call-to-action
 
-```env- **Explorar Portafolios** públicos de otros usuarios
 
-# Base de Datos- **Registro/Login** fácil y rápido
+### 🏠 Página Principal## Estructura del Proyecto- **Resumen** de tu portafolio
 
-DATABASE_URL="postgresql://usuario:password@localhost:5432/portfolio_tree"
+- Landing page con presentación del proyecto
 
-### 👤 **2. Registro de Usuario**
+- Explorar portafolios públicos- **Estadísticas** de nodos y visitas
 
-# NextAuth
-
-NEXTAUTH_URL="http://localhost:3000"#### **Método 1: Registro Manual**
-
-NEXTAUTH_SECRET="tu-secreto-generado"1. Haz clic en **"Get Started"** o **"Registrarse"**
-
-2. Completa el formulario:
-
-# GitHub OAuth (opcional)   - **Nombre completo**
-
-GITHUB_CLIENT_ID="tu-client-id"   - **Username** (será tu URL: `/user/tu-username`)
-
-GITHUB_CLIENT_SECRET="tu-client-secret"   - **Email**
-
-   - **Contraseña**
-
-# Vercel Blob (opcional, para producción)3. **¡Automáticamente entrarás al dashboard!**
-
-BLOB_READ_WRITE_TOKEN="tu-token"
-
-```#### **Método 2: OAuth Social**
-
-1. Ve a `/auth/signin`
-
-### Generar Secretos2. Selecciona **"Continue with GitHub"**
-
-3. Autoriza la aplicación
-
-```bash4. Tu username se generará automáticamente
-
-# NEXTAUTH_SECRET
-
-openssl rand -base64 32### 🎛️ **3. Dashboard - Tu Centro de Control**
-
-```
-
-Accede a `/dashboard` para gestionar tu portafolio:
-
-Ver [Configuración de GitHub OAuth](./docs/GITHUB_SETUP.md) para detalles de OAuth.
-
-#### **Vista Principal**
-
-## Estructura del Proyecto- **Resumen** de tu portafolio
-
-- **Estadísticas** de nodos y visitas
+- Registro/Login rápido
 
 ```- **Acciones rápidas** para crear contenido
 
+### 👤 Registro de Usuario
+
 portfolio-tree/
 
-├── app/                    # Next.js App Router#### **Gestión de Nodos**
+**Método 1: Registro Manual**
 
-│   ├── api/               # API endpoints- **Crear Nuevo Nodo**: Botón "+" para añadir contenido
+1. Completa el formulario con nombre, username, email y contraseña├── app/                    # Next.js App Router#### **Gestión de Nodos**
 
-│   ├── auth/              # Autenticación- **Editar Nodos**: Clic en cualquier nodo para editarlo
+2. Tu username será tu URL: `/user/tu-username`
 
-│   ├── dashboard/         # Panel admin- **Organizar**: Arrastra y suelta para reorganizar (próximamente)
+3. Automáticamente accederás al dashboard│   ├── api/               # API endpoints- **Crear Nuevo Nodo**: Botón "+" para añadir contenido
+
+
+
+**Método 2: OAuth Social**│   ├── auth/              # Autenticación- **Editar Nodos**: Clic en cualquier nodo para editarlo
+
+1. Selecciona "Continue with GitHub/Google"
+
+2. Autoriza la aplicación│   ├── dashboard/         # Panel admin- **Organizar**: Arrastra y suelta para reorganizar (próximamente)
+
+3. Username generado automáticamente
 
 │   ├── explore/           # Explorar comunidad- **Configurar Visibilidad**: Controla qué se muestra públicamente
 
+### 🎛️ Dashboard
+
 │   └── user/[username]/   # Perfiles públicos
 
-├── components/            # Componentes React### 📝 **4. Creando Contenido**
+**Vista Principal**
 
-│   ├── dashboard/         # Componentes admin
+- Resumen de tu portafolio├── components/            # Componentes React### 📝 **4. Creando Contenido**
 
-│   ├── portfolio/         # Visualización#### **Tipos de Nodos Disponibles**
+- Estadísticas de nodos
 
-│   └── ui/                # Componentes base
+- Acciones rápidas para crear contenido│   ├── dashboard/         # Componentes admin
+
+
+
+**Gestión de Nodos**│   ├── portfolio/         # Visualización#### **Tipos de Nodos Disponibles**
+
+- Crear nuevo nodo con botón "+"
+
+- Editar haciendo clic en cualquier nodo│   └── ui/                # Componentes base
+
+- Configurar visibilidad pública/privada
 
 ├── prisma/                # Base de datos**📁 CATEGORY** - Categorías Principales
 
+### 📝 Tipos de Contenido
+
 │   ├── schema.prisma      # Esquema```
 
-│   └── migrations/        # MigracionesEjemplo: "Desarrollo Web", "Proyectos Mobile", "Diseño UI/UX"
+**📁 CATEGORY** - Categorías Principales
+
+- Organiza tu contenido en secciones│   └── migrations/        # MigracionesEjemplo: "Desarrollo Web", "Proyectos Mobile", "Diseño UI/UX"
+
+- Título, descripción y contenido detallado
 
 ├── lib/                   # Utilidades- Título: nombre de la categoría
 
-├── types/                 # TypeScript types- Descripción: breve explicación
+**💻 LANGUAGE** - Tecnologías y Lenguajes
 
-└── public/                # Archivos estáticos- Contenido: información detallada
+- Nivel de experiencia├── types/                 # TypeScript types- Descripción: breve explicación
 
-``````
+- Proyectos relacionados
+
+- Certificaciones└── public/                # Archivos estáticos- Contenido: información detallada
 
 
 
-## Scripts Disponibles**💻 LANGUAGE** - Tecnologías y Lenguajes
+**🚀 PROJECT** - Proyectos``````
 
-```
+- URL del proyecto y repositorio
 
-### DesarrolloEjemplo: "JavaScript", "Python", "React"
+- Galería de imágenes
+
+- Tags tecnológicos
+
+- Contenido markdown## Scripts Disponibles**💻 LANGUAGE** - Tecnologías y Lenguajes
+
+
+
+**⚡ SKILL** - Habilidades```
+
+- Nivel: Beginner, Intermediate, Advanced, Expert
+
+- Años de experiencia### DesarrolloEjemplo: "JavaScript", "Python", "React"
+
+- Certificaciones
 
 ```bash- Nivel de experiencia
 
-npm run dev              # Servidor desarrollo- Proyectos relacionados
+**💼 EXPERIENCE** - Experiencia Laboral
 
-npm run build           # Build producción- Certificaciones
-
-npm run start           # Servidor producción```
-
-npm run lint            # Linter
-
-```**🚀 PROJECT** - Proyectos Específicos
-
-```
-
-### DockerCampos disponibles:
-
-```powershell- Título y descripción
-
-.\deploy.ps1 -Dev       # Desarrollo- URL del proyecto live
-
-.\deploy.ps1 -Prod      # Producción- Repositorio GitHub
-
-.\deploy.ps1 -Stop      # Detener- URL de demo
-
-.\deploy.ps1 -Clean     # Limpiar datos- Galería de imágenes
-
-```- Tags tecnológicos
-
-- Contenido markdown
-
-### Base de Datos```
-
-```bash
-
-npx prisma studio       # UI visual**⚡ SKILL** - Habilidades
-
-npx prisma migrate dev  # Nueva migración```
-
-npx prisma generate     # Generar clienteEjemplo: "Frontend Development", "Database Design"
-
-```- Nivel: Beginner, Intermediate, Advanced, Expert
-
-- Años de experiencia
-
-## Documentación- Certificaciones
-
-```
-
-- **[Configuración Docker](./docs/DOCKER.md)** - Setup completo con Docker
-
-- **[Sistema de Archivos](./docs/BLOBS.md)** - Gestión de imágenes y archivos**💼 EXPERIENCE** - Experiencia Laboral
-
-- **[GitHub OAuth](./docs/GITHUB_SETUP.md)** - Configurar login con GitHub```
-
-- **[Deployment](./docs/DEPLOYMENT.md)** - Deploy en diferentes entornos- Empresa y posición
+- Empresa y posiciónnpm run dev              # Servidor desarrollo- Proyectos relacionados
 
 - Fechas de inicio y fin
 
-## Despliegue- Responsabilidades
+- Responsabilidades y logrosnpm run build           # Build producción- Certificaciones
 
-- Logros destacados
+- Tecnologías utilizadas
 
-### Vercel (Recomendado)- Tecnologías utilizadas
+npm run start           # Servidor producción```
 
-1. Conectar repositorio a Vercel```
+**🎓 EDUCATION** - Formación
 
-2. Configurar variables de entorno
+- Instituciónnpm run lint            # Linter
 
-3. Conectar PostgreSQL**🎓 EDUCATION** - Formación
+- Título/Certificación
 
-4. Deploy automático```
+- Fechas y descripción```**🚀 PROJECT** - Proyectos Específicos
 
-- Institución
-
-Ver [Guía completa de Deployment](./docs/DEPLOYMENT.md) para más opciones.- Título/Certificación
-
-- Fechas
-
-### Servidor Propio con Docker- Descripción
-
-```bash- Proyectos destacados
-
-# En el servidor```
-
-git clone tu-repo.git
-
-cd portfolio-tree**📚 DOCUMENTATION** - Recursos
+- Proyectos destacados
 
 ```
 
-# Configurar .env- Guías técnicas
+**📚 DOCUMENTATION** - Recursos
 
-cp .env.example .env- Tutoriales
+- Guías técnicas### DockerCampos disponibles:
 
-# Editar .env con valores de producción- Referencias
+- Tutoriales
+
+- Referencias```powershell- Título y descripción
 
 - Links externos
 
-# Iniciar con Docker```
+.\deploy.ps1 -Dev       # Desarrollo- URL del proyecto live
 
-docker compose -f docker-compose.yml -f docker-compose.server.yml up -d
+### 🌐 Perfil Público
 
-```#### **Editor de Nodos**
+.\deploy.ps1 -Prod      # Producción- Repositorio GitHub
 
-- **Interfaz intuitiva** con formularios dinámicos
+Tu portafolio visible en `/user/tu-username` con:
 
-## Solución de Problemas- **Preview en tiempo real** de cambios
+.\deploy.ps1 -Stop      # Detener- URL de demo
 
-- **Validación automática** de campos
+**Layouts Disponibles**
 
-### Errores Comunes- **Guardado automático** de borradores
+- 🌳 **Tree View**: Vista jerárquica tradicional.\deploy.ps1 -Clean     # Limpiar datos- Galería de imágenes
 
+- 📊 **Grid Layout**: Vista de tarjetas organizada
 
+- 📋 **Kanban**: Estilo tablero Kanban```- Tags tecnológicos
 
-**Error de conexión a base de datos**### 🌐 **5. Perfil Público**
+- 📅 **Timeline**: Vista cronológica
 
-```bash
+- Contenido markdown
 
-# Verificar que PostgreSQL esté corriendoTu portafolio será visible en `/user/tu-username` con:
+## 📁 Estructura del Proyecto
 
-docker compose ps
+### Base de Datos```
 
-```#### **Layouts Disponibles**
+```
 
-- **🌳 Tree View**: Vista jerárquica tradicional
+portafolios/```bash
 
-**Error de migraciones**- **📊 Grid Layout**: Vista de tarjetas organizada
+├── 📁 app/                    # Next.js App Router
 
-```bash- **📋 Kanban**: Estilo tablero Kanban
+│   ├── 📁 api/               # Endpoints de APInpx prisma studio       # UI visual**⚡ SKILL** - Habilidades
 
-# Reset y re-aplicar migraciones- **📅 Timeline**: Vista cronológica
+│   │   ├── auth/             # Autenticación
 
-npx prisma migrate reset
+│   │   ├── nodes/            # CRUD de nodosnpx prisma migrate dev  # Nueva migración```
 
-npx prisma migrate dev#### **Navegación**
+│   │   ├── blobs/            # Gestión de archivos
 
-```- **Inspector de Nodos**: Panel lateral con detalles
+│   │   └── users/            # Gestión de usuariosnpx prisma generate     # Generar clienteEjemplo: "Frontend Development", "Database Design"
 
-- **Filtros**: Por tipo de contenido, tags, etc.
+│   ├── 📁 auth/              # Páginas de autenticación
 
-**Error de build**- **Búsqueda**: Encuentra contenido específico
+│   ├── 📁 dashboard/         # Panel de administración```- Nivel: Beginner, Intermediate, Advanced, Expert
 
-```bash- **Enlaces directos**: Comparte secciones específicas
+│   ├── 📁 explore/           # Explorar comunidad
 
-# Limpiar cache
+│   ├── 📁 user/[username]/   # Perfiles públicos- Años de experiencia
 
-rm -rf .next node_modules### 🔍 **6. Explorar Comunidad**
+│   ├── layout.tsx           # Layout raíz
 
-npm install
+│   ├── page.tsx             # Página principal## Documentación- Certificaciones
 
-npm run buildEn `/explore` puedes:
+│   └── globals.css          # Estilos globales
 
-```- **Descubrir** portafolios públicos
+├── 📁 components/            # Componentes React```
 
-- **Inspirarte** con otros profesionales
+│   ├── 📁 dashboard/        # Componentes del dashboard
 
-## Roadmap- **Seguir** tendencias en la comunidad
+│   ├── 📁 portfolio/        # Visualización de portafolios- **[Configuración Docker](./docs/DOCKER.md)** - Setup completo con Docker
 
-- **Buscar** por tecnologías o roles
+│   ├── 📁 providers/        # Context providers
 
-### Próximas Características
+│   └── 📁 ui/               # Componentes UI base- **[Sistema de Archivos](./docs/BLOBS.md)** - Gestión de imágenes y archivos**💼 EXPERIENCE** - Experiencia Laboral
 
-- Drag & Drop para reorganizar nodos## 🎨 Personalización y Configuración
+├── 📁 hooks/                # Custom React hooks
 
-- Temas personalizables
+├── 📁 lib/                  # Utilidades y configuraciones- **[GitHub OAuth](./docs/GITHUB_SETUP.md)** - Configurar login con GitHub```
 
-- Analytics de visitas### **Configuración de Perfil**
+│   ├── auth.ts             # Configuración NextAuth
 
-- Exportación a PDF- **Información básica**: Nombre, bio, ubicación
+│   └── prisma.ts           # Cliente Prisma- **[Deployment](./docs/DEPLOYMENT.md)** - Deploy en diferentes entornos- Empresa y posición
 
-- API pública- **Enlaces sociales**: GitHub, LinkedIn, Website
+├── 📁 prisma/              # Esquema y migraciones
 
-- Comentarios en portafolios- **Avatar**: Imagen de perfil
+│   ├── schema.prisma       # Esquema de base de datos- Fechas de inicio y fin
 
-- **Configuración de privacidad**
+│   └── migrations/         # Archivos de migración
 
-### Futuro
+├── 📁 types/               # Definiciones TypeScript## Despliegue- Responsabilidades
 
-- App móvil nativa### **Personalización Visual**
+├── 📁 public/              # Archivos estáticos
 
-- Colaboración en equipo- **Temas**: Claro/Oscuro (próximamente)
+├── 📁 docs/                # Documentación- Logros destacados
 
-- Marketplace de plantillas- **Layouts**: Múltiples vistas para tu contenido
+├── 🐳 Dockerfile            # Imagen Docker
 
-- Integración LinkedIn- **Colores**: Personalización de esquema (próximamente)
+├── 🐳 docker-compose.yml    # Configuración Docker base### Vercel (Recomendado)- Tecnologías utilizadas
 
-- AI-powered suggestions
+├── 🐳 docker-compose.server.yml # Override para servidor
 
-### **SEO y Compartición**
+├── 🐳 docker-entrypoint.sh  # Script de inicialización1. Conectar repositorio a Vercel```
 
-## Contribución- **Meta tags** automáticos
+├── 📜 deploy.ps1           # Script de despliegue Windows
 
-- **Open Graph** para redes sociales
+└── 📝 README.md            # Este archivo2. Configurar variables de entorno
 
-Las contribuciones son bienvenidas! Por favor:- **URLs amigables**
+```
 
-- **Sitemap** generado automáticamente
+3. Conectar PostgreSQL**🎓 EDUCATION** - Formación
 
-1. Fork el proyecto
+## 🔧 Scripts Disponibles
 
-2. Crea una rama feature (`git checkout -b feature/AmazingFeature`)## 🔧 Scripts y Comandos
+4. Deploy automático```
 
-3. Commit tus cambios (`git commit -m 'Add AmazingFeature'`)
+### Desarrollo
 
-4. Push a la rama (`git push origin feature/AmazingFeature`)### **Desarrollo**
-
-5. Abre un Pull Request```bash
+```bash- Institución
 
 npm run dev              # Servidor de desarrollo
 
-### Guíasnpm run build           # Compilar para producción
+npm run build           # Compilar para producciónVer [Guía completa de Deployment](./docs/DEPLOYMENT.md) para más opciones.- Título/Certificación
 
-- Seguir convenciones de código existentesnpm run start           # Servidor de producción
+npm run start           # Servidor de producción
 
-- Añadir tests para nuevas característicasnpm run lint            # Linter ESLint
+npm run lint            # Linter ESLint- Fechas
 
-- Actualizar documentación```
+```
 
-- Commits atómicos y descriptivos
+### Servidor Propio con Docker- Descripción
+
+### Docker
+
+```powershell```bash- Proyectos destacados
+
+# Desarrollo (hot reload)
+
+.\deploy.ps1 -Dev# En el servidor```
+
+
+
+# Produccióngit clone tu-repo.git
+
+.\deploy.ps1 -Prod  
+
+cd portfolio-tree**📚 DOCUMENTATION** - Recursos
+
+# Gestión
+
+.\deploy.ps1 -Stop     # Detener contenedores```
+
+.\deploy.ps1 -Clean    # Limpiar datos y volúmenes
+
+```# Configurar .env- Guías técnicas
+
+
+
+### Base de Datoscp .env.example .env- Tutoriales
+
+```bash
+
+npx prisma studio              # Interface visual# Editar .env con valores de producción- Referencias
+
+npx prisma migrate dev         # Nueva migración
+
+npx prisma migrate deploy      # Desplegar migraciones- Links externos
+
+npx prisma generate           # Generar cliente
+
+```# Iniciar con Docker```
+
+
+
+## 📚 Documentacióndocker compose -f docker-compose.yml -f docker-compose.server.yml up -d
+
+
+
+- **[Configuración Docker](./docs/DOCKER.md)** - Setup completo con Docker```#### **Editor de Nodos**
+
+- **[Sistema de Archivos](./docs/BLOBS.md)** - Gestión de imágenes y archivos
+
+- **[GitHub OAuth](./docs/GITHUB_SETUP.md)** - Configurar login con GitHub- **Interfaz intuitiva** con formularios dinámicos
+
+- **[Deployment](./docs/DEPLOYMENT.md)** - Deploy en diferentes entornos
+
+- **[Troubleshooting](./docs/TROUBLESHOOTING.md)** - Solución de problemas comunes## Solución de Problemas- **Preview en tiempo real** de cambios
+
+
+
+## 🚀 Despliegue- **Validación automática** de campos
+
+
+
+### Vercel (Recomendado)### Errores Comunes- **Guardado automático** de borradores
+
+1. Conecta tu repositorio a Vercel
+
+2. Configura variables de entorno
+
+3. Conecta base de datos PostgreSQL
+
+4. Deploy automático con cada push**Error de conexión a base de datos**### 🌐 **5. Perfil Público**
+
+
+
+### Servidor Propio con Docker```bash
+
+```bash
+
+# En el servidor# Verificar que PostgreSQL esté corriendoTu portafolio será visible en `/user/tu-username` con:
+
+git clone https://github.com/hugocis/portafolio.git
+
+cd portafoliodocker compose ps
+
+
+
+# Configurar .env```#### **Layouts Disponibles**
+
+cp .env.example .env
+
+# Editar .env con valores de producción- **🌳 Tree View**: Vista jerárquica tradicional
+
+
+
+# Iniciar con Docker**Error de migraciones**- **📊 Grid Layout**: Vista de tarjetas organizada
+
+docker compose -f docker-compose.yml -f docker-compose.server.yml up -d
+
+```bash- **📋 Kanban**: Estilo tablero Kanban
+
+# Ejecutar migraciones
+
+docker compose exec app npx prisma migrate deploy# Reset y re-aplicar migraciones- **📅 Timeline**: Vista cronológica
+
+```
+
+npx prisma migrate reset
+
+Ver [Guía completa de Deployment](./docs/DEPLOYMENT.md) para más opciones.
+
+npx prisma migrate dev#### **Navegación**
+
+## 🚨 Solución de Problemas
+
+```- **Inspector de Nodos**: Panel lateral con detalles
+
+### Error de conexión a base de datos
+
+```bash- **Filtros**: Por tipo de contenido, tags, etc.
+
+# Verificar que PostgreSQL esté corriendo
+
+docker compose ps**Error de build**- **Búsqueda**: Encuentra contenido específico
+
+
+
+# Ver logs```bash- **Enlaces directos**: Comparte secciones específicas
+
+docker compose logs db
+
+```# Limpiar cache
+
+
+
+### Error de migracionesrm -rf .next node_modules### 🔍 **6. Explorar Comunidad**
+
+```bash
+
+# Reset y re-aplicar migracionesnpm install
+
+npx prisma migrate reset
+
+npx prisma migrate devnpm run buildEn `/explore` puedes:
+
+```
+
+```- **Descubrir** portafolios públicos
+
+### Error de build
+
+```bash- **Inspirarte** con otros profesionales
+
+# Limpiar cache
+
+rm -rf .next node_modules## Roadmap- **Seguir** tendencias en la comunidad
+
+npm install
+
+npm run build- **Buscar** por tecnologías o roles
+
+```
+
+### Próximas Características
+
+Ver [Troubleshooting completo](./docs/TROUBLESHOOTING.md) para más detalles.
+
+- Drag & Drop para reorganizar nodos## 🎨 Personalización y Configuración
+
+## 🛣️ Roadmap
+
+- Temas personalizables
+
+### Próximas Características
+
+- [ ] Drag & Drop para reorganizar nodos- Analytics de visitas### **Configuración de Perfil**
+
+- [ ] Temas personalizables (claro/oscuro)
+
+- [ ] Subida de imágenes integrada- Exportación a PDF- **Información básica**: Nombre, bio, ubicación
+
+- [ ] Analytics de visitas
+
+- [ ] Comentarios en portafolios- API pública- **Enlaces sociales**: GitHub, LinkedIn, Website
+
+- [ ] Exportación a PDF
+
+- [ ] API pública- Comentarios en portafolios- **Avatar**: Imagen de perfil
+
+
+
+### Futuro- **Configuración de privacidad**
+
+- [ ] Colaboración en equipo
+
+- [ ] Marketplace de plantillas### Futuro
+
+- [ ] Integración con LinkedIn
+
+- [ ] App móvil nativa- App móvil nativa### **Personalización Visual**
+
+- [ ] AI-powered suggestions
+
+- Colaboración en equipo- **Temas**: Claro/Oscuro (próximamente)
+
+## 🤝 Contribución
+
+- Marketplace de plantillas- **Layouts**: Múltiples vistas para tu contenido
+
+¡Las contribuciones son bienvenidas! Por favor:
+
+- Integración LinkedIn- **Colores**: Personalización de esquema (próximamente)
+
+1. **Fork** el proyecto
+
+2. **Crea** una rama feature (`git checkout -b feature/AmazingFeature`)- AI-powered suggestions
+
+3. **Commit** tus cambios (`git commit -m 'Add AmazingFeature'`)
+
+4. **Push** a la rama (`git push origin feature/AmazingFeature`)### **SEO y Compartición**
+
+5. **Abre** un Pull Request
+
+## Contribución- **Meta tags** automáticos
+
+### Guías de Contribución
+
+- Sigue las convenciones de código existentes- **Open Graph** para redes sociales
+
+- Añade tests para nuevas características
+
+- Actualiza documentación cuando sea necesarioLas contribuciones son bienvenidas! Por favor:- **URLs amigables**
+
+- Mantén commits atómicos y descriptivos
+
+- **Sitemap** generado automáticamente
+
+## 📄 Licencia
+
+1. Fork el proyecto
+
+Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
+
+2. Crea una rama feature (`git checkout -b feature/AmazingFeature`)## 🔧 Scripts y Comandos
+
+## 🙏 Agradecimientos
+
+3. Commit tus cambios (`git commit -m 'Add AmazingFeature'`)
+
+- **Next.js** por el increíble framework
+
+- **Prisma** por la excelente abstracción de BD4. Push a la rama (`git push origin feature/AmazingFeature`)### **Desarrollo**
+
+- **TailwindCSS** por hacer el CSS divertido otra vez
+
+- **Vercel** por el hosting y deployment excepcional5. Abre un Pull Request```bash
+
+
+
+## 📞 Contacto y Soportenpm run dev              # Servidor de desarrollo
+
+
+
+- **Repositorio**: [github.com/hugocis/portafolio](https://github.com/hugocis/portafolio)### Guíasnpm run build           # Compilar para producción
+
+- **Issues**: [GitHub Issues](https://github.com/hugocis/portafolio/issues)
+
+- **Documentación**: Ver carpeta `/docs` para guías detalladas- Seguir convenciones de código existentesnpm run start           # Servidor de producción
+
+
+
+---- Añadir tests para nuevas característicasnpm run lint            # Linter ESLint
+
+
+
+**Portfolio Tree** 🌳 - *Construye y comparte tu historia profesional de manera visual*- Actualizar documentación```
+
+
+
+Desarrollado con ❤️ usando Next.js, React, y TypeScript- Commits atómicos y descriptivos
+
 
 ### **Docker**
 
