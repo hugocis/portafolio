@@ -1,280 +1,142 @@
-<div align="center"># Portfolio Tree# Portfolio Tree
-
-
+﻿<div align="center">
 
 # 🌳 Portfolio Tree
 
-
-
-### *Construye y comparte tu historia profesional de manera visual*> Plataforma moderna para crear y compartir portafolios profesionales con estructura jerárquica interactiva.> Plataforma moderna para crear y compartir portafolios profesionales con estructura jerárquica interactiva.
-
-
+### *Construye y comparte tu historia profesional de manera visual*
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-
-[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
-
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
-
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org/)[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
-
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)[![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma)](https://www.prisma.io/)[![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma)](https://www.prisma.io/)
-
-
-
-<p align="center">[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?logo=postgresql)](https://postgresql.org/)[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?logo=postgresql)](https://postgresql.org/)
-
+<p align="center">
   <a href="https://herokku.duckdns.org:8130"><strong>🚀 Demo en Vivo</strong></a> •
-
-  <a href="./docs/INDEX.md"><strong>📖 Documentación</strong></a> •[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
-
+  <a href="./docs/INDEX.md"><strong>📖 Documentación</strong></a> •
   <a href="https://github.com/hugocis/portafolio/issues"><strong>🐛 Reportar Bug</strong></a> •
-
   <a href="https://github.com/hugocis/portafolio/issues"><strong>✨ Nueva Feature</strong></a>
-
 </p>
-
-## 🚀 Características Principales
-
----
-
-## Características Principales
-
-**Portfolio Tree** es una plataforma moderna para crear y compartir portafolios profesionales con una estructura jerárquica interactiva. Organiza tus proyectos, habilidades y experiencia de forma visual y atractiva.
-
-**Organización Visual**
 
 </div>
 
-- Estructura de árbol jerárquica interactiva**Organización Visual**
+## ✨ Características Principales
 
-## ✨ Características Destacadas
-
-- Múltiples layouts: tree, grid, kanban, timeline- Estructura de árbol jerárquica interactiva
+**Portfolio Tree** es una plataforma moderna para crear y compartir portafolios profesionales con una estructura jerárquica interactiva.
 
 <table>
-
-<tr>- Navegación intuitiva y responsive- Múltiples layouts: tree, grid, kanban, timeline
-
+<tr>
 <td width="50%">
 
-- Navegación intuitiva y responsive
-
-### 🎨 Visualización Interactiva
-
-- 🌳 **Vista de Árbol** jerárquica**Sistema Completo de Autenticación**
-
+### 🎨 Visualización
+- 🌳 **Vista de Árbol** jerárquica
 - 📊 **Layout Grid** moderno
-
-- 📋 **Estilo Kanban** organizativo- Login social: GitHub, Google**Sistema Completo de Autenticación**
-
+- 📋 **Estilo Kanban** organizativo
 - 📅 **Timeline** cronológico
+- 🎯 Navegación intuitiva y responsive
 
-- 🎯 **Navegación intuitiva** y responsive- Registro manual con email/contraseña- Login social: GitHub, Google, Facebook
-
-
-
-</td>- Sesiones seguras con NextAuth.js- Registro manual con email/contraseña
-
+</td>
 <td width="50%">
 
-- URLs únicas personalizadas- Sesiones seguras con NextAuth.js
+### 🔐 Autenticación
+- 🐙 GitHub OAuth
+- 🔵 Google OAuth
+- 📧 Email/Password tradicional
+- 🔒 NextAuth.js seguro
+- 🔗 URLs personalizadas únicas
 
-### 🔐 Autenticación Completa
-
-- 🐙 **GitHub** OAuth- URLs únicas personalizadas
-
-- 🔵 **Google** OAuth  
-
-- 📧 **Email/Password** tradicional**Dashboard de Gestión**
-
-- 🔒 **NextAuth.js** seguro
-
-- 🔗 **URLs personalizadas** únicas- Editor visual para crear contenido**Dashboard de Gestión**
-
-
-
-</td>- Gestión de archivos e imágenes- Editor visual para crear contenido
-
+</td>
 </tr>
-
-<tr>- Vista previa en tiempo real- Gestión de archivos e imágenes
-
+<tr>
 <td width="50%">
 
-- Control de visibilidad pública/privada- Vista previa en tiempo real
+### 🎛️ Dashboard
+- ✏️ Editor visual de contenido
+- 🖼️ Gestión de imágenes integrada
+- 👁️ Preview en tiempo real
+- 🌐 Control de visibilidad público/privado
+- 🚀 Interfaz moderna y fluida
 
-### 🎛️ Dashboard Potente
-
-- ✏️ **Editor visual** de contenido- Control de visibilidad pública/privada
-
-- 🖼️ **Gestión de imágenes** integrada
-
-- 👁️ **Preview en tiempo real****Tipos de Contenido**
-
-- 🌐 **Control de visibilidad** público/privado
-
-- 🚀 **Interfaz moderna** y fluida- `CATEGORY` - Organiza en categorías**Tipos de Contenido**
-
-
-
-</td>- `PROJECT` - Proyectos con imágenes y enlaces- `CATEGORY` - Organiza en categorías
-
+</td>
 <td width="50%">
-
-- `LANGUAGE` - Tecnologías y lenguajes- `PROJECT` - Proyectos con imágenes y enlaces
 
 ### 📦 Tipos de Contenido
-
-- 📁 **CATEGORY** - Organización- `SKILL` - Habilidades técnicas- `LANGUAGE` - Tecnologías y lenguajes
-
+- 📁 **CATEGORY** - Organización
 - 🚀 **PROJECT** - Proyectos con galería
-
-- 💻 **LANGUAGE** - Tecnologías- `EXPERIENCE` - Experiencia laboral- `SKILL` - Habilidades técnicas
-
+- 💻 **LANGUAGE** - Tecnologías
 - ⚡ **SKILL** - Habilidades y niveles
-
-- 💼 **EXPERIENCE** - Historial laboral- `EDUCATION` - Formación académica- `EXPERIENCE` - Experiencia laboral
-
+- 💼 **EXPERIENCE** - Historial laboral
 - 🎓 **EDUCATION** - Formación
+- 📚 **DOCUMENTATION** - Recursos
 
-- 📚 **DOCUMENTATION** - Recursos- `DOCUMENTATION` - Recursos y guías- `EDUCATION` - Formación académica
-
-
-
-</td>- `DOCUMENTATION` - Recursos y guías
-
+</td>
 </tr>
-
 </table>## 🛠️ Stack Tecnológico
 
 
 
+---
+
 ## 🛠️ Stack Tecnológico
 
+<div align="center">
 
-
-<div align="center">### Frontend## Stack Tecnológico
-
-
-
-| Frontend | Backend | Database | DevOps |- Next.js 15 (App Router)
-
+| Frontend | Backend | Database | DevOps |
 |:--------:|:-------:|:--------:|:------:|
-
-| **Next.js 15** | **Next.js API** | **PostgreSQL 15** | **Docker** |- React 19### Frontend
-
+| **Next.js 15** | **Next.js API** | **PostgreSQL 15** | **Docker** |
 | React 19 | Prisma ORM | Prisma Migrate | Docker Compose |
-
-| TypeScript | NextAuth.js | | GitHub Actions |- TypeScript- Next.js 15 (App Router)
-
+| TypeScript | NextAuth.js | | GitHub Actions |
 | TailwindCSS 4 | Vercel Blob | | Nginx |
 
-| Headless UI | bcryptjs | | |- TailwindCSS 4- React 19
+</div>
 
+---
 
-
-</div>- Headless UI- TypeScript
-
-
-
-## 🚀 Inicio Rápido- Heroicons- TailwindCSS 4
-
-
-
-### ⚡ Opción 1: Docker (Recomendado)- Headless UI
-
-
-
-```powershell### Backend- Heroicons
-
-# 1️⃣ Clonar el repositorio
-
-git clone https://github.com/hugocis/portafolio.git- Next.js API Routes
-
-cd portafolio
-
-- Prisma ORM### Backend
-
-# 2️⃣ Iniciar en desarrollo (con hot reload)
-
-.\deploy.ps1 -Dev- NextAuth.js- Next.js API Routes
-
-
-
-# 3️⃣ O iniciar en producción- Vercel Blob Storage- Prisma ORM
-
-.\deploy.ps1 -Prod
-
-```- bcryptjs- NextAuth.js
-
-
-
-<div align="center">- Vercel Blob Storage
-
-
-
-**✨ ¡Listo!** Tu aplicación estará corriendo en [http://localhost:3000](http://localhost:3000)### Base de Datos- bcryptjs
-
-
-
-</div>- PostgreSQL 15
-
-
-
-### 🔧 Opción 2: Instalación Manual- Migraciones Prisma### Base de Datos
-
-
-
-<details>- PostgreSQL 15
-
-<summary><b>👉 Click para ver instrucciones detalladas</b></summary>
-
-## ⚡ Inicio Rápido- Migraciones Prisma
-
-```bash
-
-# 1️⃣ Instalar dependencias
-
-npm install
+## ⚡ Inicio Rápido
 
 ### Opción 1: Docker (Recomendado)
 
-# 2️⃣ Configurar base de datos
+```powershell
+# 1️⃣ Clonar el repositorio
+git clone https://github.com/hugocis/portafolio.git
+cd portafolio
 
-createdb portfolio_tree## Inicio Rápido
+# 2️⃣ Iniciar en desarrollo (con hot reload)
+.\deploy.ps1 -Dev
 
-
-
-# 3️⃣ Copiar y editar variables de entorno```powershell
-
-cp .env.example .env.local
-
-# Edita .env.local con tu configuración# Clonar repositorio### Opción 1: Docker (Recomendado)
-
-
-
-# 4️⃣ Ejecutar migracionesgit clone https://github.com/hugocis/portafolio.git
-
-npx prisma migrate dev
-
-cd portafolio```powershell
-
-# 5️⃣ Iniciar servidor de desarrollo
-
-npm run dev# Clonar repositorio
-
+# O en producción
+.\deploy.ps1 -Prod
 ```
 
-# Iniciar en modo desarrollogit clone https://github.com/hugocis/portafolio.git
+**✨ ¡Listo!** Tu aplicación estará corriendo en [http://localhost:3000](http://localhost:3000)
+
+📚 **Más detalles:** Ver [Documentación de Docker](./docs/DOCKER.md)
+
+### Opción 2: Instalación Manual
+
+<details>
+<summary><b>👉 Click para ver instrucciones detalladas</b></summary>
+
+```bash
+# 1️⃣ Instalar dependencias
+npm install
+
+# 2️⃣ Configurar base de datos
+createdb portfolio_tree
+
+# 3️⃣ Copiar y editar variables de entorno
+cp .env.example .env.local
+# Edita .env.local con tu configuración
+
+# 4️⃣ Ejecutar migraciones
+npx prisma migrate dev
+
+# 5️⃣ Iniciar servidor de desarrollo
+npm run dev
+```
 
 </details>
-
-.\deploy.ps1 -Devcd portafolio
 
 📚 **Más detalles:** Ver [Documentación de Docker](./docs/DOCKER.md)
 
